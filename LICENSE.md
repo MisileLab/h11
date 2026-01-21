@@ -1,6 +1,6 @@
 # Misilelab license v3.0
 
-Default author information: base-repository by MisileLaboratory  
+Default author information: h11 by MisileLaboratory  
 You can override author in subproject like `Override author information: Base repository by Misile`  
 
 ## Basic rules
