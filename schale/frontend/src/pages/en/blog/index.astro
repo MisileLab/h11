@@ -1,0 +1,20 @@
+---
+import Base from "../../../components/base.astro"
+import Post from "../../../components/post.astro"
+---
+
+<Base title="Blog" description="Posts and notes by Misile.">
+  <div class="page-container min-h-screen py-12 flex flex-col items-center gap-y-8">
+    <div class="w-full max-w-2xl border-b border-indigo-500/30 pb-4 mb-4">
+      <h1 class="font-normal text-3xl sm:text-4xl text-indigo-100">
+        Blog <span class="text-indigo-500 mx-2">/</span> <a href="/ko/blog" class="text-indigo-400 hover:text-indigo-300 text-lg sm:text-xl align-middle">KR Version</a>
+      </h1>
+    </div>
+    <div class="w-full flex flex-col items-center gap-y-8">
+      <Post title="Thinking AI as children." description="How much data matters to AI?" path={4} lang="en" />
+      <Post title="c'est la vie to open-source maintainers" description="Humans can't be perfect, including you and me." path={3} lang='en' />
+      <Post title="Linus, I have a different opinion." description="Open-source should be not political." path={2} lang='en'/>
+      <Post title="The 'Password Restriction' failed" description="NIST confirmed" path={1} lang='en'/>
+    </div>
+  </div>
+</Base>

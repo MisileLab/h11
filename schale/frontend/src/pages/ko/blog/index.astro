@@ -1,0 +1,19 @@
+---
+import Base from "../../../components/base.astro"
+import Post from "../../../components/post.astro"
+---
+
+<Base title="블로그" description="미실의 글과 노트 모음.">
+  <div class="page-container min-h-screen py-12 flex flex-col items-center gap-y-8">
+    <div class="w-full max-w-2xl border-b border-indigo-500/30 pb-4 mb-4">
+      <h1 class="font-normal text-3xl sm:text-4xl text-indigo-100">
+        Blog <span class="text-indigo-500 mx-2">/</span> <a href="/en/blog" class="text-indigo-400 hover:text-indigo-300 text-lg sm:text-xl align-middle">EN Version</a>
+      </h1>
+    </div>
+    <div class="w-full flex flex-col items-center gap-y-8">
+      <Post title="오픈 소스 유지보수자들에게, c'est la vie" description="사람은 완벽할 수 없습니다. 저와 당신도 해당됩니다." path={3} lang='ko'/>
+      <Post title="리누스, 저는 다른 의견입니다." description="오픈 소스는 정치와 관련되지 않아야 합니다." path={2} lang='ko'/>
+      <Post title="'비밀번호 제한'은 실패했다." description="그리고 그것을 미국이 인정했다." path={1} lang='ko'/>
+    </div>
+  </div>
+</Base>

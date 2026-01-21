@@ -1,0 +1,21 @@
+---
+import { DataType } from "./lib";
+
+export interface Props {
+  title: string
+  description: string
+  path: number,
+  type?: DataType,
+  lang?: string
+}
+const {title, description, path, type = DataType.blog, lang = "en"} = Astro.props;
+---
+
+<a href={type==DataType.news?`/data/${type}/${path}`:`/${lang}/${type}/${path}`} class="group block w-full max-w-2xl">
+  <div class="flex flex-col border-b border-indigo-800 pb-4 transition-all duration-300 ease-in-out group-hover:border-indigo-500 group-hover:pl-2">
+    <p class="text-2xl sm:text-3xl font-semibold text-indigo-100 group-hover:text-indigo-50 mb-2">{title}</p>
+    <div class="flex flex-row justify-between w-full h-fit gap-x-2">
+      <p class="text-indigo-300 text-lg sm:text-xl group-hover:text-indigo-200 transition-colors">{description}</p>
+    </div>
+  </div>
+</a>

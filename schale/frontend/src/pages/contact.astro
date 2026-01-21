@@ -1,0 +1,64 @@
+---
+import Base from "../components/base.astro";
+
+interface Contacts {
+  type: string;
+  value: string;
+  display?: string;
+}
+
+const contacts: Contacts[] = [{
+  type: "Email",
+  value: "misile@duck.com"
+}, {
+  type: "GPG Public Key",
+  value: `-----BEGIN PGP PUBLIC KEY BLOCK-----
+mDMEZfRmkBYJKwYBBAHaRw8BAQdAlD0S9P/WWffTzW+RrpOeBCcHrWj53pjpXM9A
+/b6blkW0FW1pc2lsZSA8aUBtaXNpbGUueHl6PoiOBBMWCgA2FiEEQbbKyIW9DGaw
+gQkwx76DsxNgW3cFAmX0ZpACGwMECwkIBwQVCgkIBRYCAwEAAh4FAheAAAoJEMe+
+g7MTYFt3EegA/jX0esvjF661bOTGYb4uuWvvM6qeczDmKfbfwfyzdoX8AQD+OipY
+r44XncRVirkFHeJoJEENYwUO3oo8MmFMHC+yBrg4BGX0ZpASCisGAQQBl1UBBQEB
+B0B31/x4+wez0dwZtTOpa3KswoPckWktNKTJ2SZYpsSBBgMBCAeIeAQYFgoAIBYh
+BEG2ysiFvQxmsIEJMMe+g7MTYFt3BQJl9GaQAhsMAAoJEMe+g7MTYFt3CCsBAJS1
+J7Km9zM9UY45t0lJ/pc6FQMnkobuxqghZqLNdccyAQDE3nTOFrhuLGQDwS9P0RjK
+dKlLiI7Ex3KOnMRwC004AQ==
+=VYi/
+-----END PGP PUBLIC KEY BLOCK-----`
+}, {
+  type: 'simplex-chat',
+  value: 'https://simplex.chat/contact#/?v=2-7&smp=smp%3A%2F%2F0YuTwO05YJWS8rkjn9eLJDjQhFKvIYd8d4xG8X1blIU%3D%40smp8.simplex.im%2FC3Jp5up5smeakSR70_pEMVklbKI2ZN9N%23%2F%3Fv%3D1-3%26dh%3DMCowBQYDK2VuAyEAv-DU4ho2LLOMWtuiXAjKzcWdB3BRMhEUZZE8LQtM82U%253D%26srv%3Dbeccx4yfxxbvyhqypaavemqurytl6hozr47wfc7uuecacjqdvwpw2xid.onion'
+}]
+---
+
+<Base title="Contact" description="Ways to reach Misile and public keys.">
+  <Fragment slot="head">
+    <script>
+      import { atom } from "nanostores"
+      import { queryId, nullVerify } from "@misile/satellite"
+
+      const valueAtom = atom<string>("misile@duck.com")
+      valueAtom.subscribe((v)=>{
+        queryId("placeholder").innerText = v.slice(0, 4) + "..." + v.slice(-4)
+      })
+      queryId("placeholder").addEventListener("click", ()=>{
+        navigator.clipboard.writeText(valueAtom.get())
+        alert("Copied!")
+      })
+      queryId("select").addEventListener("change", (e)=>{
+        valueAtom.set((nullVerify(e.target) as HTMLSelectElement).value);
+      })
+    </script>
+  </Fragment>
+  <div class="w-full h-screen flex flex-col items-center justify-center font-bold text-xl lg:text-2xl md:text-4xl gap-y-2">
+    <span>(Click to Copy)</span>
+    <div class="flex flex-row gap-x-2 items-center min-w-fit">
+      <select class="w-auto max-w-full bg-gray-950" id="select">
+        {contacts.map((v)=>{
+          return <option value={v.value}>{v.type}</option>
+        })}
+      </select>
+      <span>-></span>
+      <span class="text-indigo-200" id="placeholder">None</span>
+    </div>
+  </div>
+</Base>

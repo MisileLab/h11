@@ -1,0 +1,92 @@
+---
+export interface Props {
+  rewind?: boolean
+  title?: string
+  description?: string
+  image?: string
+  ogType?: "website" | "article"
+  lang?: string
+}
+const {
+  rewind = false,
+  title,
+  description,
+  image,
+  ogType = "website",
+  lang
+} = Astro.props
+const site = Astro.site ?? new URL("https://misile.xyz")
+const canonical = new URL(Astro.url.pathname, site)
+const pageLang = lang ?? (Astro.url.pathname.startsWith("/ko") ? "ko" : "en")
+const siteName = "Misile"
+const fullTitle = title ? `${title} | ${siteName}` : siteName
+const metaDescription = description ?? "Misile personal site, projects, and blog."
+const twitterCard = image ? "summary_large_image" : "summary"
+Astro.response.headers.set("onion-location", `http://b723cfcf6psmade7vqldtbc332nhhrwy52wvka3afy5s5257pzbqswid.onion${Astro.url.pathname}`)
+import "../styles/global.css"
+---
+
+<html lang={pageLang}>
+  <head>
+    <title>{fullTitle}</title>
+    <link rel="canonical" href={canonical} />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={metaDescription} />
+    <meta name="robots" content="index,follow" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={metaDescription} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:locale" content={pageLang === "ko" ? "ko_KR" : "en_US"} />
+    {image && <meta property="og:image" content={image} />}
+    <meta name="twitter:card" content={twitterCard} />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={metaDescription} />
+    {image && <meta name="twitter:image" content={image} />}
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <slot name="head" />
+    <style is:global>
+    @reference "tailwindcss/theme";
+    @font-face {
+      font-family: 'Iosevka';
+      src: url('/fonts/Iosevka/Iosevka-Regular.woff2') format('Woff');
+    }
+    @font-face {
+      font-family: 'SarasaMono';
+      src: url('/fonts/SarasaMono/SarasaMonoK-Regular.ttf') format('truetype');
+    }
+    * {
+      word-break: break-all;
+    }
+    p, span, h1, h2, h3, h4, h5, h6 {
+      width: fit-content;
+      height: fit-content;
+    }
+    
+    /* Global Container Utilities */
+    .page-container {
+      @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+    }
+    
+    .content-container {
+      @apply mx-auto w-full max-w-3xl px-4 sm:px-6;
+    }
+
+    /* Global Link Styles */
+    a {
+      @apply transition-colors duration-200 ease-in-out outline-none;
+    }
+    a:focus-visible {
+      @apply ring-2 ring-indigo-400 ring-offset-2 ring-offset-gray-950 rounded-sm;
+    }
+    </style>
+    {!rewind && <style is:global>* {font-family: 'Iosevka', 'SarasaMono';}</style>}
+    {rewind && <style is:global> * {font-family: 'SarasaMono';}</style>}
+  </head>
+  <body class="bg-gray-950 text-indigo-100">
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,55 @@
+---
+import Content from "../../../components/content.astro"
+---
+<Content title="Boring SSH Tunnel Manager" description="간단한 ssh 터널 관리 CLI" date={1728537507} isnews={true}>
+  <h2>기능</h2>
+  <ol>
+    <li>매우 경량 및 빠른 속도</li>
+    <li>로컬 및 원격 터널 지원</li>
+    <li>SSH 구성 및 ssh-agent와의 호환성</li>
+    <li>유닉스 소켓 지원</li>
+    <li>자동 재연결 기능</li>
+    <li>TOML을 통한 사람 친화적인 구성</li>
+  </ol>
+
+  <h2>사용법</h2>
+  <h3><strong>명령어</strong></h3>
+  <ol>
+    <li><code>boring list</code> - 모든 터널 나열</li>
+    <li><code>boring open {`<name1> [<name2> ...]`}</code> - 지정된 터널 열기</li>
+    <li><code>boring close {`<name1> [<name2> ...]`}</code> - 지정된 터널 닫기</li>
+  </ol>
+
+  <h3>구성</h3>
+  <ol>
+    <li>구성은 <code>~/.boring.toml</code>에서 읽어옴
+    <li><code>name</code>, <code>local</code>, <code>remote</code>, <code>host</code>, <code>user</code>, <code>identity</code>와 같은 옵션 구조 포함
+  </ol>
+
+  <h2>설치</h2>
+  <ol>
+    <li>사전 빌드된 바이너리를 다운로드하거나 소스에서 빌드할 수 있음
+      <ol>
+        <li>
+          <code>
+git clone https://github.com/alebeck/boring && cd boring
+./build.sh
+          </code>
+        </li>
+      </ol>
+    </li>
+    <li>현재 macOS 및 Linux만 지원</li>
+  </ol>
+  <h1>댓글 요약</h1>
+  <ol>
+    <li>사용자들은 사용 용이성과 Go SSH 라이브러리의 높은 품질을 칭찬하며 효과성에 대해 언급함</li>
+    <li>네이티브 Go SSL 라이브러리에 대한 성능 우려가 제기되었으며, 이들이 애플리케이션 속도를 저하시킬 수 있다고 언급</li>
+    <li>Go SSH 라이브러리의 유지 관리에 관한 토론이 이루어졌고, 해결되지 않은 문제와 서드파티 솔루션의 필요성에 대한 강조가 있었음</li>
+    <li>한 사용자가 Go의 SSH 처리와 관련된 일반 문제를 해결하는 knownhosts 래퍼 패키지 경험을 공유</li>
+    <li>독립 패키지 유지 관리 개념에 대한 논의와 유지 관리자의 지속성에 대한 우려가 존재함</li>
+    <li>사용자는 더 나은 압축 지원과 SSH 서버 내장 사용 사례에 대해 언급함</li>
+    <li>일부 사용자는 Rust에 비해 Go의 가독성과 직관성을 높이게 된 점을 강조함</li>
+    <li>CLI 기능 확장 제안으로 UI 개선을 위한 Bubble Tea 탐색이 포함됨</li>
+    <li>SSH 터널 관리자 향후 기능 아이디어, 예를 들어 Windows 지원 및 SOCKS 프록시 추가에 대해 언급됨</li>
+  </ol>
+</Content>
