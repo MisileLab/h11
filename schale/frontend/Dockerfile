@@ -1,6 +1,6 @@
 FROM node:25-alpine AS base
 WORKDIR /app
-RUN corepack enable
+RUN npm install -g corepack && corepack enable
 
 FROM base AS deps
 COPY package.json yarn.lock .yarnrc.yml ./
