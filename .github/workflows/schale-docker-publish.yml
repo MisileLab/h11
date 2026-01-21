@@ -44,7 +44,7 @@ jobs:
         with:
           context: schale/frontend
           file: schale/frontend/Dockerfile
-          push: true
+          push: ${{ env.ACT != 'true' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
