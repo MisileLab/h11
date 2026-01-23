@@ -40,6 +40,8 @@ h11/
 - Corin requires Python >=3.14 and pins dependencies in `corin/pyproject.toml`.
 - attn targets Unity 6000.3.4f1; dependencies live in `attn/Packages/manifest.json`.
 - Font assets in `schale/frontend/public/fonts` are large; avoid moving unless required.
+- When work is complete, agents should commit and push changes by default unless explicitly told otherwise.
+- Git commit messages use conventional commits with optional scopes (e.g., `feat(corin): add embedding compressor`).
 
 ## ANTI-PATTERNS (THIS PROJECT)
 - Do not edit or commit generated Unity directories: `attn/Library`, `attn/Logs`, `attn/UserSettings`.
