@@ -35,6 +35,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--batch-size", type=int, default=256)
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--margin", type=float, default=0.1)
+    parser.add_argument("--tau", type=float, default=0.05)
+    parser.add_argument("--lambda-list", type=float, default=1.0)
+    parser.add_argument("--hard-neg-l", type=int, default=200)
+    parser.add_argument("--hard-neg-per-anchor", type=int, default=1)
+    parser.add_argument("--listwise-queue-size", type=int, default=0)
     parser.add_argument("--weight-decay", type=float, default=1e-4)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--output", type=str, default="compressor_model.npz")
@@ -61,25 +66,41 @@ def parse_args() -> argparse.Namespace:
 def sample_triplets(
     rng: np.random.Generator,
     teacher_topk: np.ndarray,
+    k: int,
     batch_size: int,
+    hard_neg_per_anchor: int,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    num_items, k = teacher_topk.shape
+    num_items, teacher_k = teacher_topk.shape
     anchors = rng.integers(0, num_items, size=batch_size)
     positives = teacher_topk[anchors, rng.integers(0, k, size=batch_size)]
-    negatives = np.empty(batch_size, dtype=np.int64)
+    negatives = np.empty((batch_size, hard_neg_per_anchor), dtype=np.int64)
     for i, anchor in enumerate(anchors):
-        forbidden = set(teacher_topk[anchor])
+        hard_pool = teacher_topk[anchor, k:teacher_k]
+        if hard_pool.size:
+            replace = hard_pool.size < hard_neg_per_anchor
+            negatives[i] = rng.choice(
+                hard_pool, size=hard_neg_per_anchor, replace=replace
+            )
+            continue
+        forbidden = set(teacher_topk[anchor, :k])
         forbidden.add(anchor)
-        candidate = rng.integers(0, num_items)
-        while candidate in forbidden:
+        for j in range(hard_neg_per_anchor):
             candidate = rng.integers(0, num_items)
-        negatives[i] = candidate
+            while candidate in forbidden:
+                candidate = rng.integers(0, num_items)
+            negatives[i, j] = candidate
     return anchors, positives, negatives
 
 
-def build_teacher_topk(embeddings: np.ndarray, k: int, max_items: int) -> np.ndarray:
-    subset = embeddings[:max_items]
-    return topk_cosine_indices(subset, k)
+def build_teacher_topk(embeddings: np.ndarray, k: int, hard_neg_l: int) -> np.ndarray:
+    num_items = embeddings.shape[0]
+    if num_items < 2:
+        raise ValueError("Need at least 2 items to compute top-k")
+    effective_l = max(hard_neg_l, k + 1)
+    effective_l = min(effective_l, num_items - 1)
+    if effective_l < k:
+        raise ValueError("hard_neg_l must be >= k + 1")
+    return topk_cosine_indices(embeddings, effective_l)
 
 
 def train_model(
@@ -90,6 +111,11 @@ def train_model(
     batch_size: int,
     lr: float,
     margin: float,
+    tau: float,
+    lambda_list: float,
+    hard_neg_l: int,
+    hard_neg_per_anchor: int,
+    listwise_queue_size: int,
     weight_decay: float,
     seed: int,
     init: str,
@@ -100,7 +126,9 @@ def train_model(
 ) -> CompressorModel:
     set_seed(seed)
     rng = np.random.default_rng(seed)
-    split = train_test_split(embeddings, test_ratio=0.1, seed=seed)
+    rows = min(max_items, embeddings.shape[0])
+    subset = embeddings[:rows]
+    split = train_test_split(subset, test_ratio=0.1, val_ratio=0.1, seed=seed)
     train_embeddings = split.train
     standardizer = Standardizer(
         clip_percentile=clip_percentile if clip_percentile > 0.0 else None
@@ -118,45 +146,126 @@ def train_model(
     )
     optimizer = torch.optim.Adam([weight_param], lr=lr, weight_decay=weight_decay)
 
-    teacher_topk = build_teacher_topk(standardized, k=k, max_items=max_items)
-    indices = np.arange(min(max_items, standardized.shape[0]))
-    data_tensor = torch.tensor(
-        standardized[indices], dtype=torch.float32, device=device
-    )
+    if tau <= 0.0:
+        raise ValueError("tau must be positive")
+    if hard_neg_per_anchor < 1:
+        raise ValueError("hard_neg_per_anchor must be >= 1")
+    teacher_topk = build_teacher_topk(train_embeddings, k=k, hard_neg_l=hard_neg_l)
+    hard_neg_l_effective = int(teacher_topk.shape[1])
+    data_tensor = torch.tensor(standardized, dtype=torch.float32, device=device)
+    teacher_tensor = torch.tensor(train_embeddings, dtype=torch.float32, device=device)
+    queue_indices: list[int] = []
 
     log_records = []
     for epoch in range(1, epochs + 1):
-        anchors, positives, negatives = sample_triplets(rng, teacher_topk, batch_size)
+        anchors, positives, negatives = sample_triplets(
+            rng,
+            teacher_topk,
+            k,
+            batch_size,
+            hard_neg_per_anchor,
+        )
         anchor_vecs = data_tensor[anchors]
         pos_vecs = data_tensor[positives]
         neg_vecs = data_tensor[negatives]
 
         anchor_proj = torch.nn.functional.normalize(anchor_vecs @ weight_param, dim=1)
         pos_proj = torch.nn.functional.normalize(pos_vecs @ weight_param, dim=1)
-        neg_proj = torch.nn.functional.normalize(neg_vecs @ weight_param, dim=1)
+        neg_proj = torch.nn.functional.normalize(neg_vecs @ weight_param, dim=2)
 
         sim_pos = (anchor_proj * pos_proj).sum(dim=1)
-        sim_neg = (anchor_proj * neg_proj).sum(dim=1)
-        loss = torch.relu(margin + sim_neg - sim_pos).mean()
+        sim_neg = (anchor_proj[:, None, :] * neg_proj).sum(dim=2)
+        sim_neg_best = sim_neg.max(dim=1).values
+        triplet_loss = torch.relu(margin + sim_neg_best - sim_pos).mean()
+
+        listwise_loss = torch.tensor(0.0, device=device)
+        if lambda_list > 0.0:
+            candidates = np.concatenate(
+                [anchors, positives, negatives.reshape(-1)]
+            ).astype(np.int64)
+            if listwise_queue_size > 0 and queue_indices:
+                candidates = np.concatenate(
+                    [candidates, np.asarray(queue_indices, dtype=np.int64)]
+                )
+            candidates = np.unique(candidates)
+            if candidates.size > 1:
+                candidate_tensor = data_tensor[candidates]
+                teacher_candidates_raw = teacher_tensor[candidates]
+                teacher_anchor = torch.nn.functional.normalize(
+                    teacher_tensor[anchors], dim=1
+                )
+                teacher_candidates = torch.nn.functional.normalize(
+                    teacher_candidates_raw, dim=1
+                )
+                sim_t = teacher_anchor @ teacher_candidates.T
+                student_candidates = torch.nn.functional.normalize(
+                    candidate_tensor @ weight_param, dim=1
+                )
+                sim_s = anchor_proj @ student_candidates.T
+                candidate_ids = torch.tensor(
+                    candidates, dtype=torch.int64, device=device
+                )
+                anchor_ids = torch.tensor(anchors, dtype=torch.int64, device=device)
+                self_mask = candidate_ids.unsqueeze(0) == anchor_ids.unsqueeze(1)
+                sim_t = sim_t.masked_fill(self_mask, -1e9)
+                sim_s = sim_s.masked_fill(self_mask, -1e9)
+                log_p_t = torch.nn.functional.log_softmax(sim_t / tau, dim=1)
+                log_p_s = torch.nn.functional.log_softmax(sim_s / tau, dim=1)
+                p_t = torch.exp(log_p_t)
+                listwise_loss = (p_t * (log_p_t - log_p_s)).sum(dim=1).mean()
+
+        loss = triplet_loss + lambda_list * listwise_loss
 
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
-        log_records.append({"epoch": epoch, "loss": float(loss.item())})
+        log_records.append(
+            {
+                "epoch": epoch,
+                "loss": float(loss.item()),
+                "triplet_loss": float(triplet_loss.item()),
+                "listwise_loss": float(listwise_loss.item()),
+            }
+        )
+
+        if listwise_queue_size > 0:
+            queue_indices.extend(anchors.tolist())
+            if len(queue_indices) > listwise_queue_size:
+                queue_indices = queue_indices[-listwise_queue_size:]
 
     save_json(log_path, {"seed": seed, "records": log_records, "data": data_meta})
+    split_meta = {
+        "seed": seed,
+        "val_ratio": 0.1,
+        "test_ratio": 0.1,
+        "train_size": int(split.train_idx.size),
+        "val_size": int(split.val_idx.size),
+        "test_size": int(split.test_idx.size),
+        "train_idx": split.train_idx.tolist(),
+        "val_idx": split.val_idx.tolist(),
+        "test_idx": split.test_idx.tolist(),
+    }
     meta = {
+        "dim_in": int(embeddings.shape[1]),
         "dim_out": dim_out,
         "k": k,
+        "rows": int(rows),
         "epochs": epochs,
         "batch_size": batch_size,
         "lr": lr,
         "margin": margin,
+        "tau": tau,
+        "lambda_list": lambda_list,
+        "hard_neg_l": hard_neg_l,
+        "hard_neg_l_effective": hard_neg_l_effective,
+        "hard_neg_per_anchor": hard_neg_per_anchor,
+        "listwise_queue_size": listwise_queue_size,
         "weight_decay": weight_decay,
         "seed": seed,
         "init": init,
         "clip_percentile": clip_percentile,
+        "split": split_meta,
         "data": data_meta,
     }
     return CompressorModel(
@@ -198,6 +307,11 @@ def main() -> None:
         batch_size=args.batch_size,
         lr=args.lr,
         margin=args.margin,
+        tau=args.tau,
+        lambda_list=args.lambda_list,
+        hard_neg_l=args.hard_neg_l,
+        hard_neg_per_anchor=args.hard_neg_per_anchor,
+        listwise_queue_size=args.listwise_queue_size,
         weight_decay=args.weight_decay,
         seed=args.seed,
         init=args.init,

@@ -25,6 +25,13 @@ pip install -e .
 python train.py --dim-out 64 --k 50 --epochs 20 --max-items 5000
 ```
 
+Additional training knobs for ranking preservation:
+- `--tau`: temperature for listwise distillation (default 0.05)
+- `--lambda-list`: weight for listwise KL loss (default 1.0)
+- `--hard-neg-l`: teacher top-L pool for hard negatives (default 200)
+- `--hard-neg-per-anchor`: negatives per anchor (default 1)
+- `--listwise-queue-size`: optional candidate queue size (default 0)
+
 Parquet column name is inferred when there is a single column containing
 "embedding". If needed, specify it explicitly:
 
@@ -42,6 +49,17 @@ python train.py --hf-parquet-file data/train-00000-of-00001.parquet
 ```bash
 python eval.py --model compressor_model.npz --k 50 --max-items 5000
 ```
+
+## Sweep dim_out
+Train + evaluate multiple dimensions and store aggregated results:
+
+```bash
+python sweep_dim_out.py --dim-outs 64,32,16 --epochs 20 --max-items 5000
+```
+
+Results are stored as JSONL (one line per dim_out) by default, with `metrics`
+and `meta` for each run. Use `--output-format json` for a single JSON payload.
+Each meta block includes split indices, seed, k, and hyperparameters.
 
 ## Benchmark
 ```bash

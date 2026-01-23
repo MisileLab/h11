@@ -13,7 +13,11 @@ from huggingface_hub import HfApi, hf_hub_download
 @dataclass
 class DatasetSplit:
     train: np.ndarray
+    val: np.ndarray
     test: np.ndarray
+    train_idx: np.ndarray
+    val_idx: np.ndarray
+    test_idx: np.ndarray
 
 
 def set_seed(seed: int) -> None:
@@ -40,15 +44,23 @@ def resolve_parquet_file(
     revision: str,
     parquet_file: Optional[str],
 ) -> Tuple[str, str]:
-    if parquet_file:
-        api = HfApi()
-        info = api.dataset_info(repo_id=repo_id, revision=revision)
-        return parquet_file, info.sha
     api = HfApi()
     info = api.dataset_info(repo_id=repo_id, revision=revision)
+    if info.sha is None:
+        raise ValueError("Dataset revision SHA not found")
     commit_sha = info.sha
     files = api.list_repo_files(repo_id=repo_id, repo_type="dataset", revision=revision)
     parquet_files = [name for name in files if name.endswith(".parquet")]
+    if parquet_file:
+        if parquet_file in files:
+            return parquet_file, commit_sha
+        if len(parquet_files) == 1:
+            return parquet_files[0], commit_sha
+        if parquet_files:
+            raise ValueError(
+                f"Parquet file '{parquet_file}' not found; available: {', '.join(parquet_files)}"
+            )
+        raise ValueError("No parquet files found in dataset repository")
     if not parquet_files:
         raise ValueError("No parquet files found in dataset repository")
     return parquet_files[0], commit_sha
@@ -73,8 +85,24 @@ def load_hf_parquet(
         frame = frame.limit(max_items)
     df = frame.collect()
     column = embedding_column or infer_embedding_column(df.columns)
+    if column not in df.columns:
+        candidates = [name for name in df.columns if column.lower() in name.lower()]
+        if len(candidates) == 1:
+            column = candidates[0]
+        elif candidates:
+            raise ValueError(
+                f"Embedding column '{column}' not found; candidates: {', '.join(candidates)}"
+            )
+        else:
+            raise ValueError(
+                f"Embedding column '{column}' not found; available: {', '.join(df.columns)}"
+            )
     series = df[column]
-    embeddings = np.asarray(series.to_list(), dtype=np.float32)
+    values = [
+        json.loads(value) if isinstance(value, str) else value
+        for value in series.to_list()
+    ]
+    embeddings = np.asarray(values, dtype=np.float32)
     meta = {
         "repo_id": repo_id,
         "revision": revision,
@@ -116,16 +144,32 @@ def train_test_split(
     embeddings: np.ndarray,
     test_ratio: float,
     seed: int,
+    val_ratio: float = 0.1,
 ) -> DatasetSplit:
     if not 0.0 < test_ratio < 1.0:
         raise ValueError("test_ratio must be in (0, 1)")
+    if not 0.0 <= val_ratio < 1.0:
+        raise ValueError("val_ratio must be in [0, 1)")
+    if test_ratio + val_ratio >= 1.0:
+        raise ValueError("test_ratio + val_ratio must be < 1")
     rng = np.random.default_rng(seed)
     indices = np.arange(embeddings.shape[0])
     rng.shuffle(indices)
-    split = int(embeddings.shape[0] * (1.0 - test_ratio))
-    train_idx = indices[:split]
-    test_idx = indices[split:]
-    return DatasetSplit(train=embeddings[train_idx], test=embeddings[test_idx])
+    test_size = int(embeddings.shape[0] * test_ratio)
+    val_size = int(embeddings.shape[0] * val_ratio)
+    test_start = embeddings.shape[0] - test_size
+    val_start = test_start - val_size
+    train_idx = indices[:val_start]
+    val_idx = indices[val_start:test_start] if val_size else indices[:0]
+    test_idx = indices[test_start:] if test_size else indices[:0]
+    return DatasetSplit(
+        train=embeddings[train_idx],
+        val=embeddings[val_idx],
+        test=embeddings[test_idx],
+        train_idx=train_idx,
+        val_idx=val_idx,
+        test_idx=test_idx,
+    )
 
 
 def save_json(path: str, payload: dict) -> None:
