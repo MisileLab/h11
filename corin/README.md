@@ -32,6 +32,12 @@ Additional training knobs for ranking preservation:
 - `--hard-neg-per-anchor`: negatives per anchor (default 1)
 - `--listwise-queue-size`: optional candidate queue size (default 0)
 
+Split metadata is recorded in the model meta block (train/val/test indices),
+so results are reproducible across sweeps. The defaults use a 80/10/10 split
+with seed 42 and the same 5,000-row subset. For analysis, compare recall@k,
+ndcg@k, and neighbor_overlap@k across dim_out values to see how much ranking
+signal survives aggressive compression.
+
 Parquet column name is inferred when there is a single column containing
 "embedding". If needed, specify it explicitly:
 
@@ -60,6 +66,11 @@ python sweep_dim_out.py --dim-outs 64,32,16 --epochs 20 --max-items 5000
 Results are stored as JSONL (one line per dim_out) by default, with `metrics`
 and `meta` for each run. Use `--output-format json` for a single JSON payload.
 Each meta block includes split indices, seed, k, and hyperparameters.
+
+Example output record (abridged):
+```json
+{"metrics": {"recall@k": 0.61, "ndcg@k": 0.69}, "meta": {"dim_out": 32}}
+```
 
 ## Benchmark
 ```bash
