@@ -2,10 +2,13 @@
 # GITHUB
 
 ## OVERVIEW
-CI/CD and funding configuration for the repo.
+CI/CD workflows and funding configuration for the repo.
 
-## KEY FILES
-| File | Purpose |
-| --- | --- |
-| `workflows/schale-docker-publish.yml` | Build and push Docker image |
-| `FUNDING.yml` | Sponsor links |
+## WHERE TO LOOK
+| Task | Location | Notes |
+| --- | --- | --- |
+| Docker publish | `workflows/schale-docker-publish.yml` | Builds/pushes Schale image |
+| Funding links | `FUNDING.yml` | Sponsor metadata |
+
+## CONVENTIONS
+- Workflow scopes to `schale/frontend/**` on main branch pushes.

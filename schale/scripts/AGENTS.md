@@ -4,11 +4,11 @@
 ## OVERVIEW
 Small Python utilities used manually.
 
-## KEY FILES
-| File | Purpose |
-| --- | --- |
-| `generate-news.py` | Interactive news markdown generator |
-| `open-tabs.py` | Open URLs from stdin |
+## WHERE TO LOOK
+| Task | Location | Notes |
+| --- | --- | --- |
+| News formatter | `generate-news.py` | Interactive markdown generator |
+| Open URLs | `open-tabs.py` | Reads stdin, opens browser |
 
-## NOTES
+## CONVENTIONS
 - Scripts are interactive; do not assume non-interactive usage.

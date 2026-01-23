@@ -23,5 +23,5 @@ pages/
 | News entries | `data/news/*.astro` | Uses Content with `isnews` |
 
 ## CONVENTIONS
-- Blog/news pages wrap content with `Content` component.
+- Blog/news pages wrap content with the `Content` component.
 - Production drafts are blocked when `date` is 0.

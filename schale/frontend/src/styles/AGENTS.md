@@ -4,7 +4,10 @@
 ## OVERVIEW
 Global styles live here; Tailwind is imported via `global.css`.
 
-## KEY FILES
-| File | Purpose |
-| --- | --- |
-| `global.css` | Tailwind import only |
+## WHERE TO LOOK
+| Task | Location | Notes |
+| --- | --- | --- |
+| Global CSS | `global.css` | Tailwind import only |
+
+## CONVENTIONS
+- Keep `global.css` minimal; Tailwind is configured via CSS-first v4.

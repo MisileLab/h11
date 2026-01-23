@@ -2,12 +2,12 @@
 # SCHALE
 
 ## OVERVIEW
-Schale is the monolithic website project; frontend is the only codebase here.
+Astro SSR website plus a small set of interactive scripts.
 
 ## STRUCTURE
 ```
 schale/
-├── frontend/    # Astro app
+├── frontend/    # Astro app (SSR)
 └── scripts/     # Python utilities
 ```
 
@@ -15,9 +15,11 @@ schale/
 | Task | Location | Notes |
 | --- | --- | --- |
 | App config | `frontend/astro.config.mjs` | SSR, sitemap filter |
-| Pages | `frontend/src/pages` | File-based routes |
+| Routes | `frontend/src/pages` | File-based routing |
 | Components | `frontend/src/components` | Base/content/request helpers |
-| Scripts | `scripts` | CLI helpers for news/tabs |
+| Styles | `frontend/src/styles` | Global CSS entry |
+| Scripts | `scripts` | Interactive helpers for news/tabs |
 
-## NOTES
-- No backend service in this repo; API is referenced by URL in `request.ts`.
+## CONVENTIONS
+- The frontend references the API by URL in `frontend/src/components/request.ts`.
+- Scripts expect interactive stdin; do not assume non-interactive usage.

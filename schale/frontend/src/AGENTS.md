@@ -2,7 +2,7 @@
 # SRC
 
 ## OVERVIEW
-Astro source tree: routes in `pages/`, shared components in `components/`.
+Astro source tree with pages, components, and global styles.
 
 ## STRUCTURE
 ```
@@ -17,10 +17,10 @@ src/
 | Task | Location | Notes |
 | --- | --- | --- |
 | New page route | `pages/*.astro` | File-based routing |
-| Shared layout | `components/base.astro` | Meta tags, fonts |
+| Base layout | `components/base.astro` | Meta tags, fonts |
 | Content layout | `components/content.astro` | Blog/news wrapper |
 | API requests | `components/request.ts` | Fetch helpers |
 
 ## CONVENTIONS
-- Prefer Astro components for pages; keep logic minimal in routes.
-- Components export `Props` interface when they accept inputs.
+- Prefer Astro components for routes; keep logic minimal in pages.
+- Components export a `Props` interface when they accept inputs.

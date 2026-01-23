@@ -1,21 +1,31 @@
-# AGENTS
-## Commands
-- Package manager: yarn (see package.json packageManager).
-- Dev: yarn dev (alias: yarn start).
-- Build: yarn build (runs astro check && astro build).
-- Preview: yarn preview.
-- Typecheck only: yarn astro check.
-- Lint: yarn lint (oxlint + eslint).
-- Format: yarn format (oxfmt).
+<!-- Parent: ../AGENTS.md -->
+# FRONTEND
 
-## Code Style
-- TypeScript strict via astro/tsconfigs/strict; avoid any and keep export types explicit.
-- ES modules throughout; prefer named exports for shared utilities.
-- Import grouping: external then local with blank lines where present.
-- Formatting: match file-local style; TS/Astro mostly omit semicolons and use double quotes.
-- Indentation appears 2 spaces in TS/config; keep consistent within file.
-- Naming: camelCase vars/functions, PascalCase types/components; keep existing exceptions (e.g., statusError).
-- Error handling: throw explicit errors; avoid empty catch blocks.
-- Data fetching: check response.ok before JSON parse; keep generic return types.
-- Layout: pages in src/pages, components in src/components, styles in src/styles.
-- Astro config: astro.config.mjs uses Tailwind via Vite and sitemap/node adapters.
+## OVERVIEW
+Astro SSR app using Tailwind v4 via Vite and Node standalone adapter.
+
+## STRUCTURE
+```
+frontend/
+├── src/            # Astro source
+├── public/         # Static assets
+├── Dockerfile      # SSR container build
+├── astro.config.mjs
+└── eslint.config.js
+```
+
+## WHERE TO LOOK
+| Task | Location | Notes |
+| --- | --- | --- |
+| Astro config | `astro.config.mjs` | SSR, sitemap filter, site URL |
+| Routes | `src/pages` | File-based routing |
+| Layouts | `src/components` | `base.astro`, `content.astro` |
+| API helpers | `src/components/request.ts` | Fetch wrappers |
+| Styles | `src/styles/global.css` | Tailwind import |
+| Fonts | `public/fonts` | Large font assets |
+
+## CONVENTIONS
+- TypeScript strict via `astro/tsconfigs/strict`.
+- Utilities use named exports (no default exports in TS).
+- Linting uses `oxlint` + `eslint`; formatting uses `oxfmt`.
+- Layout components live in `src/components` (no `src/layouts`).
