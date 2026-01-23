@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
-from typing import Dict, Tuple
+from typing import Dict, Mapping, Tuple
 
 import numpy as np
 import torch
@@ -15,6 +15,7 @@ from compressor import (
 )
 from data import (
     load_embeddings,
+    load_hf_parquet,
     make_synthetic_embeddings,
     save_json,
     set_seed,
@@ -45,6 +46,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--synthetic-dim", type=int, default=4096)
     parser.add_argument("--synthetic-clusters", type=int, default=32)
     parser.add_argument("--synthetic-std", type=float, default=0.3)
+    parser.add_argument(
+        "--hf-dataset",
+        type=str,
+        default="chaehoyu/wikipedia-22-12-ko-embeddings-100k",
+        help="HF dataset repo id (parquet)",
+    )
+    parser.add_argument("--hf-revision", type=str, default="main")
+    parser.add_argument("--hf-embedding-column", type=str, default="")
+    parser.add_argument("--hf-parquet-file", type=str, default="")
     return parser.parse_args()
 
 
@@ -86,6 +96,7 @@ def train_model(
     clip_percentile: float,
     max_items: int,
     log_path: str,
+    data_meta: Mapping[str, object],
 ) -> CompressorModel:
     set_seed(seed)
     rng = np.random.default_rng(seed)
@@ -134,7 +145,7 @@ def train_model(
 
         log_records.append({"epoch": epoch, "loss": float(loss.item())})
 
-    save_json(log_path, {"seed": seed, "records": log_records})
+    save_json(log_path, {"seed": seed, "records": log_records, "data": data_meta})
     meta = {
         "dim_out": dim_out,
         "k": k,
@@ -146,6 +157,7 @@ def train_model(
         "seed": seed,
         "init": init,
         "clip_percentile": clip_percentile,
+        "data": data_meta,
     }
     return CompressorModel(
         weight=weight_param.detach().cpu().numpy(),
@@ -158,6 +170,16 @@ def main() -> None:
     args = parse_args()
     if args.input:
         embeddings = load_embeddings(args.input)
+        data_meta = {"source": "file", "path": args.input}
+    elif args.hf_dataset:
+        embeddings, info = load_hf_parquet(
+            repo_id=args.hf_dataset,
+            revision=args.hf_revision,
+            embedding_column=args.hf_embedding_column or None,
+            parquet_file=args.hf_parquet_file or None,
+            max_items=args.max_items,
+        )
+        data_meta = {"source": "hf", **info}
     else:
         embeddings = make_synthetic_embeddings(
             num_items=args.synthetic_items,
@@ -166,6 +188,7 @@ def main() -> None:
             cluster_std=args.synthetic_std,
             seed=args.seed,
         )
+        data_meta = {"source": "synthetic", "items": str(args.synthetic_items)}
 
     model = train_model(
         embeddings=embeddings,
@@ -181,6 +204,7 @@ def main() -> None:
         clip_percentile=args.clip_percentile,
         max_items=args.max_items,
         log_path=args.log_path,
+        data_meta=data_meta,
     )
     model.save(args.output)
     print(json.dumps({"output": args.output, "meta": model.meta}, indent=2))

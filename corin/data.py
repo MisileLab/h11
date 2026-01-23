@@ -3,9 +3,11 @@ from __future__ import annotations
 import json
 import random
 from dataclasses import dataclass
-from typing import Tuple
+from typing import Optional, Tuple
 
 import numpy as np
+import polars as pl
+from huggingface_hub import HfApi, hf_hub_download
 
 
 @dataclass
@@ -31,6 +33,69 @@ def load_embeddings(path: str) -> np.ndarray:
             return np.asarray(data[data.files[0]], dtype=np.float32)
         raise ValueError("npz must contain key 'embeddings' or a single array")
     raise ValueError("Unsupported file extension; use .npy or .npz")
+
+
+def resolve_parquet_file(
+    repo_id: str,
+    revision: str,
+    parquet_file: Optional[str],
+) -> Tuple[str, str]:
+    if parquet_file:
+        api = HfApi()
+        info = api.dataset_info(repo_id=repo_id, revision=revision)
+        return parquet_file, info.sha
+    api = HfApi()
+    info = api.dataset_info(repo_id=repo_id, revision=revision)
+    commit_sha = info.sha
+    files = api.list_repo_files(repo_id=repo_id, repo_type="dataset", revision=revision)
+    parquet_files = [name for name in files if name.endswith(".parquet")]
+    if not parquet_files:
+        raise ValueError("No parquet files found in dataset repository")
+    return parquet_files[0], commit_sha
+
+
+def load_hf_parquet(
+    repo_id: str,
+    revision: str,
+    embedding_column: Optional[str],
+    parquet_file: Optional[str],
+    max_items: Optional[int],
+) -> Tuple[np.ndarray, dict]:
+    parquet_name, commit_sha = resolve_parquet_file(repo_id, revision, parquet_file)
+    local_path = hf_hub_download(
+        repo_id=repo_id,
+        repo_type="dataset",
+        filename=parquet_name,
+        revision=revision,
+    )
+    frame = pl.scan_parquet(local_path)
+    if max_items is not None:
+        frame = frame.limit(max_items)
+    df = frame.collect()
+    column = embedding_column or infer_embedding_column(df.columns)
+    series = df[column]
+    embeddings = np.asarray(series.to_list(), dtype=np.float32)
+    meta = {
+        "repo_id": repo_id,
+        "revision": revision,
+        "commit_sha": commit_sha,
+        "parquet_file": parquet_name,
+        "embedding_column": column,
+        "rows": df.shape[0],
+    }
+    return embeddings, meta
+
+
+def infer_embedding_column(columns: list[str]) -> str:
+    candidates = [name for name in columns if "embedding" in name.lower()]
+    if len(candidates) == 1:
+        return candidates[0]
+    if not candidates:
+        raise ValueError("Embedding column not found; specify --hf-embedding-column")
+    raise ValueError(
+        "Multiple embedding columns found; specify --hf-embedding-column: "
+        + ", ".join(candidates)
+    )
 
 
 def make_synthetic_embeddings(
