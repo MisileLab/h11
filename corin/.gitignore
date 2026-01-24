@@ -1,3 +1,5 @@
+*.json
+*.jsonl
 
 # Python.gitignore by ignofierplus
 __pycache__/

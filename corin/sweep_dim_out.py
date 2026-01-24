@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import time
+from pathlib import Path
 
 import numpy as np
 
@@ -42,6 +44,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-items", type=int, default=5000)
     parser.add_argument("--init", type=str, choices=["random", "pca"], default="pca")
     parser.add_argument("--clip-percentile", type=float, default=0.0)
+    parser.add_argument("--log-dir", type=str, default=".")
     parser.add_argument("--synthetic-items", type=int, default=2000)
     parser.add_argument("--synthetic-dim", type=int, default=4096)
     parser.add_argument("--synthetic-clusters", type=int, default=32)
@@ -87,8 +90,12 @@ def main() -> None:
     jsonl_handle = None
     if args.output_format == "jsonl":
         jsonl_handle = open(args.output, "w", encoding="utf-8")
+    log_dir = Path(args.log_dir)
+    log_dir.mkdir(parents=True, exist_ok=True)
     try:
         for dim_out in dim_outs:
+            run_start = time.perf_counter()
+            log_path = log_dir / f"train_log_dim{dim_out}.json"
             model = train_model(
                 embeddings=embeddings,
                 dim_out=dim_out,
@@ -107,11 +114,14 @@ def main() -> None:
                 init=args.init,
                 clip_percentile=args.clip_percentile,
                 max_items=args.max_items,
-                log_path=f"train_log_dim{dim_out}.json",
+                log_path=str(log_path),
                 data_meta=data_meta,
             )
             metrics = evaluate(embeddings, model, args.k, args.max_items)
-            payload = {"metrics": metrics, "meta": model.meta}
+            runtime_seconds = time.perf_counter() - run_start
+            meta = dict(model.meta)
+            meta["runtime_seconds"] = runtime_seconds
+            payload = {"metrics": metrics, "meta": meta}
             results.append(payload)
             if jsonl_handle is not None:
                 jsonl_handle.write(json.dumps(payload) + "\n")
