@@ -33,7 +33,7 @@ const RAW_RUNTIME_STATE =
           ["@types/react-dom", "npm:18.3.1"],\
           ["corin-web", "workspace:."],\
           ["next", "virtual:75283ec1e4673eaacdf49f0a5ee8be987832d7b71a3faefc3250fa0fffb3c442e71e1a784638abd405562d01ad0596fccaf308a7f90cfc13de05abfe53b260c0#npm:16.1.5"],\
-          ["next-auth", "virtual:75283ec1e4673eaacdf49f0a5ee8be987832d7b71a3faefc3250fa0fffb3c442e71e1a784638abd405562d01ad0596fccaf308a7f90cfc13de05abfe53b260c0#npm:4.24.11"],\
+          ["next-auth", "virtual:75283ec1e4673eaacdf49f0a5ee8be987832d7b71a3faefc3250fa0fffb3c442e71e1a784638abd405562d01ad0596fccaf308a7f90cfc13de05abfe53b260c0#npm:4.24.12"],\
           ["react", "npm:18.3.1"],\
           ["react-dom", "virtual:75283ec1e4673eaacdf49f0a5ee8be987832d7b71a3faefc3250fa0fffb3c442e71e1a784638abd405562d01ad0596fccaf308a7f90cfc13de05abfe53b260c0#npm:18.3.1"],\
           ["typescript", "patch:typescript@npm%3A5.7.2#optional!builtin<compat/typescript>::version=5.7.2&hash=5786d5"]\
@@ -489,7 +489,7 @@ const RAW_RUNTIME_STATE =
           ["@types/react-dom", "npm:18.3.1"],\
           ["corin-web", "workspace:."],\
           ["next", "virtual:75283ec1e4673eaacdf49f0a5ee8be987832d7b71a3faefc3250fa0fffb3c442e71e1a784638abd405562d01ad0596fccaf308a7f90cfc13de05abfe53b260c0#npm:16.1.5"],\
-          ["next-auth", "virtual:75283ec1e4673eaacdf49f0a5ee8be987832d7b71a3faefc3250fa0fffb3c442e71e1a784638abd405562d01ad0596fccaf308a7f90cfc13de05abfe53b260c0#npm:4.24.11"],\
+          ["next-auth", "virtual:75283ec1e4673eaacdf49f0a5ee8be987832d7b71a3faefc3250fa0fffb3c442e71e1a784638abd405562d01ad0596fccaf308a7f90cfc13de05abfe53b260c0#npm:4.24.12"],\
           ["react", "npm:18.3.1"],\
           ["react-dom", "virtual:75283ec1e4673eaacdf49f0a5ee8be987832d7b71a3faefc3250fa0fffb3c442e71e1a784638abd405562d01ad0596fccaf308a7f90cfc13de05abfe53b260c0#npm:18.3.1"],\
           ["typescript", "patch:typescript@npm%3A5.7.2#optional!builtin<compat/typescript>::version=5.7.2&hash=5786d5"]\
@@ -620,15 +620,15 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["next-auth", [\
-      ["npm:4.24.11", {\
-        "packageLocation": "../../../../../.yarn/berry/cache/next-auth-npm-4.24.11-e0e7c6275e-10c0.zip/node_modules/next-auth/",\
+      ["npm:4.24.12", {\
+        "packageLocation": "../../../../../.yarn/berry/cache/next-auth-npm-4.24.12-e7b788e87a-10c0.zip/node_modules/next-auth/",\
         "packageDependencies": [\
-          ["next-auth", "npm:4.24.11"]\
+          ["next-auth", "npm:4.24.12"]\
         ],\
         "linkType": "SOFT"\
       }],\
-      ["virtual:75283ec1e4673eaacdf49f0a5ee8be987832d7b71a3faefc3250fa0fffb3c442e71e1a784638abd405562d01ad0596fccaf308a7f90cfc13de05abfe53b260c0#npm:4.24.11", {\
-        "packageLocation": "./.yarn/__virtual__/next-auth-virtual-612a829454/6/.yarn/berry/cache/next-auth-npm-4.24.11-e0e7c6275e-10c0.zip/node_modules/next-auth/",\
+      ["virtual:75283ec1e4673eaacdf49f0a5ee8be987832d7b71a3faefc3250fa0fffb3c442e71e1a784638abd405562d01ad0596fccaf308a7f90cfc13de05abfe53b260c0#npm:4.24.12", {\
+        "packageLocation": "./.yarn/__virtual__/next-auth-virtual-dc732c181a/6/.yarn/berry/cache/next-auth-npm-4.24.12-e7b788e87a-10c0.zip/node_modules/next-auth/",\
         "packageDependencies": [\
           ["@auth/core", null],\
           ["@babel/runtime", "npm:7.28.6"],\
@@ -641,12 +641,12 @@ const RAW_RUNTIME_STATE =
           ["cookie", "npm:0.7.2"],\
           ["jose", "npm:4.15.9"],\
           ["next", "virtual:75283ec1e4673eaacdf49f0a5ee8be987832d7b71a3faefc3250fa0fffb3c442e71e1a784638abd405562d01ad0596fccaf308a7f90cfc13de05abfe53b260c0#npm:16.1.5"],\
-          ["next-auth", "virtual:75283ec1e4673eaacdf49f0a5ee8be987832d7b71a3faefc3250fa0fffb3c442e71e1a784638abd405562d01ad0596fccaf308a7f90cfc13de05abfe53b260c0#npm:4.24.11"],\
+          ["next-auth", "virtual:75283ec1e4673eaacdf49f0a5ee8be987832d7b71a3faefc3250fa0fffb3c442e71e1a784638abd405562d01ad0596fccaf308a7f90cfc13de05abfe53b260c0#npm:4.24.12"],\
           ["nodemailer", null],\
           ["oauth", "npm:0.9.15"],\
           ["openid-client", "npm:5.7.1"],\
           ["preact", "npm:10.28.2"],\
-          ["preact-render-to-string", "virtual:612a829454c54d5ade8e7df69a7a2fc855a6b4cc7d2ef169f6566fe6390d1bb0625801ac3097ba8f9e02ac27c87ad34fc62abfbb8eb4d3989fb14321f0e4a4e3#npm:5.2.6"],\
+          ["preact-render-to-string", "virtual:dc732c181a19695f5a1408f69362573e18e3236836bf90c93f2915ee192ecc380417992144b82ecb1842d72818c541a86a5e9ce35517d1b5bd5810480a7ef819#npm:5.2.6"],\
           ["react", "npm:18.3.1"],\
           ["react-dom", "virtual:75283ec1e4673eaacdf49f0a5ee8be987832d7b71a3faefc3250fa0fffb3c442e71e1a784638abd405562d01ad0596fccaf308a7f90cfc13de05abfe53b260c0#npm:18.3.1"],\
           ["uuid", "npm:8.3.2"]\
@@ -744,12 +744,12 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "SOFT"\
       }],\
-      ["virtual:612a829454c54d5ade8e7df69a7a2fc855a6b4cc7d2ef169f6566fe6390d1bb0625801ac3097ba8f9e02ac27c87ad34fc62abfbb8eb4d3989fb14321f0e4a4e3#npm:5.2.6", {\
-        "packageLocation": "./.yarn/__virtual__/preact-render-to-string-virtual-1cf669fa52/6/.yarn/berry/cache/preact-render-to-string-npm-5.2.6-5999db0763-10c0.zip/node_modules/preact-render-to-string/",\
+      ["virtual:dc732c181a19695f5a1408f69362573e18e3236836bf90c93f2915ee192ecc380417992144b82ecb1842d72818c541a86a5e9ce35517d1b5bd5810480a7ef819#npm:5.2.6", {\
+        "packageLocation": "./.yarn/__virtual__/preact-render-to-string-virtual-f98046de65/6/.yarn/berry/cache/preact-render-to-string-npm-5.2.6-5999db0763-10c0.zip/node_modules/preact-render-to-string/",\
         "packageDependencies": [\
           ["@types/preact", null],\
           ["preact", "npm:10.28.2"],\
-          ["preact-render-to-string", "virtual:612a829454c54d5ade8e7df69a7a2fc855a6b4cc7d2ef169f6566fe6390d1bb0625801ac3097ba8f9e02ac27c87ad34fc62abfbb8eb4d3989fb14321f0e4a4e3#npm:5.2.6"],\
+          ["preact-render-to-string", "virtual:dc732c181a19695f5a1408f69362573e18e3236836bf90c93f2915ee192ecc380417992144b82ecb1842d72818c541a86a5e9ce35517d1b5bd5810480a7ef819#npm:5.2.6"],\
           ["pretty-format", "npm:3.8.0"]\
         ],\
         "packagePeers": [\
