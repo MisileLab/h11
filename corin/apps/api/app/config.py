@@ -12,12 +12,12 @@ class Settings(BaseSettings):
     )
     redis_url: str = Field(default="redis://localhost:6379/0")
 
-    s3_endpoint_url: str = Field(default="http://localhost:9000")
+    s3_endpoint_url: str | None = Field(default=None)
     s3_region: str = Field(default="us-east-1")
-    s3_access_key_id: str = Field(default="minioadmin")
-    s3_secret_access_key: str = Field(default="minioadmin")
+    s3_access_key_id: str | None = Field(default=None)
+    s3_secret_access_key: str | None = Field(default=None)
     s3_bucket: str = Field(default="corin")
-    s3_use_path_style: bool = Field(default=True)
+    s3_use_path_style: bool = Field(default=False)
 
     api_host: str = Field(default="0.0.0.0")
     api_port: int = Field(default=8080)

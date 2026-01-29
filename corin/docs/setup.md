@@ -16,24 +16,32 @@
    - `http://localhost:3000`
 
 ## Local dev (without Docker)
-1. Start Postgres, Redis, and MinIO (use `docker compose up postgres redis minio`).
-2. API:
+1. Start Postgres and Valkey (use `docker compose up postgres valkey`).
+2. Configure AWS S3 credentials in `.env` (or export env vars).
+3. API:
    - `cd corin/apps/api`
    - `python -m venv .venv && source .venv/bin/activate`
    - `uv pip install -r requirements.txt`
    - `uvicorn main:app --reload --host 0.0.0.0 --port 8080`
-3. Worker:
+4. Worker:
    - `cd corin/apps/worker`
    - `python -m venv .venv && source .venv/bin/activate`
    - `uv pip install -r requirements.txt`
    - `python worker.py`
-4. Web:
+5. Web:
    - `cd corin/apps/web`
    - `yarn install`
    - `yarn dev`
 
-## MinIO bucket
+## S3 bucket
 The API auto-creates the bucket specified by `S3_BUCKET` if it does not exist.
+
+## AWS S3 env vars
+Minimum required:
+- `S3_REGION`
+- `S3_ACCESS_KEY_ID`
+- `S3_SECRET_ACCESS_KEY`
+- `S3_BUCKET`
 
 ## VAD audit tool
 Sample VAD segments for manual spot checks:

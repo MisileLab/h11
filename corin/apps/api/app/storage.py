@@ -19,9 +19,10 @@ def get_s3_client():
     config = None
     if settings.s3_use_path_style:
         config = Config(s3={"addressing_style": "path"})
+    endpoint_url = settings.s3_endpoint_url or None
     return boto3.client(
         "s3",
-        endpoint_url=settings.s3_endpoint_url,
+        endpoint_url=endpoint_url,
         region_name=settings.s3_region,
         aws_access_key_id=settings.s3_access_key_id,
         aws_secret_access_key=settings.s3_secret_access_key,
