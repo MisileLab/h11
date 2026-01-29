@@ -47,7 +47,7 @@ services:
       - "3000:3000"
     environment:
       API_INTERNAL_URL: http://api:8080
-      NEXT_PUBLIC_API_URL: http://localhost:8080
+      NEXT_PUBLIC_API_URL: https://corin.misile.xyz
     depends_on:
       - api
 
