@@ -1,4 +1,7 @@
-const PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+const runtimeApiUrl =
+  typeof window !== "undefined" ? window.__env?.NEXT_PUBLIC_API_URL : undefined;
+const PUBLIC_API_URL =
+  runtimeApiUrl || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 const INTERNAL_API_URL = process.env.API_INTERNAL_URL;
 const API_URL =
   typeof window === "undefined" && INTERNAL_API_URL ? INTERNAL_API_URL : PUBLIC_API_URL;

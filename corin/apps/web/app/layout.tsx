@@ -15,6 +15,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <script src="/runtime-env.js"></script>
+      </head>
       <body>
         <Providers>{children}</Providers>
       </body>
