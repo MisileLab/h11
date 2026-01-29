@@ -29,6 +29,12 @@ class Settings(BaseSettings):
     openai_chat_model: str = Field(default="gpt-4o-mini")
     openai_embed_model: str = Field(default="text-embedding-3-small")
 
+    stt_provider: str = Field(default="openai_4o")
+    stt_diarize: bool = Field(default=False)
+    stt_language: str | None = Field(default="ko")
+    openai_transcribe_input_usd_per_1m: float = Field(default=2.5)
+    openai_transcribe_output_usd_per_1m: float = Field(default=10.0)
+
 
 @lru_cache
 def get_settings() -> Settings:

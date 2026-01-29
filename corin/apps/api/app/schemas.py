@@ -77,6 +77,11 @@ class MeetingOut(OrmBase):
     folder: str | None
     status: str
     progress_json: dict
+    stt_provider: str | None = None
+    stt_audio_tokens: int | None = None
+    stt_input_text_tokens: int | None = None
+    stt_output_tokens: int | None = None
+    stt_cost_usd: float | None = None
     created_at: datetime
 
 
