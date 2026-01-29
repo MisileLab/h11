@@ -1,0 +1,71 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: corin
+      POSTGRES_USER: corin
+      POSTGRES_PASSWORD: corin
+    ports:
+      - "5432:5432"
+    volumes:
+      - corin_postgres:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  minio:
+    image: minio/minio:RELEASE.2024-10-13T13-34-11Z
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - corin_minio:/data
+
+  api:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-misilelab}/corin-api:latest
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://corin:corin@postgres:5432/corin
+      REDIS_URL: redis://redis:6379/0
+      S3_ENDPOINT_URL: http://minio:9000
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - redis
+      - minio
+
+  worker:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-misilelab}/corin-worker:latest
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://corin:corin@postgres:5432/corin
+      REDIS_URL: redis://redis:6379/0
+      S3_ENDPOINT_URL: http://minio:9000
+    depends_on:
+      - postgres
+      - redis
+      - minio
+
+  web:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-misilelab}/corin-web:latest
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8080
+    depends_on:
+      - api
+
+volumes:
+  corin_postgres:
+  corin_minio:
