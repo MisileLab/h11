@@ -327,12 +327,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:22.10.5":
-  version: 22.10.5
-  resolution: "@types/node@npm:22.10.5"
+"@types/node@npm:22.19.7":
+  version: 22.19.7
+  resolution: "@types/node@npm:22.19.7"
   dependencies:
-    undici-types: "npm:~6.20.0"
-  checksum: 10c0/6a0e7d1fe6a86ef6ee19c3c6af4c15542e61aea2f4cee655b6252efb356795f1f228bc8299921e82924e80ff8eca29b74d9dd0dd5cc1a90983f892f740b480df
+    undici-types: "npm:~6.21.0"
+  checksum: 10c0/0a4b13fd51306a72393f145693063e074be1bf884bdc642c879436d2c053ac9d573cc0a0d69867f60b14d3f1b9d03317e8ec0e4377f7527cb645e7b2a5d34045
   languageName: node
   linkType: hard
 
@@ -396,11 +396,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "corin-web@workspace:."
   dependencies:
-    "@types/node": "npm:22.10.5"
+    "@types/node": "npm:22.19.7"
     "@types/react": "npm:18.3.27"
     "@types/react-dom": "npm:18.3.7"
     next: "npm:16.1.6"
-    next-auth: "npm:4.24.12"
+    next-auth: "npm:4.24.13"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     typescript: "npm:5.7.2"
@@ -464,9 +464,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next-auth@npm:4.24.12":
-  version: 4.24.12
-  resolution: "next-auth@npm:4.24.12"
+"next-auth@npm:4.24.13":
+  version: 4.24.13
+  resolution: "next-auth@npm:4.24.13"
   dependencies:
     "@babel/runtime": "npm:^7.20.13"
     "@panva/hkdf": "npm:^1.0.2"
@@ -478,7 +478,7 @@ __metadata:
     preact-render-to-string: "npm:^5.1.19"
     uuid: "npm:^8.3.2"
   peerDependencies:
-    "@auth/core": 0.34.2
+    "@auth/core": 0.34.3
     next: ^12.2.5 || ^13 || ^14 || ^15 || ^16
     nodemailer: ^7.0.7
     react: ^17.0.2 || ^18 || ^19
@@ -488,7 +488,7 @@ __metadata:
       optional: true
     nodemailer:
       optional: true
-  checksum: 10c0/345346f89c161ddbc55605a419d909f664d081b21327590b2d8bdc831e3062219be81d743bbe7ef4b99cc67f23cb698261fc161520db4774a99710c0e913e912
+  checksum: 10c0/33a03d71951c30007aacfdb589afabd361440c95635068e4270108bfcdd155cf76b0ab3f82fa99d8c747888f250f0e6c675a8c4f9a2d80ad7f5bcacd8542a5c6
   languageName: node
   linkType: hard
 
@@ -801,10 +801,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:~6.20.0":
-  version: 6.20.0
-  resolution: "undici-types@npm:6.20.0"
-  checksum: 10c0/68e659a98898d6a836a9a59e6adf14a5d799707f5ea629433e025ac90d239f75e408e2e5ff086afc3cace26f8b26ee52155293564593fbb4a2f666af57fc59bf
+"undici-types@npm:~6.21.0":
+  version: 6.21.0
+  resolution: "undici-types@npm:6.21.0"
+  checksum: 10c0/c01ed51829b10aa72fc3ce64b747f8e74ae9b60eafa19a7b46ef624403508a54c526ffab06a14a26b3120d055e1104d7abe7c9017e83ced038ea5cf52f8d5e04
   languageName: node
   linkType: hard
 
