@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import tempfile
 import uuid
+from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
@@ -65,9 +66,11 @@ def _compute_stt_cost(
     output_tokens: int,
     input_usd_per_1m: float,
     output_usd_per_1m: float,
-) -> float:
-    input_cost = (audio_tokens + text_tokens) * input_usd_per_1m / 1_000_000
-    output_cost = output_tokens * output_usd_per_1m / 1_000_000
+) -> Decimal:
+    input_rate = Decimal(str(input_usd_per_1m))
+    output_rate = Decimal(str(output_usd_per_1m))
+    input_cost = (Decimal(audio_tokens + text_tokens) * input_rate) / Decimal(1_000_000)
+    output_cost = (Decimal(output_tokens) * output_rate) / Decimal(1_000_000)
     return input_cost + output_cost
 
 
@@ -245,7 +248,7 @@ def transcribe_vad_segment(meeting_id: str, segment_id: str) -> None:
             usage_audio_tokens = 0
             usage_text_tokens = 0
             usage_output_tokens = 0
-            total_cost = 0.0
+            total_cost = Decimal("0")
 
             for part_start_ms, part_end_ms in _iter_clip_parts(total_ms, max_part_ms):
                 window_start = vad_row.padded_start_ms + part_start_ms
@@ -315,7 +318,12 @@ def transcribe_vad_segment(meeting_id: str, segment_id: str) -> None:
                     meeting.stt_output_tokens = (
                         meeting.stt_output_tokens or 0
                     ) + usage_output_tokens
-                    meeting.stt_cost_usd = (meeting.stt_cost_usd or 0.0) + total_cost
+                    current_cost = (
+                        meeting.stt_cost_usd
+                        if meeting.stt_cost_usd is not None
+                        else Decimal("0")
+                    )
+                    meeting.stt_cost_usd = current_cost + total_cost
                     session.commit()
 
 
