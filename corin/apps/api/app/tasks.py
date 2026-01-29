@@ -3,6 +3,7 @@ from __future__ import annotations
 import tempfile
 import uuid
 from pathlib import Path
+from typing import Any
 
 from sqlalchemy import select
 
@@ -13,7 +14,12 @@ from app.audio import (
     probe_duration_ms,
 )
 from app.db import SessionLocal
-from app.llm import embed_texts, summarize_map, summarize_reduce, transcribe_audio
+from app.llm import (
+    embed_texts,
+    summarize_map,
+    summarize_reduce,
+    transcribe_audio_with_usage,
+)
 from app.models import (
     MediaAsset,
     Meeting,
@@ -26,6 +32,52 @@ from app.models import (
 from app.queue import get_queue
 from app.storage import download_file, upload_fileobj
 from app.vad import detect_segments
+
+
+_MAX_TRANSCRIBE_BYTES = 25 * 1024 * 1024
+_SAFE_TRANSCRIBE_BYTES = 24 * 1024 * 1024
+_BYTES_PER_MS = 96
+
+
+def _iter_clip_parts(total_ms: int, max_part_ms: int) -> list[tuple[int, int]]:
+    if total_ms <= 0:
+        return []
+    if total_ms <= max_part_ms:
+        return [(0, total_ms)]
+    parts = []
+    start_ms = 0
+    while start_ms < total_ms:
+        end_ms = min(start_ms + max_part_ms, total_ms)
+        parts.append((start_ms, end_ms))
+        start_ms = end_ms
+    return parts
+
+
+def _remap_segment_times(
+    offset_ms: int, seg_start_ms: int, seg_end_ms: int
+) -> tuple[int, int]:
+    return offset_ms + seg_start_ms, offset_ms + seg_end_ms
+
+
+def _compute_stt_cost(
+    audio_tokens: int,
+    text_tokens: int,
+    output_tokens: int,
+    input_usd_per_1m: float,
+    output_usd_per_1m: float,
+) -> float:
+    input_cost = (audio_tokens + text_tokens) * input_usd_per_1m / 1_000_000
+    output_cost = output_tokens * output_usd_per_1m / 1_000_000
+    return input_cost + output_cost
+
+
+def _window_has_existing_segments(
+    segments: list[Any], window_start: int, window_end: int
+) -> bool:
+    for seg in segments:
+        if seg.start_ms >= window_start and seg.end_ms <= window_end:
+            return True
+    return False
 
 
 def _update_progress(
@@ -170,25 +222,101 @@ def transcribe_vad_segment(meeting_id: str, segment_id: str) -> None:
     meeting_uuid = uuid.UUID(meeting_id)
     segment_uuid = uuid.UUID(segment_id)
     with SessionLocal() as session:
+        from app.config import get_settings
+
+        settings = get_settings()
+        meeting = session.get(Meeting, meeting_uuid)
+        if meeting:
+            meeting.stt_provider = settings.stt_provider
+            session.commit()
+
         vad_row = session.get(VadSegment, segment_uuid)
         if not vad_row or not vad_row.clip_object_key:
             return
+
         with tempfile.TemporaryDirectory() as tmpdir:
             clip_path = Path(tmpdir) / "clip.wav"
             download_file(vad_row.clip_object_key, str(clip_path))
-            segments = transcribe_audio(str(clip_path))
+            clip_duration_ms = probe_duration_ms(str(clip_path))
+            fallback_ms = vad_row.padded_end_ms - vad_row.padded_start_ms
+            total_ms = clip_duration_ms or fallback_ms
+            max_part_ms = int(_SAFE_TRANSCRIBE_BYTES / _BYTES_PER_MS)
 
-        for seg in segments:
-            session.add(
-                TranscriptSegment(
-                    meeting_id=meeting_uuid,
-                    start_ms=vad_row.padded_start_ms + seg.start_ms,
-                    end_ms=vad_row.padded_start_ms + seg.end_ms,
-                    speaker_key="spk_1",
-                    text=seg.text.strip(),
+            usage_audio_tokens = 0
+            usage_text_tokens = 0
+            usage_output_tokens = 0
+            total_cost = 0.0
+
+            for part_start_ms, part_end_ms in _iter_clip_parts(total_ms, max_part_ms):
+                window_start = vad_row.padded_start_ms + part_start_ms
+                window_end = vad_row.padded_start_ms + part_end_ms
+                existing_segments = (
+                    session.execute(
+                        select(TranscriptSegment)
+                        .where(TranscriptSegment.meeting_id == meeting_uuid)
+                        .where(TranscriptSegment.start_ms >= window_start)
+                        .where(TranscriptSegment.end_ms <= window_end)
+                    )
+                    .scalars()
+                    .all()
                 )
-            )
-        session.commit()
+                if _window_has_existing_segments(
+                    existing_segments, window_start, window_end
+                ):
+                    continue
+
+                part_path = clip_path
+                if part_start_ms != 0 or part_end_ms != total_ms:
+                    part_path = Path(tmpdir) / f"clip-{part_start_ms}-{part_end_ms}.wav"
+                    extract_clip(
+                        str(clip_path),
+                        str(part_path),
+                        part_start_ms,
+                        part_end_ms,
+                    )
+
+                result = transcribe_audio_with_usage(str(part_path))
+                for seg in result.segments:
+                    start_ms, end_ms = _remap_segment_times(
+                        window_start, seg.start_ms, seg.end_ms
+                    )
+                    session.add(
+                        TranscriptSegment(
+                            meeting_id=meeting_uuid,
+                            start_ms=start_ms,
+                            end_ms=end_ms,
+                            speaker_key=seg.speaker or "spk_1",
+                            text=seg.text.strip(),
+                        )
+                    )
+                session.commit()
+
+                if result.usage:
+                    usage_audio_tokens += result.usage.audio_tokens
+                    usage_text_tokens += result.usage.text_tokens
+                    usage_output_tokens += result.usage.output_tokens
+                    total_cost += _compute_stt_cost(
+                        result.usage.audio_tokens,
+                        result.usage.text_tokens,
+                        result.usage.output_tokens,
+                        settings.openai_transcribe_input_usd_per_1m,
+                        settings.openai_transcribe_output_usd_per_1m,
+                    )
+
+            if usage_audio_tokens or usage_text_tokens or usage_output_tokens:
+                meeting = session.get(Meeting, meeting_uuid)
+                if meeting:
+                    meeting.stt_audio_tokens = (
+                        meeting.stt_audio_tokens or 0
+                    ) + usage_audio_tokens
+                    meeting.stt_input_text_tokens = (
+                        meeting.stt_input_text_tokens or 0
+                    ) + usage_text_tokens
+                    meeting.stt_output_tokens = (
+                        meeting.stt_output_tokens or 0
+                    ) + usage_output_tokens
+                    meeting.stt_cost_usd = (meeting.stt_cost_usd or 0.0) + total_cost
+                    session.commit()
 
 
 def _snapshot_transcript(session, meeting_uuid: uuid.UUID) -> None:

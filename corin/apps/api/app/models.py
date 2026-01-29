@@ -9,6 +9,8 @@ from sqlalchemy import (
     Float,
     ForeignKey,
     Integer,
+    BigInteger,
+    Numeric,
     String,
     Text,
     func,
@@ -33,6 +35,19 @@ class Meeting(Base):
     folder: Mapped[str | None] = mapped_column(String(255), nullable=True)
     status: Mapped[str] = mapped_column(String(50), default="uploaded")
     progress_json: Mapped[dict] = mapped_column(JSONB, default=dict)
+    stt_provider: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    stt_audio_tokens: Mapped[int | None] = mapped_column(
+        BigInteger, nullable=True, default=0
+    )
+    stt_input_text_tokens: Mapped[int | None] = mapped_column(
+        BigInteger, nullable=True, default=0
+    )
+    stt_output_tokens: Mapped[int | None] = mapped_column(
+        BigInteger, nullable=True, default=0
+    )
+    stt_cost_usd: Mapped[float | None] = mapped_column(
+        Numeric(12, 6), nullable=True, default=0.0
+    )
     deleted_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
