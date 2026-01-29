@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import MeetingClient from "./MeetingClient";
 import { authOptions } from "@/lib/auth";
@@ -10,6 +10,11 @@ export default async function MeetingDetailPage({
 }: {
   params: { id: string };
 }) {
+  const uuidPattern =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  if (!uuidPattern.test(params.id)) {
+    notFound();
+  }
   const session = await getServerSession(authOptions);
   if (!session) {
     redirect("/");

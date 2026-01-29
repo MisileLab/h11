@@ -27,6 +27,10 @@ export default function UploadPage() {
         .filter(Boolean),
       folder: folder || null,
     });
+    if (!meeting?.id) {
+      setStatus("Upload failed: meeting id missing.");
+      return;
+    }
     setStatus("Uploading file...");
     await uploadMeetingFile(meeting.id, file);
     setStatus("Upload complete. Processing started.");
