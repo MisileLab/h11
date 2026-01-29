@@ -10,6 +10,7 @@
 1. Copy env template:
    - `cp .env.example .env`
 2. Update `.env` with your Google OAuth keys and OpenAI API key.
+   - For GPT-4o transcription, set `STT_PROVIDER=openai_4o` and pricing vars.
 3. Start services:
    - `docker compose up --build`
 4. Open the web app:
@@ -42,6 +43,13 @@ Minimum required:
 - `S3_ACCESS_KEY_ID`
 - `S3_SECRET_ACCESS_KEY`
 - `S3_BUCKET`
+
+## STT env vars
+- `STT_PROVIDER` (`openai_4o` default, `whisper` fallback)
+- `STT_DIARIZE` (set `true` to use `gpt-4o-transcribe-diarize`)
+- `STT_LANGUAGE` (ISO-639-1 language hint, default `ko`)
+- `OPENAI_TRANSCRIBE_INPUT_USD_PER_1M`
+- `OPENAI_TRANSCRIBE_OUTPUT_USD_PER_1M`
 
 ## VAD audit tool
 Sample VAD segments for manual spot checks:
