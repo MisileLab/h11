@@ -7,6 +7,11 @@ export type Meeting = {
   tags: string[];
   folder: string | null;
   status: string;
+  stt_provider: string | null;
+  stt_audio_tokens: number | null;
+  stt_input_text_tokens: number | null;
+  stt_output_tokens: number | null;
+  stt_cost_usd: number | null;
   progress_json: Record<string, unknown>;
   created_at: string;
 };

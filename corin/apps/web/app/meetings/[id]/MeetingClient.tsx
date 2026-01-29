@@ -67,15 +67,61 @@ export default function MeetingClient({ meeting }: { meeting: MeetingDetail }) {
 
   return (
     <div className="grid">
-      <div className="card">
-        <h3 className="section-title">Playback</h3>
-        {meeting.playable_url ? (
-          <audio controls src={meeting.playable_url} style={{ width: "100%" }}>
-            <track kind="captions" src="data:text/vtt,WEBVTT" />
-          </audio>
-        ) : (
-          <p className="hero-subtitle">Audio is still processing.</p>
-        )}
+      <div className="grid two">
+        <div className="card">
+          <h3 className="section-title">Playback</h3>
+          {meeting.playable_url ? (
+            <audio controls src={meeting.playable_url} style={{ width: "100%" }}>
+              <track kind="captions" src="data:text/vtt,WEBVTT" />
+            </audio>
+          ) : (
+            <div>
+              <p className="hero-subtitle">Audio is still processing.</p>
+              {meeting.status === "vad" && (
+                <p className="hero-subtitle" style={{ marginTop: "8px", fontSize: "0.9em" }}>
+                  Current step: VAD
+                </p>
+              )}
+              {meeting.status === "transcribing" && (
+                <p className="hero-subtitle" style={{ marginTop: "8px", fontSize: "0.9em" }}>
+                  Current step: Transcribing
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="card">
+          <h3 className="section-title">Cost & Details</h3>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+            <div>
+              <strong>Provider</strong>
+              <p className="hero-subtitle">{meeting.stt_provider || "—"}</p>
+            </div>
+            <div>
+              <strong>Cost</strong>
+              <p className="hero-subtitle">
+                {meeting.stt_cost_usd !== null ? `$${meeting.stt_cost_usd.toFixed(4)}` : "—"}
+              </p>
+            </div>
+          </div>
+          {(meeting.stt_audio_tokens !== null ||
+            meeting.stt_input_text_tokens !== null ||
+            meeting.stt_output_tokens !== null) && (
+            <div style={{ marginTop: "12px" }}>
+              <strong>Tokens</strong>
+              <p className="hero-subtitle" style={{ fontSize: "0.9em" }}>
+                {[
+                  meeting.stt_audio_tokens && `${meeting.stt_audio_tokens} audio`,
+                  meeting.stt_input_text_tokens && `${meeting.stt_input_text_tokens} in`,
+                  meeting.stt_output_tokens && `${meeting.stt_output_tokens} out`,
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="grid two">
