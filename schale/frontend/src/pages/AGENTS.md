@@ -10,9 +10,9 @@ pages/
 ├── index.astro
 ├── projects.astro
 ├── contact.astro
-├── en/blog/      # English posts
-├── ko/blog/      # Korean posts
-└── data/news/    # News entries (excluded from sitemap)
+├── en/blog/      # English posts (6 files)
+├── ko/blog/      # Korean posts (5 files)
+└── data/news/    # News entries (54 files, excluded from sitemap)
 ```
 
 ## WHERE TO LOOK
@@ -24,4 +24,4 @@ pages/
 
 ## CONVENTIONS
 - Blog/news pages wrap content with the `Content` component.
-- Production drafts are blocked when `date` is 0.
+- Production drafts blocked when `date` is 0.

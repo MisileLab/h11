@@ -2,7 +2,7 @@
 # STYLES
 
 ## OVERVIEW
-Global styles live here; Tailwind is imported via `global.css`.
+Global styles; Tailwind imported via `global.css`.
 
 ## WHERE TO LOOK
 | Task | Location | Notes |
@@ -10,4 +10,4 @@ Global styles live here; Tailwind is imported via `global.css`.
 | Global CSS | `global.css` | Tailwind import only |
 
 ## CONVENTIONS
-- Keep `global.css` minimal; Tailwind is configured via CSS-first v4.
+- Keep `global.css` minimal; Tailwind configured via CSS-first v4.

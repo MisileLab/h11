@@ -2,13 +2,16 @@
 # GITHUB
 
 ## OVERVIEW
-CI/CD workflows and funding configuration for the repo.
+CI/CD workflows and funding configuration.
 
 ## WHERE TO LOOK
 | Task | Location | Notes |
 | --- | --- | --- |
-| Docker publish | `workflows/schale-docker-publish.yml` | Builds/pushes Schale image |
-| Funding links | `FUNDING.yml` | Sponsor metadata |
+| Schale Docker | `workflows/schale-docker-publish.yml` | Builds/pushes Schale image |
+| Corin Docker | `workflows/corin-docker-publish.yml` | Legacy (Corin removed) |
+| Funding | `FUNDING.yml` | Sponsor metadata |
 
 ## CONVENTIONS
-- Workflow scopes to `schale/frontend/**` on main branch pushes.
+- Schale workflow scopes to `schale/frontend/**` on main branch pushes.
+- Uses Docker metadata-action with `enable={{is_default_branch}}` templating.
+- Push gated by `env.ACT != 'true'`.

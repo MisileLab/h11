@@ -2,7 +2,7 @@
 # COMPONENTS
 
 ## OVERVIEW
-Shared Astro components and small TypeScript utilities.
+Shared Astro components and TypeScript utilities.
 
 ## WHERE TO LOOK
 | Task | Location | Notes |
@@ -17,5 +17,5 @@ Shared Astro components and small TypeScript utilities.
 
 ## CONVENTIONS
 - Export a `Props` interface for component inputs.
-- Keep utilities as named exports (no default exports in TS files).
+- Named exports only (no default exports in TS files).
 - Throw explicit errors for fetch failures (see `request.ts`).

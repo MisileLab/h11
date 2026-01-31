@@ -8,7 +8,7 @@ Astro SSR app using Tailwind v4 via Vite and Node standalone adapter.
 ```
 frontend/
 ├── src/            # Astro source
-├── public/         # Static assets
+├── public/         # Static assets (large fonts)
 ├── Dockerfile      # SSR container build
 ├── astro.config.mjs
 └── eslint.config.js
@@ -22,10 +22,10 @@ frontend/
 | Layouts | `src/components` | `base.astro`, `content.astro` |
 | API helpers | `src/components/request.ts` | Fetch wrappers |
 | Styles | `src/styles/global.css` | Tailwind import |
-| Fonts | `public/fonts` | Large font assets |
+| Fonts | `public/fonts` | Large font assets (114 files) |
 
 ## CONVENTIONS
 - TypeScript strict via `astro/tsconfigs/strict`.
 - Utilities use named exports (no default exports in TS).
-- Linting uses `oxlint` + `eslint`; formatting uses `oxfmt`.
+- Linting: `oxlint` + `eslint`; formatting: `oxfmt`.
 - Layout components live in `src/components` (no `src/layouts`).

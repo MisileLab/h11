@@ -2,7 +2,7 @@
 # SCHALE
 
 ## OVERVIEW
-Astro SSR website plus a small set of interactive scripts.
+Astro SSR website with interactive Python scripts.
 
 ## STRUCTURE
 ```
@@ -21,5 +21,4 @@ schale/
 | Scripts | `scripts` | Interactive helpers for news/tabs |
 
 ## CONVENTIONS
-- The frontend references the API by URL in `frontend/src/components/request.ts`.
 - Scripts expect interactive stdin; do not assume non-interactive usage.

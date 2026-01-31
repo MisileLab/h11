@@ -2,7 +2,7 @@
 # SCRIPTS
 
 ## OVERVIEW
-Small Python utilities used manually.
+Python utilities for manual/interactive use.
 
 ## WHERE TO LOOK
 | Task | Location | Notes |

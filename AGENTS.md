@@ -1,18 +1,17 @@
 # PROJECT KNOWLEDGE BASE
 
-**Generated:** 2026-01-29 02:01:20Z
-**Commit:** af70695
+**Generated:** 2026-01-31T10:24:46Z
+**Commit:** 691d619
 **Branch:** main
 
 ## OVERVIEW
-Monorepo with Schale (Astro SSR site) and Corin (Next.js + FastAPI + worker). Each subproject uses its own toolchain.
+Monorepo containing Schale (Astro SSR website). Small codebase focused on content delivery with manual i18n.
 
 ## STRUCTURE
 ```
 h11/
-├── corin/          # Full-stack app + docs
-├── schale/         # Astro SSR website
-└── .github/        # CI/CD workflow
+├── schale/         # Astro SSR website + Python scripts
+└── .github/        # CI/CD workflows
 ```
 
 ## WHERE TO LOOK
@@ -23,35 +22,33 @@ h11/
 | Schale components | `schale/frontend/src/components` | Base/content layouts, request helpers |
 | Schale styles | `schale/frontend/src/styles/global.css` | Tailwind import |
 | Schale scripts | `schale/scripts` | Interactive Python helpers |
-| Corin web app | `corin/apps/web` | Next.js app router |
-| Corin API | `corin/apps/api` | FastAPI service + routers |
-| Corin worker | `corin/apps/worker` | RQ worker + tools |
-| Corin docs | `corin/docs` | Setup/architecture/API notes |
-| CI/CD | `.github/workflows/schale-docker-publish.yml` | Docker build/push |
+| CI/CD | `.github/workflows` | Docker build/push workflows |
 
 ## CONVENTIONS
-- Each subproject is isolated: Schale uses Yarn 4.
-- Schale uses Tailwind v4 via Vite (no tailwind.config file).
-- Schale has no test suite; build runs `astro check`.
-- Corin web uses Yarn 4 (PnP). Corin API/worker use Python 3.12 + requirements.txt.
+- Schale uses Yarn 4 (Berry) with PnP mode.
+- Tailwind v4 via Vite (no tailwind.config file).
+- No test suite; build runs `astro check`.
 - Font assets in `schale/frontend/public/fonts` are large; avoid moving unless required.
-- When work is complete, agents should commit and push changes by default unless explicitly told otherwise.
 - Git commit messages use conventional commits with optional scopes (e.g., `feat(schale): add news entry`).
+- Scripts in `schale/scripts` expect interactive stdin.
 
 ## ANTI-PATTERNS (THIS PROJECT)
 - Do not commit local Python environments like `.venv`.
+- Do not assume scripts work non-interactively.
 
 ## COMMANDS
 ```bash
 # Schale (Astro)
 cd schale/frontend
-yarn dev
-yarn build
-yarn lint
-yarn format
+yarn dev              # Dev server
+yarn build            # Production build
+yarn lint             # oxlint + eslint
+yarn format           # oxfmt
 ```
 
 ## NOTES
-- Schale uses manual i18n via `src/pages/en` and `src/pages/ko`.
-- News pages under `src/pages/data/news` are excluded from the sitemap.
-- Production drafts are blocked when `date` is 0 in content pages.
+- Manual i18n via `src/pages/en` and `src/pages/ko`.
+- News pages under `src/pages/data/news` excluded from sitemap.
+- Production drafts blocked when `date` is 0 in content pages.
+- CI workflows use Docker metadata-action with custom templating (`enable={{is_default_branch}}`).
+- Build gating via `env.ACT` variable in workflows.
