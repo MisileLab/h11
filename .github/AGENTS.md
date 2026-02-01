@@ -8,7 +8,8 @@ CI/CD workflows and funding configuration.
 | Task | Location | Notes |
 | --- | --- | --- |
 | Schale Docker | `workflows/schale-docker-publish.yml` | Builds/pushes Schale image |
-| Corin Docker | `workflows/corin-docker-publish.yml` | Legacy (Corin removed) |
+| Corin Docker | `workflows/corin-docker-publish.yml` | Builds/pushes Corin images |
+| Corin Build | `workflows/corin-docker-build.yml` | Build-only workflow |
 | Funding | `FUNDING.yml` | Sponsor metadata |
 
 ## CONVENTIONS

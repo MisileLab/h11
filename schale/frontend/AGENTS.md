@@ -28,4 +28,5 @@ frontend/
 - TypeScript strict via `astro/tsconfigs/strict`.
 - Utilities use named exports (no default exports in TS).
 - Linting: `oxlint` + `eslint`; formatting: `oxfmt`.
+- Yarn uses `nodeLinker: node-modules` (see `.yarnrc.yml`).
 - Layout components live in `src/components` (no `src/layouts`).
