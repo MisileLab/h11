@@ -10,7 +10,6 @@ api/
 ├── app/            # FastAPI package
 ├── alembic/        # Migrations
 ├── worker.py       # RQ worker entrypoint
-├── test_*.py       # Integration scripts
 ├── pyproject.toml
 └── Dockerfile
 ```
