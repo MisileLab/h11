@@ -5,13 +5,14 @@
 **Branch:** main
 
 ## OVERVIEW
-Monorepo with two apps: Schale (Astro SSR site) and Corin (FastAPI + Next.js meeting archive).
+Monorepo with three products: Schale (Astro SSR site), Corin (FastAPI + Next.js meeting archive), and gqldb (Rust GraphQL database + SDKs).
 
 ## STRUCTURE
 ```
 h11/
 ├── corin/          # FastAPI API + Next.js web app
 ├── schale/         # Astro SSR website + Python scripts
+├── gqldb/          # Rust GraphQL DB + Python/TS SDKs
 └── .github/        # CI/CD workflows
 ```
 
@@ -26,6 +27,9 @@ h11/
 | Schale components | `schale/frontend/src/components` | Base/content layouts, request helpers |
 | Schale styles | `schale/frontend/src/styles/global.css` | Tailwind import |
 | Schale scripts | `schale/scripts` | Interactive Python helpers |
+| gqldb server | `gqldb/crates/server/src/main.rs` | GraphQL server entrypoint |
+| gqldb workspace | `gqldb/Cargo.toml` | Rust workspace members + deps |
+| gqldb SDKs | `gqldb/sdk` | Python + TypeScript SDKs |
 | CI/CD | `.github/workflows` | Docker build/push workflows |
 
 ## CONVENTIONS
@@ -37,10 +41,12 @@ h11/
 - Font assets in `schale/frontend/public/fonts` are large; avoid moving unless required.
 - Git commit messages use conventional commits with optional scopes (e.g., `feat(schale): add news entry`).
 - Scripts in `schale/scripts` expect interactive stdin.
+- gqldb is a Rust workspace; run server via `cargo run -p gqldb-server`.
 
 ## ANTI-PATTERNS (THIS PROJECT)
 - Do not commit local Python environments like `.venv`.
 - Do not commit build outputs like `.next`.
+- Do not commit Rust build outputs like `gqldb/target`.
 - Do not assume scripts work non-interactively.
 
 ## COMMANDS
@@ -62,6 +68,10 @@ uv run python -m app.main
 cd corin/web
 yarn install
 yarn dev
+
+# gqldb (Rust)
+cd gqldb
+cargo run -p gqldb-server
 ```
 
 ## NOTES
