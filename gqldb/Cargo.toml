@@ -1,0 +1,41 @@
+[workspace]
+resolver = "2"
+members = [
+  "crates/core",
+  "crates/schema",
+  "crates/planner",
+  "crates/executor",
+  "crates/storage",
+  "crates/mvcc",
+  "crates/index",
+  "crates/vector",
+  "crates/server",
+  "crates/cluster",
+]
+
+[workspace.package]
+edition = "2021"
+license = "Apache-2.0"
+version = "0.1.0"
+authors = ["gqldb contributors"]
+
+[workspace.dependencies]
+anyhow = "1.0"
+async-graphql = "7.0"
+async-graphql-axum = "7.0"
+axum = "0.8"
+bytes = "1.6"
+chrono = { version = "0.4", features = ["serde"] }
+graphql-parser = "0.4"
+parking_lot = "0.12"
+rand = "0.8"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+tokio = { version = "1.36", features = ["full"] }
+tokio-stream = { version = "0.1", features = ["sync"] }
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors", "trace"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+uuid = { version = "1.7", features = ["serde", "v4"] }
