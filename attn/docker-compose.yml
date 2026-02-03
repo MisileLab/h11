@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: workbench-api
     ports:
-      - "8000:8000"
+      - "8001:8000"
     volumes:
       - ./data:/app/data
       - /var/run/docker.sock:/var/run/docker.sock
@@ -23,7 +23,7 @@ services:
       dockerfile: Dockerfile
     container_name: workbench-web
     ports:
-      - "3000:80"
+      - "3001:80"
     depends_on:
       - api
     restart: unless-stopped
