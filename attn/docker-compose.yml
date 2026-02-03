@@ -10,6 +10,7 @@ services:
       - "8001:8000"
     volumes:
       - ./data:/app/data
+      - ./workspace-image:/app/workspace-image:ro
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - PYTHONUNBUFFERED=1
