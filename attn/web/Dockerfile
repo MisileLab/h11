@@ -3,10 +3,12 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
+# Enable corepack for yarn
+RUN corepack enable
+
 # Install dependencies
-COPY package.json yarn.lock .yarnrc.yml ./
-COPY .yarn ./.yarn
-RUN corepack enable && yarn install
+COPY package.json yarn.lock .yarnrc.yml* ./
+RUN yarn install --immutable
 
 # Copy source
 COPY . .
