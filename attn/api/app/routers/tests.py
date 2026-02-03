@@ -1,7 +1,8 @@
 from datetime import datetime
 from pathlib import Path
 import subprocess
-from fastapi import APIRouter, HTTPException, Depends, FileResponse
+from fastapi import APIRouter, HTTPException, Depends
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from sqlmodel import Session, select
 import docker
