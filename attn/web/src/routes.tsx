@@ -7,12 +7,28 @@ interface MyRouterContext {
   queryClient: QueryClient
 }
 
-// Root Route
 export const rootRoute = createRootRouteWithContext<MyRouterContext>()({
   component: () => <Outlet />,
 })
 
-// Setup Route
+export const indexRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/',
+  beforeLoad: async () => {
+    try {
+      const { data: status } = await api.get('/setup/status')
+      if (!status.is_setup) {
+        throw redirect({ to: '/setup' })
+      }
+      throw redirect({ to: '/login' })
+    } catch (e) {
+      if (e && typeof e === 'object' && 'href' in e) {
+        throw e
+      }
+      throw redirect({ to: '/setup' })
+    }
+  },
+})
 import { SetupPage } from '@/pages/Setup.tsx'
 export const setupRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -80,6 +96,7 @@ export const settingsRoute = createRoute({
 })
 
 export const routeTree = rootRoute.addChildren([
+  indexRoute,
   setupRoute,
   loginRoute,
   appRoute.addChildren([
