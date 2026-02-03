@@ -16,12 +16,9 @@ export function LoginPage() {
     setError('')
 
     try {
-      const formData = new FormData()
-      formData.append('username', username)
-      formData.append('password', password)
-
-      await api.post('/auth/login', formData, {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      await api.post('/auth/login', {
+        username,
+        password
       })
       
       navigate({ to: '/' })
