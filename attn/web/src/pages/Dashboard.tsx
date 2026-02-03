@@ -15,7 +15,7 @@ export function DashboardPage() {
     queryKey: ['workspaces'],
     queryFn: async () => {
       const res = await api.get('/workspaces')
-      return res.data
+      return res.data.workspaces
     }
   })
 
