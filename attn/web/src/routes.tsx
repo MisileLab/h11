@@ -64,7 +64,7 @@ export const appRoute = createRoute({
 
     // Check auth
     try {
-      await api.get('/me')
+      await api.get('/auth/me')
     } catch (e) {
       throw redirect({ to: '/login' })
     }
