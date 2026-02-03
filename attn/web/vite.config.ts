@@ -7,12 +7,14 @@ import path from 'path'
 export default defineConfig({
   plugins: [
     react(),
+    TanStackRouterVite(),
     tailwindcss(),
   ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+    extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
   },
   server: {
     host: '0.0.0.0',
