@@ -1,6 +1,7 @@
 import docker
 from pathlib import Path
 from app.core.config import (
+    BASE_DIR,
     WORKSPACES_DIR,
     GITHUB_SSH_DIR,
     GITHUB_CONFIG_DIR,
@@ -20,8 +21,11 @@ def create_workspace_container(workspace_id: str) -> str:
     """
     client = docker.from_env()
 
-    # Build image from workspace-image directory
-    image_path = Path("/Users/misile/repos/h11/attn/workspace-image")
+    # Build image from workspace-image directory (relative to BASE_DIR)
+    image_path = BASE_DIR / "workspace-image"
+    if not image_path.exists():
+        raise RuntimeError(f"Workspace image directory not found: {image_path}")
+
     image, _ = client.images.build(
         path=str(image_path),
         tag=f"workbench-workspace:{workspace_id}",
