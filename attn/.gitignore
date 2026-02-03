@@ -26,7 +26,6 @@ ENV/
 env/
 
 .uv/
-uv.lock
 
 node_modules/
 .pnp
