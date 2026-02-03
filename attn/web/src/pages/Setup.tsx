@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
-import { api } from '@/lib/api'
+import { api } from '@/lib/api.ts'
 import { ShieldAlert } from 'lucide-react'
 
 export function SetupPage() {

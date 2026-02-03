@@ -1,6 +1,6 @@
 import { createRootRouteWithContext, createRoute, Outlet, redirect } from '@tanstack/react-router'
 import { QueryClient } from '@tanstack/react-query'
-import { api } from '@/lib/api'
+import { api } from '@/lib/api.ts'
 
 // Define context type
 interface MyRouterContext {
@@ -13,7 +13,7 @@ export const rootRoute = createRootRouteWithContext<MyRouterContext>()({
 })
 
 // Setup Route
-import { SetupPage } from '@/pages/Setup'
+import { SetupPage } from '@/pages/Setup.tsx'
 export const setupRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: 'setup',
@@ -21,7 +21,7 @@ export const setupRoute = createRoute({
 })
 
 // Login Route
-import { LoginPage } from '@/pages/Login'
+import { LoginPage } from '@/pages/Login.tsx'
 export const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: 'login',
@@ -29,7 +29,7 @@ export const loginRoute = createRoute({
 })
 
 // Protected Layout
-import { AppLayout } from '@/pages/Layout'
+import { AppLayout } from '@/pages/Layout.tsx'
 export const appRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: 'app',
@@ -56,7 +56,7 @@ export const appRoute = createRoute({
 })
 
 // Dashboard
-import { DashboardPage } from '@/pages/Dashboard'
+import { DashboardPage } from '@/pages/Dashboard.tsx'
 export const dashboardRoute = createRoute({
   getParentRoute: () => appRoute,
   path: '/',
@@ -64,7 +64,7 @@ export const dashboardRoute = createRoute({
 })
 
 // Workspace
-import { WorkspacePage } from '@/pages/Workspace'
+import { WorkspacePage } from '@/pages/Workspace.tsx'
 export const workspaceRoute = createRoute({
   getParentRoute: () => appRoute,
   path: 'workspace/$workspaceId',
@@ -72,7 +72,7 @@ export const workspaceRoute = createRoute({
 })
 
 // Settings
-import { SettingsPage } from '@/pages/Settings'
+import { SettingsPage } from '@/pages/Settings.tsx'
 export const settingsRoute = createRoute({
   getParentRoute: () => appRoute,
   path: 'settings',

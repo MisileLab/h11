@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from '@tanstack/react-router'
-import { api } from '@/lib/api'
+import { api } from '@/lib/api.ts'
 import { Plus, Terminal, AlertCircle, CheckCircle } from 'lucide-react'
 import clsx from 'clsx'
 

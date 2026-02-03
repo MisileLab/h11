@@ -4,11 +4,11 @@ import { Folder, Terminal, Eye, GitPullRequest, Beaker } from 'lucide-react'
 import clsx from 'clsx'
 
 // Placeholder imports - we will create these next
-import { FilesTab } from '@/components/workspace/FilesTab'
-import { TerminalTab } from '@/components/workspace/TerminalTab'
-import { PreviewTab } from '@/components/workspace/PreviewTab'
-import { PRTab } from '@/components/workspace/PRTab'
-import { TestsTab } from '@/components/workspace/TestsTab'
+import { FilesTab } from '@/components/workspace/FilesTab.tsx'
+import { TerminalTab } from '@/components/workspace/TerminalTab.tsx'
+import { PreviewTab } from '@/components/workspace/PreviewTab.tsx'
+import { PRTab } from '@/components/workspace/PRTab.tsx'
+import { TestsTab } from '@/components/workspace/TestsTab.tsx'
 
 type Tab = 'files' | 'terminal' | 'preview' | 'pr' | 'tests'
 
@@ -35,6 +35,7 @@ export function WorkspacePage() {
         <nav className="flex-1 overflow-y-auto py-2">
           {tabs.map((tab) => (
             <button
+              type="button"
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={clsx(

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Outlet, Link, useNavigate } from '@tanstack/react-router'
-import { api } from '@/lib/api'
+import { api } from '@/lib/api.ts'
 import { LogOut, Settings, Home } from 'lucide-react'
 
 export function AppLayout() {
