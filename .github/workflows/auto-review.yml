@@ -51,7 +51,7 @@ jobs:
       - name: Setup OpenCode with oh-my-opencode
         env:
           OPENCODE_AUTH_JSON: ${{ secrets.OPENCODE_AUTH_JSON }}
-          OPENCODE_JSON: ${{ secrets.OPENCODE_JSON }}
+          OPENCODE_JSONC: ${{ secrets.OPENCODE_JSONC }}
           ANTIGRAVITY_ACCOUNTS_JSON: ${{ secrets.ANTIGRAVITY_ACCOUNTS_JSON }}
           OH_MY_OPENCODE_JSON: ${{ secrets.OH_MY_OPENCODE_JSON }}
           ANTHROPIC_BASE_URL: ${{ secrets.ANTHROPIC_BASE_URL }}
@@ -79,7 +79,7 @@ jobs:
 
           mkdir -p ~/.local/share/opencode ~/.config/opencode
           echo "$OPENCODE_AUTH_JSON" > ~/.local/share/opencode/auth.json
-          echo "$OPENCODE_JSON" > ~/.config/opencode/opencode.json
+          echo "$OPENCODE_JSONC" > ~/.config/opencode/opencode.jsonc
           echo "$ANTIGRAVITY_ACCOUNTS_JSON" > ~/.config/opencode/antigravity-accounts.json
           echo "$OH_MY_OPENCODE_JSON" > ~/.config/opencode/oh-my-opencode.json
 
