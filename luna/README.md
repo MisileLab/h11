@@ -81,6 +81,9 @@ Luna is configured via environment variables. Create a `.env` file in the root d
 | `PRIVATE_KEY_PATH` | Yes | Path to the downloaded private key file | `./private-key.pem` |
 | `WEBHOOK_SECRET` | Yes | Secret used to verify webhook signatures | `your-secret-string` |
 | `WEBHOOK_PROXY_URL` | Dev only | smee.io URL for local development | `https://smee.io/xyz` |
+| `ALLOWED_USER` | No | GitHub username allowed to trigger reviews (default: `misilelab`) | `your-username` |
+
+**Note**: By default, Luna only responds to PRs created by the user specified in `ALLOWED_USER` (defaults to `misilelab`). This makes Luna work as a personal bot. To allow all users, remove or leave this variable empty.
 
 ## Usage
 
