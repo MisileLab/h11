@@ -3,34 +3,34 @@ version: '3.8'
 services:
   api:
     build:
-      context: ./api
+      context: ./backend
       dockerfile: Dockerfile
-    container_name: workbench-api
+    container_name: opencode-api
     ports:
-      - "8001:8000"
+      - "8000:8000"
     volumes:
-      - ./data:/app/data
-      - ./workspace-image:/app/workspace-image:ro
+      - ./data:/data
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - PYTHONUNBUFFERED=1
     restart: unless-stopped
     networks:
-      - workbench-network
+      - opencode_network
 
   web:
     build:
-      context: ./web
+      context: ./frontend
       dockerfile: Dockerfile
-    container_name: workbench-web
+    container_name: opencode-web
     ports:
-      - "3001:80"
+      - "3000:80"
     depends_on:
       - api
     restart: unless-stopped
     networks:
-      - workbench-network
+      - opencode_network
 
 networks:
-  workbench-network:
+  opencode_network:
     driver: bridge
+    name: opencode_network
