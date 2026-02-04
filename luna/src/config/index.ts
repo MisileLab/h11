@@ -10,12 +10,14 @@ import type { LunaConfig } from "../types/index.ts";
  * 
  * Optional environment variables:
  * - WEBHOOK_PROXY_URL: Webhook proxy URL (e.g., smee.io for local development)
+ * - ALLOWED_USER: GitHub username allowed to create PRs (default: misilelab)
  */
 function loadConfig(): LunaConfig {
   const appId = process.env.APP_ID;
   const privateKeyPath = process.env.PRIVATE_KEY_PATH;
   const webhookSecret = process.env.WEBHOOK_SECRET;
   const webhookProxyUrl = process.env.WEBHOOK_PROXY_URL;
+  const allowedUser = process.env.ALLOWED_USER || "misilelab";
 
   // Validate required environment variables
   if (!appId) {
@@ -44,6 +46,7 @@ function loadConfig(): LunaConfig {
     privateKeyPath,
     webhookSecret,
     webhookProxyUrl: webhookProxyUrl || undefined,
+    allowedUser,
     ignorePatterns: [
       "**/package-lock.json",
       "**/yarn.lock",

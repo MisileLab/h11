@@ -57,6 +57,7 @@ export interface LunaConfig {
   webhookProxyUrl?: string;
   ignorePatterns: string[];
   largePRThreshold: number;
+  allowedUser?: string;
 }
 
 /**

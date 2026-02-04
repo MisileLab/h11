@@ -35,124 +35,123 @@ describe("PR Webhook Handler", () => {
     expect(registeredHandlers.has("pull_request.synchronize")).toBe(true);
   });
 
-  test("skips draft PRs", async () => {
-    registerPRHandler(mockApp);
-    const handler = registeredHandlers.get("pull_request.opened")!;
+   test("skips draft PRs", async () => {
+     registerPRHandler(mockApp);
+     const handler = registeredHandlers.get("pull_request.opened")!;
 
-    const mockContext = createMockContext({
-      isDraft: true,
-      isBot: false,
-      isOwner: true,
-    });
+     const mockContext = createMockContext({
+       isDraft: true,
+       isBot: false,
+       isAllowedUser: true,
+     });
 
-    await handler(mockContext);
+     await handler(mockContext);
 
-    // Wait for async processing to complete
-    await new Promise(resolve => setTimeout(resolve, 10));
+     // Wait for async processing to complete
+     await new Promise(resolve => setTimeout(resolve, 10));
 
-    // Verify no processing happened
-    expect(consoleLogSpy).not.toHaveBeenCalled();
-  });
+     // Verify no processing happened
+     expect(consoleLogSpy).not.toHaveBeenCalled();
+   });
 
-  test("skips bot-created PRs", async () => {
-    registerPRHandler(mockApp);
-    const handler = registeredHandlers.get("pull_request.opened")!;
+   test("skips bot-created PRs", async () => {
+     registerPRHandler(mockApp);
+     const handler = registeredHandlers.get("pull_request.opened")!;
 
-    const mockContext = createMockContext({
-      isDraft: false,
-      isBot: true,
-      isOwner: true,
-    });
+     const mockContext = createMockContext({
+       isDraft: false,
+       isBot: true,
+       isAllowedUser: true,
+     });
 
-    await handler(mockContext);
+     await handler(mockContext);
 
-    // Wait for async processing
-    await new Promise(resolve => setTimeout(resolve, 10));
+     // Wait for async processing
+     await new Promise(resolve => setTimeout(resolve, 10));
 
-    expect(consoleLogSpy).not.toHaveBeenCalled();
-  });
+     expect(consoleLogSpy).not.toHaveBeenCalled();
+   });
 
-  test("skips non-owner repositories", async () => {
-    registerPRHandler(mockApp);
-    const handler = registeredHandlers.get("pull_request.opened")!;
+   test("skips PRs from non-allowed users", async () => {
+     registerPRHandler(mockApp);
+     const handler = registeredHandlers.get("pull_request.opened")!;
 
-    const mockContext = createMockContext({
-      isDraft: false,
-      isBot: false,
-      isOwner: false,
-    });
+     const mockContext = createMockContext({
+       isDraft: false,
+       isBot: false,
+       isAllowedUser: false,
+     });
 
-    await handler(mockContext);
+     await handler(mockContext);
 
-    // Wait for async processing
-    await new Promise(resolve => setTimeout(resolve, 10));
+     // Wait for async processing
+     await new Promise(resolve => setTimeout(resolve, 10));
 
-    // Processing should be skipped
-    expect(consoleLogSpy).not.toHaveBeenCalled();
-  });
+     // Processing should be skipped
+     expect(consoleLogSpy).not.toHaveBeenCalled();
+   });
 
-  test("extracts PR context for valid PRs", async () => {
-    registerPRHandler(mockApp);
-    const handler = registeredHandlers.get("pull_request.opened")!;
+   test("extracts PR context for valid PRs", async () => {
+     registerPRHandler(mockApp);
+     const handler = registeredHandlers.get("pull_request.opened")!;
 
-    const mockContext = createMockContext({
-      isDraft: false,
-      isBot: false,
-      isOwner: true,
-      prNumber: 42,
-      headSha: "abc123",
-      baseSha: "def456",
-      isFork: false,
-    });
+     const mockContext = createMockContext({
+       isDraft: false,
+       isBot: false,
+       isAllowedUser: true,
+       prNumber: 42,
+       headSha: "abc123",
+       baseSha: "def456",
+       isFork: false,
+     });
 
-    await handler(mockContext);
+     await handler(mockContext);
 
-    // Wait for async processing
-    await new Promise(resolve => setTimeout(resolve, 10));
+     // Wait for async processing
+     await new Promise(resolve => setTimeout(resolve, 10));
 
-    // Verify processing happened
-    expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining("Processing PR review for")
-    );
-  });
+     // Verify processing happened
+     expect(consoleLogSpy).toHaveBeenCalledWith(
+       expect.stringContaining("Processing PR review for")
+     );
+   });
 
-  test("sets summaryOnly flag for large PRs (50+ files)", async () => {
-    registerPRHandler(mockApp);
-    const handler = registeredHandlers.get("pull_request.opened")!;
+   test("sets summaryOnly flag for large PRs (50+ files)", async () => {
+     registerPRHandler(mockApp);
+     const handler = registeredHandlers.get("pull_request.opened")!;
 
-    const mockContext = createMockContext({
-      isDraft: false,
-      isBot: false,
-      isOwner: true,
-      changedFiles: 75,
-    });
+     const mockContext = createMockContext({
+       isDraft: false,
+       isBot: false,
+       isAllowedUser: true,
+       changedFiles: 75,
+     });
 
-    await handler(mockContext);
+     await handler(mockContext);
 
-    // Wait for async processing
-    await new Promise(resolve => setTimeout(resolve, 10));
+     // Wait for async processing
+     await new Promise(resolve => setTimeout(resolve, 10));
 
-    // Verify large PR is processed with summaryOnly flag
-    expect(consoleLogSpy).toHaveBeenCalledWith("Summary only: true");
-  });
+     // Verify large PR is processed with summaryOnly flag
+     expect(consoleLogSpy).toHaveBeenCalledWith("Summary only: true");
+   });
 });
 
 // Helper function to create mock context
 function createMockContext(options: {
   isDraft: boolean;
   isBot: boolean;
-  isOwner: boolean;
+  isAllowedUser: boolean;
   prNumber?: number;
   headSha?: string;
   baseSha?: string;
   isFork?: boolean;
   changedFiles?: number;
 }): Context {
-  const ownerLogin = "test-owner";
-  const repoOwner = options.isOwner ? ownerLogin : "different-owner";
+  const prCreator = options.isAllowedUser ? "misilelab" : "other-user";
   
   const mockRepo = mock(() => ({
-    owner: repoOwner,
+    owner: "test-owner",
     repo: "test-repo",
   }));
 
@@ -163,12 +162,15 @@ function createMockContext(options: {
       },
       repository: {
         owner: {
-          login: ownerLogin,
+          login: "test-owner",
         },
       },
       pull_request: {
         number: options.prNumber || 1,
         draft: options.isDraft,
+        user: {
+          login: prCreator,
+        },
         head: {
           sha: options.headSha || "head-sha",
           repo: {

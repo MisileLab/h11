@@ -12,12 +12,17 @@ function getConfig() {
 }
 
 /**
- * Check if the repository owner matches the configured owner
+ * Check if the PR creator is the allowed user
  */
-function isOwner(context: Context): boolean {
-  // @ts-expect-error - context.payload.repository is not typed
-  const repoOwner = context.payload.repository.owner.login;
-  return context.repo().owner === repoOwner;
+function isAllowedUser(context: Context): boolean {
+  const config = getConfig();
+  if (!config.allowedUser) {
+    return true; // If not configured, allow all
+  }
+  // Check if PR creator is the allowed user
+  // @ts-expect-error - pull_request.user is not fully typed
+  const prCreator = context.payload.pull_request?.user?.login;
+  return prCreator === config.allowedUser;
 }
 
 /**
@@ -77,8 +82,8 @@ async function handlePullRequest(context: Context): Promise<void> {
     return;
   }
 
-  // Skip non-owner repositories
-  if (!isOwner(context)) {
+  // Skip if PR creator is not the allowed user
+  if (!isAllowedUser(context)) {
     return;
   }
 
