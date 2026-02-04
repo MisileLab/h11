@@ -2,7 +2,8 @@
   "name": "luna",
   "type": "module",
   "scripts": {
-    "dev": "probot run ./main.ts",
+    "dev": "bun run main.ts",
+    "start": "bun run main.ts",
     "build": "tsc --noEmit",
     "test": "bun test",
     "check": "tsc --noEmit"
