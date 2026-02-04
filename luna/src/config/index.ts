@@ -1,4 +1,4 @@
-import type { LunaConfig } from "../types/index.ts";
+import type { LunaConfig, AgentType, AgentConfig } from "../types/index.ts";
 
 /**
  * Load configuration from environment variables and provide defaults.
@@ -66,3 +66,21 @@ function loadConfig(): LunaConfig {
  * If required environment variables are missing, this will throw immediately.
  */
 export const config: LunaConfig = loadConfig();
+
+export const agentConfig: AgentConfig = {
+  defaultAgent: 'sisyphus',
+  prAgents: new Map<string, AgentType>(),
+};
+
+export function setDefaultAgent(agent: AgentType): void {
+  agentConfig.defaultAgent = agent;
+}
+
+export function setPRAgent(prNumber: number, agent: AgentType): void {
+  agentConfig.prAgents.set(prNumber.toString(), agent);
+}
+
+export function getPRAgent(prNumber: number): AgentType {
+  return agentConfig.prAgents.get(prNumber.toString()) || agentConfig.defaultAgent;
+}
+

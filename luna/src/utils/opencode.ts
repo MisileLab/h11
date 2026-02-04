@@ -1,16 +1,14 @@
 import { createOpencode, type Part } from "@opencode-ai/sdk";
+import type { AgentType } from "../types/index.ts";
 
 // Global client instance - initialized from main.ts
 const { client } = await createOpencode();
 
-/**
- * Creates a new OpenCode session
- * @returns Session ID string
- * @throws Error after 3 retry attempts
- */
-export async function createSession(): Promise<string> {
+export async function createSession(agent?: AgentType): Promise<string> {
   return retryWithBackoff(async () => {
-    const response = await client.session.create();
+    const response = await client.session.create({
+      body: agent ? { agent } : undefined,
+    });
     const sessionId = response.data?.id;
     
     if (!sessionId) {

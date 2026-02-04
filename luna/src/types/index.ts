@@ -61,6 +61,23 @@ export interface LunaConfig {
 }
 
 /**
+ * OpenCode agent types
+ */
+export type AgentType = 
+  | 'sisyphus'
+  | 'hephaestus'
+  | 'prometheus'
+  | 'atlas';
+
+/**
+ * Agent configuration for PRs
+ */
+export interface AgentConfig {
+  defaultAgent: AgentType;
+  prAgents: Map<string, AgentType>;
+}
+
+/**
  * Incremental review state tracking
  */
 export interface ReviewState {

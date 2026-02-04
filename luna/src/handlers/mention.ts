@@ -1,30 +1,41 @@
 import type { Probot, Context } from "probot";
 import { createSession, sendPrompt, closeSession } from "../utils/opencode.ts";
+import { setDefaultAgent, setPRAgent, getPRAgent } from "../config/index.ts";
+import type { AgentType } from "../types/index.ts";
 
-/**
- * Detect if comment contains @luna mention (case insensitive, word boundary)
- */
-function hasMention(commentBody: string): boolean {
-  return /\b@luna\b/i.test(commentBody);
+function hasCommand(commentBody: string): boolean {
+  return /\/luna(?:\s|$)/i.test(commentBody);
 }
 
-/**
- * Extract text after @luna mention
- */
 function extractRequest(commentBody: string): string {
-  const match = commentBody.match(/\b@luna\b\s+(.*)/i);
+  const match = commentBody.match(/\/luna\s+(.*)/i);
   return match ? match[1].trim() : "";
 }
 
-/**
- * Process mention and post AI response (extracted for testing)
- */
-export async function processMention(context: any, request: string): Promise<void> {
+function isChangeCommand(commentBody: string): boolean {
+  return /\/luna-change(?:\s|$)/i.test(commentBody);
+}
+
+function isChangeDefaultCommand(commentBody: string): boolean {
+  return /\/luna-change-default(?:\s|$)/i.test(commentBody);
+}
+
+function extractAgent(commentBody: string, commandPattern: RegExp): AgentType | null {
+  const match = commentBody.match(commandPattern);
+  const agentStr = match ? match[1].trim().toLowerCase() : '';
+  const validAgents: AgentType[] = ['sisyphus', 'hephaestus', 'prometheus', 'atlas'];
+  return validAgents.includes(agentStr as AgentType) ? agentStr as AgentType : null;
+}
+
+function isAuthorized(username: string): boolean {
+  return username.toLowerCase() === 'misilelab';
+}
+
+export async function processMention(context: any, request: string, agent?: AgentType): Promise<void> {
   let sessionId: string | undefined;
   
   try {
-    // Create AI session
-    sessionId = await createSession();
+    sessionId = await createSession(agent);
 
     // Send request to AI
     const prompt = `User asked: ${request}`;
@@ -51,28 +62,105 @@ export async function processMention(context: any, request: string): Promise<voi
   }
 }
 
-/**
- * Handle mention in issue comment
- */
+async function handleChangeCommand(context: any): Promise<void> {
+  const username = context.payload.sender?.login || '';
+  const commentBody = context.payload.comment?.body || "";
+  const issueNumber = context.payload.issue?.number;
+  const { owner, repo } = context.repo();
+
+  if (!isAuthorized(username)) {
+    await context.octokit.issues.createComment({
+      owner,
+      repo,
+      issue_number: issueNumber,
+      body: '⚠️ Unauthorized. Only @misilelab can change agent configuration.',
+    });
+    return;
+  }
+
+  const agent = extractAgent(commentBody, /\/luna-change\s+(\w+)/i);
+  if (!agent) {
+    await context.octokit.issues.createComment({
+      owner,
+      repo,
+      issue_number: issueNumber,
+      body: '⚠️ Invalid agent. Valid agents: sisyphus, hephaestus, prometheus, atlas',
+    });
+    return;
+  }
+
+  setPRAgent(issueNumber, agent);
+  await context.octokit.issues.createComment({
+    owner,
+    repo,
+    issue_number: issueNumber,
+    body: `✅ Agent for PR #${issueNumber} changed to **${agent}**`,
+  });
+}
+
+async function handleChangeDefaultCommand(context: any): Promise<void> {
+  const username = context.payload.sender?.login || '';
+  const commentBody = context.payload.comment?.body || "";
+  const issueNumber = context.payload.issue?.number;
+  const { owner, repo } = context.repo();
+
+  if (!isAuthorized(username)) {
+    await context.octokit.issues.createComment({
+      owner,
+      repo,
+      issue_number: issueNumber,
+      body: '⚠️ Unauthorized. Only @misilelab can change agent configuration.',
+    });
+    return;
+  }
+
+  const agent = extractAgent(commentBody, /\/luna-change-default\s+(\w+)/i);
+  if (!agent) {
+    await context.octokit.issues.createComment({
+      owner,
+      repo,
+      issue_number: issueNumber,
+      body: '⚠️ Invalid agent. Valid agents: sisyphus, hephaestus, prometheus, atlas',
+    });
+    return;
+  }
+
+  setDefaultAgent(agent);
+  await context.octokit.issues.createComment({
+    owner,
+    repo,
+    issue_number: issueNumber,
+    body: `✅ Default agent changed to **${agent}** for all PRs`,
+  });
+}
+
 async function handleMention(context: any): Promise<void> {
-  // Skip bot's own comments to avoid infinite loop
   if (context.payload.sender?.type === "Bot") {
     return;
   }
 
   const commentBody = context.payload.comment?.body || "";
 
-  // Check if @luna is mentioned
-  if (!hasMention(commentBody)) {
+  if (isChangeCommand(commentBody)) {
+    await handleChangeCommand(context);
     return;
   }
 
-  // Extract request text after mention
-  const request = extractRequest(commentBody);
+  if (isChangeDefaultCommand(commentBody)) {
+    await handleChangeDefaultCommand(context);
+    return;
+  }
 
-  // Respond immediately to webhook, then process async
+  if (!hasCommand(commentBody)) {
+    return;
+  }
+
+  const request = extractRequest(commentBody);
+  const issueNumber = context.payload.issue?.number;
+  const selectedAgent = getPRAgent(issueNumber);
+
   setImmediate(async () => {
-    await processMention(context, request);
+    await processMention(context, request, selectedAgent);
   });
 }
 

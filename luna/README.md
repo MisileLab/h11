@@ -6,13 +6,14 @@
 
 Luna is an intelligent GitHub Pull Request review bot that leverages the power of OpenCode.ai's multi-agent system. It provides deep, automated code analysis by orchestrating specialized agents (Oracle, Explore, and Librarian) to review your changes.
 
-Luna automatically reviews Pull Requests when they are opened or synchronized, providing a comprehensive summary of changes along with specific inline suggestions. It also responds to natural language requests via `@luna` mentions in PR comments, making it a collaborative partner in your development workflow.
+Luna automatically reviews Pull Requests when they are opened or synchronized, providing a comprehensive summary of changes along with specific inline suggestions. It also responds to natural language requests via `/luna` commands in PR comments, making it a collaborative partner in your development workflow.
 
 ## Features
 
 - ✅ **Auto-review on PR open/sync**: Immediate feedback on every change.
-- ✅ **@luna mention**: Natural language interaction for specific requests or explanations.
-- ✅ **Multi-agent analysis**: Deep insights from Oracle, Explore, and Librarian agents.
+- ✅ **/luna command**: Natural language interaction for specific requests or explanations.
+- ✅ **Agent selection**: Choose between Sisyphus, Hephaestus, Prometheus, or Atlas for different analysis styles.
+- ✅ **Multi-agent analysis**: Deep insights from specialized OpenCode agents.
 - ✅ **Rich formatted comments**: Clear summaries with tables, emojis, and code suggestions.
 - ✅ **Security highlighting (🚨)**: Critical security issues are prominently flagged.
 - ✅ **Large PR detection**: Automatically switches to summary-only mode for PRs with 50+ files to maintain performance.
@@ -61,7 +62,7 @@ Luna requires a GitHub App to interact with your repositories. Follow these step
 5. **Permissions**:
    - **Repository permissions**:
      - **Pull requests**: Read & write (for reviews and comments).
-     - **Issues**: Read & write (for @luna mention responses).
+     - **Issues**: Read & write (for /luna command responses).
      - **Contents**: Read-only (for cloning and analyzing code).
 6. **Subscribe to events**:
    - **Pull request**: opened, synchronize.
@@ -95,12 +96,28 @@ When a PR is opened or new commits are pushed:
 3. Specialized agents analyze the diff and the codebase.
 4. Luna posts a summary review with a verdict and specific inline comments for findings.
 
-### @luna Mentions
+### /luna Commands
 
-You can talk to Luna directly by mentioning it in any PR or Issue comment:
-- `@luna explain this function`
-- `@luna can you find potential performance issues in this file?`
-- `@luna summarize the changes in this PR`
+You can interact with Luna directly by using commands in any PR or Issue comment:
+
+**Basic Usage:**
+- `/luna explain this function`
+- `/luna can you find potential performance issues in this file?`
+- `/luna summarize the changes in this PR`
+
+**Agent Selection (misilelab only):**
+- `/luna-change <agent>` - Change agent for current PR
+  - Example: `/luna-change sisyphus`
+  - Valid agents: `sisyphus`, `hephaestus`, `prometheus`, `atlas`
+  
+- `/luna-change-default <agent>` - Change default agent for all PRs
+  - Example: `/luna-change-default prometheus`
+
+**Available Agents:**
+- **Sisyphus**: Default agent, balanced analysis
+- **Hephaestus**: Focused on build and infrastructure
+- **Prometheus**: Strategic planning and architecture
+- **Atlas**: Comprehensive orchestration and coordination
 
 ## .lunaignore
 

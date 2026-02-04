@@ -55,7 +55,7 @@ describe("mention handler", () => {
         issue: { number: 42 },
         comment: {
           id: 123,
-          body: "@luna explain this function",
+          body: "/luna explain this function",
           user: { login: "testuser", type: "User" },
         },
         sender: { login: "testuser", type: "User" },
@@ -73,7 +73,7 @@ describe("mention handler", () => {
     };
   });
 
-  test("detects @luna mention and triggers AI response", async () => {
+  test("detects /luna command and triggers AI response", async () => {
     // Test processMention directly to avoid setImmediate timing issues
     await processMention(mockContext, "explain this function");
 
@@ -86,12 +86,12 @@ describe("mention handler", () => {
     });
   });
 
-  test("ignores @lunar (partial match, not exact)", async () => {
+  test("ignores /lunar (different command)", async () => {
     registerMentionHandler(mockApp);
     const handler = registeredHandlers.get("issue_comment.created");
 
-    // Set comment body to partial match
-    mockContext.payload.comment.body = "@lunar eclipse is cool";
+    // Set comment body to different command
+    mockContext.payload.comment.body = "/lunar eclipse is cool";
 
     await handler!(mockContext);
     await new Promise((resolve) => setTimeout(resolve, 50));
@@ -106,7 +106,7 @@ describe("mention handler", () => {
 
     // Set sender to Bot
     mockContext.payload.sender.type = "Bot";
-    mockContext.payload.comment.body = "@luna help me";
+    mockContext.payload.comment.body = "/luna help me";
 
     await handler!(mockContext);
     await new Promise((resolve) => setTimeout(resolve, 50));
@@ -115,14 +115,80 @@ describe("mention handler", () => {
     expect(mockContext.octokit.issues.createComment).not.toHaveBeenCalled();
   });
 
-  test("extracts text after @luna as the request", async () => {
-    // Test with different request text
+  test("extracts text after /luna as the request", async () => {
     await processMention(mockContext, "can you review this code?");
 
-    // Verify sendPrompt was called with extracted text
     expect(mockSendPrompt).toHaveBeenCalledWith(
       "sess_mock_123",
       expect.stringContaining("can you review this code?")
+    );
+  });
+
+  test("handles /luna-change command for authorized user", async () => {
+    registerMentionHandler(mockApp);
+    const handler = registeredHandlers.get("issue_comment.created");
+
+    mockContext.payload.sender.login = "misilelab";
+    mockContext.payload.comment.body = "/luna-change sisyphus";
+
+    await handler!(mockContext);
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    expect(mockContext.octokit.issues.createComment).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: expect.stringContaining("Agent for PR #42 changed to **sisyphus**"),
+      })
+    );
+  });
+
+  test("rejects /luna-change command for unauthorized user", async () => {
+    registerMentionHandler(mockApp);
+    const handler = registeredHandlers.get("issue_comment.created");
+
+    mockContext.payload.sender.login = "unauthorized";
+    mockContext.payload.comment.body = "/luna-change sisyphus";
+
+    await handler!(mockContext);
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    expect(mockContext.octokit.issues.createComment).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: expect.stringContaining("Unauthorized"),
+      })
+    );
+  });
+
+  test("handles /luna-change-default command for authorized user", async () => {
+    registerMentionHandler(mockApp);
+    const handler = registeredHandlers.get("issue_comment.created");
+
+    mockContext.payload.sender.login = "misilelab";
+    mockContext.payload.comment.body = "/luna-change-default prometheus";
+
+    await handler!(mockContext);
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    expect(mockContext.octokit.issues.createComment).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: expect.stringContaining("Default agent changed to **prometheus**"),
+      })
+    );
+  });
+
+  test("rejects invalid agent in /luna-change command", async () => {
+    registerMentionHandler(mockApp);
+    const handler = registeredHandlers.get("issue_comment.created");
+
+    mockContext.payload.sender.login = "misilelab";
+    mockContext.payload.comment.body = "/luna-change invalid-agent";
+
+    await handler!(mockContext);
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    expect(mockContext.octokit.issues.createComment).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: expect.stringContaining("Invalid agent"),
+      })
     );
   });
 });
