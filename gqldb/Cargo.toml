@@ -24,7 +24,7 @@ anyhow = "1.0"
 async-graphql = "7.0"
 async-graphql-axum = "7.0"
 axum = "0.8"
-bytes = "1.6"
+bytes = "1.11"
 chrono = { version = "0.4", features = ["serde"] }
 graphql-parser = "0.4"
 parking_lot = "0.12"
