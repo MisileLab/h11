@@ -1,0 +1,14 @@
+mutation {
+  createUser(input: "{\"name\":\"Ada\",\"email\":\"ada@example.com\"}") {
+    id
+    name
+    email
+  }
+}
+
+query {
+  listUser(first: 10) {
+    id
+    name
+  }
+}

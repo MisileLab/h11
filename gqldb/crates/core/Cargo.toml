@@ -1,0 +1,20 @@
+[package]
+name = "gqldb-core"
+edition.workspace = true
+license.workspace = true
+version.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tracing.workspace = true
+uuid.workspace = true
+gqldb-schema = { path = "../schema" }
+gqldb-planner = { path = "../planner" }
+gqldb-executor = { path = "../executor" }
+gqldb-storage = { path = "../storage" }
+gqldb-mvcc = { path = "../mvcc" }
+gqldb-index = { path = "../index" }
+gqldb-vector = { path = "../vector" }
+gqldb-cluster = { path = "../cluster" }

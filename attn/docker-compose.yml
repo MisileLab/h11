@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: opencode-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    networks:
+      - opencode_network
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: opencode-web
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks:
+      - opencode_network
+
+networks:
+  opencode_network:
+    driver: bridge
+    name: opencode_network

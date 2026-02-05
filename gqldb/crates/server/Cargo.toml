@@ -1,0 +1,24 @@
+[package]
+name = "gqldb-server"
+edition.workspace = true
+license.workspace = true
+version.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+async-graphql.workspace = true
+async-graphql-axum.workspace = true
+axum.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+tokio-stream.workspace = true
+tower-http.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+gqldb-core = { path = "../core" }
+gqldb-executor = { path = "../executor" }
+gqldb-mvcc = { path = "../mvcc" }
+gqldb-planner = { path = "../planner" }
+gqldb-schema = { path = "../schema" }
+gqldb-storage = { path = "../storage" }
