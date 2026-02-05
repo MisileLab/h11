@@ -900,19 +900,19 @@ __metadata:
   linkType: hard
 
 "@tanstack/react-router@npm:^1.158.0":
-  version: 1.158.0
-  resolution: "@tanstack/react-router@npm:1.158.0"
+  version: 1.158.1
+  resolution: "@tanstack/react-router@npm:1.158.1"
   dependencies:
     "@tanstack/history": "npm:1.154.14"
     "@tanstack/react-store": "npm:^0.8.0"
-    "@tanstack/router-core": "npm:1.158.0"
+    "@tanstack/router-core": "npm:1.158.1"
     isbot: "npm:^5.1.22"
     tiny-invariant: "npm:^1.3.3"
     tiny-warning: "npm:^1.0.3"
   peerDependencies:
     react: ">=18.0.0 || >=19.0.0"
     react-dom: ">=18.0.0 || >=19.0.0"
-  checksum: 10c0/2e2caf04bb359e318404f8ceccbd6d533b253bbc971fe093e63e09929b55dcf01b1ce28eb963875d13a9d46c13d2f173e83654a705851cc8becb881a78d54d88
+  checksum: 10c0/90b7c80401c33c4e5182ac1909ccc4197acd26fc5a3b8d06cf9713cf277d89ad31a441f12ad5db0357adb9c5b53b056c6a348e1770344044f7fe032f36e98000
   languageName: node
   linkType: hard
 
@@ -929,9 +929,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/router-core@npm:1.158.0":
-  version: 1.158.0
-  resolution: "@tanstack/router-core@npm:1.158.0"
+"@tanstack/router-core@npm:1.158.1":
+  version: 1.158.1
+  resolution: "@tanstack/router-core@npm:1.158.1"
   dependencies:
     "@tanstack/history": "npm:1.154.14"
     "@tanstack/store": "npm:^0.8.0"
@@ -940,7 +940,7 @@ __metadata:
     seroval-plugins: "npm:^1.4.2"
     tiny-invariant: "npm:^1.3.3"
     tiny-warning: "npm:^1.0.3"
-  checksum: 10c0/087220908e82d800c477b5e28de651f0d951c8b74a3c20acb7ebce8dd1b295d5a10f983876338b4ddd3eb89650aab34da2a0f4061d6f4d6cd17020ad59a12352
+  checksum: 10c0/dddeacd5c3e575b2f218543f3671fd797b495190809c99d4730ad5752b5503c5ef0a73c9a370fee7c9a11a9d1304e7e24c1b1e15c7d522dfbf316f583927b50f
   languageName: node
   linkType: hard
 
