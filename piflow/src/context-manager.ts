@@ -9,53 +9,6 @@ export interface ContextCache {
   summary: string;
 }
 
-function byPriority(cwd: string): string[] {
-  const result: string[] = [];
-
-  // 1) README*
-  result.push(path.join(cwd, "README.md"), path.join(cwd, "README"));
-
-  // 2) docs/README*, docs/overview*, docs/architecture*
-  result.push(
-    path.join(cwd, "docs/README.md"),
-    path.join(cwd, "docs/README"),
-    path.join(cwd, "docs/overview.md"),
-    path.join(cwd, "docs/overview"),
-    path.join(cwd, "docs/architecture.md"),
-    path.join(cwd, "docs/architecture"),
-  );
-
-  // 3) Build config
-  result.push(
-    path.join(cwd, "package.json"),
-    path.join(cwd, "pyproject.toml"),
-    path.join(cwd, "Cargo.toml"),
-    path.join(cwd, "go.mod"),
-  );
-
-  // 4) Contributing / task runners
-  result.push(path.join(cwd, "CONTRIBUTING.md"), path.join(cwd, "CONTRIBUTING"), path.join(cwd, "Makefile"), path.join(cwd, "justfile"));
-
-  // 5) Entrypoints
-  result.push(
-    path.join(cwd, "main.ts"),
-    path.join(cwd, "main.js"),
-    path.join(cwd, "main.py"),
-    path.join(cwd, "index.ts"),
-    path.join(cwd, "index.js"),
-    path.join(cwd, "app.ts"),
-    path.join(cwd, "app.js"),
-    path.join(cwd, "src/main.ts"),
-    path.join(cwd, "src/main.js"),
-    path.join(cwd, "src/index.ts"),
-    path.join(cwd, "src/index.js"),
-    path.join(cwd, "src/app.ts"),
-    path.join(cwd, "src/app.js"),
-  );
-
-  return result;
-}
-
 async function existsFile(filePath: string): Promise<boolean> {
   try {
     const stat = await fs.stat(filePath);
@@ -63,6 +16,47 @@ async function existsFile(filePath: string): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+function globToRegex(pattern: string): RegExp {
+  const escaped = pattern.replace(/[.+^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*");
+  return new RegExp(`^${escaped}$`, "i");
+}
+
+async function resolvePriorityPattern(cwd: string, pattern: string): Promise<string[]> {
+  const normalized = pattern.replace(/^\.\//, "");
+
+  if (!normalized.includes("*")) {
+    const full = path.join(cwd, normalized);
+    return (await existsFile(full)) ? [full] : [];
+  }
+
+  const dir = path.join(cwd, path.dirname(normalized));
+  const basePattern = path.basename(normalized);
+
+  try {
+    const entries = await fs.readdir(dir, { withFileTypes: true });
+    const re = globToRegex(basePattern);
+    const matches = entries
+      .filter((entry) => entry.isFile() && re.test(entry.name))
+      .map((entry) => path.join(dir, entry.name))
+      .sort((a, b) => a.localeCompare(b));
+
+    return matches;
+  } catch {
+    return [];
+  }
+}
+
+async function candidatesByPriority(cwd: string, priorities: string[]): Promise<string[]> {
+  const ordered: string[] = [];
+  for (const pattern of priorities) {
+    const resolved = await resolvePriorityPattern(cwd, pattern);
+    for (const file of resolved) {
+      if (!ordered.includes(file)) ordered.push(file);
+    }
+  }
+  return ordered;
 }
 
 function buildSummary(files: ContextFile[]): string {
@@ -76,7 +70,7 @@ export async function runAutoContextManager(
   config: FlowEnforcerConfig,
   ctx: ExtensionContext,
 ): Promise<ContextCache> {
-  const candidates = byPriority(cwd);
+  const candidates = await candidatesByPriority(cwd, config.contextManager.priorities);
   const selected: ContextFile[] = [];
   let totalChars = 0;
 
