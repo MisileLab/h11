@@ -1,5 +1,6 @@
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import { loadConfig } from "./config.js";
+import { runAutoContextManager } from "./context-manager.js";
 import type { SessionState } from "./types.js";
 
 export default function piFlowEnforcer(pi: ExtensionAPI): void {
@@ -29,6 +30,23 @@ export default function piFlowEnforcer(pi: ExtensionAPI): void {
   pi.on("session_start", async (_event, ctx) => {
     state.startedAt = Date.now();
     state.approved = false;
+
+    const contextCache = await runAutoContextManager(ctx.cwd, config, ctx);
+    state.contextCache = contextCache;
+
+    pi.sendMessage(
+      {
+        customType: "pi-flow-context",
+        content: contextCache.summary,
+        details: {
+          files: contextCache.files.map((f) => f.path),
+          totalChars: contextCache.totalChars,
+        },
+        display: false,
+      },
+      { triggerTurn: false },
+    );
+
     if (ctx.hasUI) {
       ctx.ui.setStatus("pi-flow-enforcer", ctx.ui.theme.fg("accent", "flow: planning"));
       ctx.ui.notify("pi-flow-enforcer active (auto-start)", "info");

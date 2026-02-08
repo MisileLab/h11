@@ -25,4 +25,9 @@ export interface ContextFile {
 export interface SessionState {
   startedAt: number;
   approved: boolean;
+  contextCache?: {
+    summary: string;
+    files: ContextFile[];
+    totalChars: number;
+  };
 }
