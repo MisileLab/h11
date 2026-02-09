@@ -1,0 +1,50 @@
+Task 20 Regression Check (Refreshed)
+Date: 2026-02-09
+
+Scope: Existing piflow guardrails (approval gate, plan enforcement, big-commit behavior, ambiguity handling)
+
+1) Approval Gate
+Status: PASS
+Evidence:
+- Static: `piflow/src/events.ts` still contains block reason
+  `Execution blocked. Type ${config.approvalToken} after plan approval.`
+- Runtime: non-interactive write-request probe stayed in enforced planning flow (`.sisyphus/evidence/task-20-approval-probe.jsonl`) and did not bypass pre-approval execution path.
+
+2) Plan Enforcement
+Status: PASS
+Evidence:
+- Static: `buildPlanInstruction(...)` remains wired in `before_agent_start`.
+- Runtime: `pi --mode json -p --no-session` smoke stream shows `customType: "pi-flow-enforcer"` with enforced schema injection.
+
+3) Big-Commit Behavior
+Status: PASS
+Evidence:
+- Static wiring intact:
+  - `checkBigCommitThreshold(...)` in `piflow/src/execution-guard.ts`
+  - call site from `tool_result` in `piflow/src/events.ts`
+- No regression signal observed in integration wiring.
+
+4) Ambiguity Detection Path
+Status: PASS
+Evidence:
+- Static: `detectAmbiguity(...)` remains invoked in `agent_end` processing.
+- Runtime: interactive capture includes ambiguity/blocking prompts such as:
+  - `Missing success definition or acceptance criteria. (blocking)`
+
+5) Interactive QA Infrastructure
+Status: PASS
+Evidence:
+- `interactive_bash` now works with tmux create/kill session commands.
+- Bash tmux automation also works (`tmux send-keys`, `tmux capture-pane`).
+
+6) Required TypeScript Verification
+Status: PASS
+Command:
+- `cd piflow && npx tsc --noEmit && echo "TSC_PASS"`
+Observed:
+- `TSC_PASS`
+
+Overall Regression Verdict: PASS (with residual E2E blockers outside regression scope)
+- Core guardrails remain active and wired.
+- Required typecheck now passes.
+- Remaining blockers are tied to full deterministic end-to-end feature-path coverage in extension-heavy interactive sessions, not guardrail regressions.

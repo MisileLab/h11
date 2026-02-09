@@ -1,0 +1,117 @@
+{
+  // CORE: Approval token (required to unlock execution)
+  "approvalToken": "/approve",
+
+  // BIG COMMIT THRESHOLDS: Triggers a split-commit warning if exceeded
+  "bigCommitThresholds": {
+    "locChanged": 350,     // Lines of code changed
+    "filesChanged": 12     // Number of files modified
+  },
+
+  // CONTEXT MANAGER: Auto-context selection strategy
+  "contextManager": {
+    "maxFiles": 6,         // Maximum files to include in context
+    "maxChars": 24000,     // Maximum characters total
+    "priorities": [
+      "README*",
+      "docs/README*",
+      "docs/overview*",
+      "docs/architecture*",
+      "package.json",
+      "pyproject.toml",
+      "Cargo.toml",
+      "go.mod",
+      "CONTRIBUTING*",
+      "Makefile",
+      "justfile",
+      "main.*",
+      "index.*",
+      "app.*"
+    ]
+  },
+
+  // COMMIT STYLE: Currently only "conventional" is supported
+  "commitStyle": "conventional",
+
+  // AGENTS: Agent discovery and execution settings
+  "agents": {
+    "enabled": true,       // Enable agent orchestration
+    "maxConcurrent": 4,    // Max concurrent agents (semaphore limit)
+    "models": {
+      "planning": "gpt-4-turbo",     // Model for planning triad
+      "review": "gpt-4-turbo",       // Model for quality review
+      "execution": "gpt-4-turbo"     // Model for execution
+    },
+    "timeout": 300000      // Timeout per agent (ms)
+  },
+
+  // HOOKS: External callback URLs or custom scripts
+  "hooks": {
+    // Triggered after plan is created
+    "onPlanCreated": null,
+    // Triggered when todo list updates
+    "onTodoUpdated": null,
+    // Triggered when context window warning threshold hit
+    "onContextWarning": null,
+    // Triggered on tool execution errors
+    "onToolError": null,
+    // Triggered on keyword mode activation (deep/ultrawork)
+    "onModeSwitch": null
+  },
+
+  // TOOLS: Fine-grained tool enablement and configuration
+  "tools": {
+    "disabled": [],        // Disable specific tools by name
+    // LSP code intelligence tools
+    "lsp": {
+      "enabled": true      // Enable goto-definition, find-references, rename
+    },
+    // AST-grep pattern search/replace
+    "astGrep": {
+      "enabled": true,
+      "dryRunDefault": true  // Default to dry-run for replace operations
+    },
+    // Tmux interactive terminal tool
+    "tmux": {
+      "enabled": true
+    }
+  },
+
+  // COMMANDS: Slash command customization
+  "commands": {
+    "disabled": [],        // Disable specific commands by name
+    // Define short aliases for common commands
+    "aliases": {
+      "p": "plan",        // /p → /plan
+      "a": "approve",     // /a → /approve
+      "s": "status",      // /s → /status
+      "w": "start-work"   // /w → /start-work
+    }
+  },
+
+  // THRESHOLDS: Behavior triggers and limits
+  "thresholds": {
+    "contextPercentage": 75,     // Warn when context usage exceeds 75%
+    "commentCheckEnabled": true, // Enable AI slop detection in comments
+    "maxCommentIssues": 5        // Max warnings to report per file
+  },
+
+  // MODES: Activation and configuration for keyword modes
+  "modes": {
+    "ultrawork": true,           // Enable /ultrawork keyword mode
+    "deep": true,                // Enable /deep keyword mode
+    "ralphLoop": {
+      "enabled": true,
+      "maxIterations": 10,       // Max continuation iterations before stopping
+      "cooldownMs": 1000         // Delay between iterations (prevents spam)
+    }
+  },
+
+  // TODO: Todo/checkpoint enforcement settings
+  "todo": {
+    "enforceCompletion": true,   // Block execution if todos incomplete
+    "blockOnIncomplete": false,  // Warning-only mode (set true for strict)
+    "showBoulderContext": true,  // Inject todo list into agent prompts
+    "maxDisplayItems": 10        // Max todos to show in boulder context
+  }
+}

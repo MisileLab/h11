@@ -18,12 +18,20 @@ Enforces a strict workflow in pi.dev sessions:
 
 ## Register (project-local)
 
-Use project settings:
+Install packages:
+
+```bash
+pi install pi-flow-enforcer
+pi install pi-agent-pack
+```
+
+Then use project settings:
 
 ```json
 {
   "packages": [
-    "../piflow"
+    "pi-flow-enforcer",
+    "pi-agent-pack"
   ]
 }
 ```

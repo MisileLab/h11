@@ -1,0 +1,204 @@
+ • explore: Codebase explorer
+ • librarian: External knowledge researcher
+ • metis: Gap analysis reviewer
+ • momus: Quality gate critic
+ • multimodal-looker: Visual/media analyzer
+ • oracle: Architecture deep-dive consultant
+ • prometheus: Strategic planning consultant
+ • sisyphus-junior: Task executor
+ • api-tester: Lightweight agent that sends API requests and returns concise
+ results. Use for testing endpoints without cluttering the main conversation.
+
+ ⠧ Working... (escape to interrupt)
+
+────────────────────────────────────────────────────────────────────────────────
+
+ Missing success definition or acceptance criteria. (blocking)
+
+ → Add explicit acceptance criteria
+   Use checkpoint proof as success criteria
+
+ ↑↓ navigate  enter select  escape/ctrl+c cancel
+
+────────────────────────────────────────────────────────────────────────────────
+ (sub) | ◆ 0 checkpoints  ·  flow: planning
+
+ pi v0.52.8
+ escape to interrupt
+ ctrl+c to clear
+ ctrl+c twice to exit
+ ctrl+d to exit (empty)
+ ctrl+z to suspend
+ ctrl+k to delete to end
+ shift+tab to cycle thinking level
+ ctrl+p/shift+ctrl+p to cycle models
+ ctrl+l to select model
+ ctrl+o to expand tools
+ ctrl+t to expand thinking
+ ctrl+g for external editor
+ / for commands
+ ! to run bash
+ !! to run bash (no context)
+ alt+enter to queue follow-up
+ alt+up to edit all queued messages
+ ctrl+v to paste image
+ drop files to attach
+
+
+ pi-flow-enforcer active (auto-start)
+
+[Context]
+  ~/.pi/agent/AGENTS.md
+  ~/repos/h11/AGENTS.md
+
+[Skills]
+  user
+    ~/.pi/agent/skills/send-request/SKILL.md
+    npm:pi-package-test
+      shitty-extensions/skills/a-nach-b/SKILL.md
+      transcribe/SKILL.md
+    npm:pi-web-access
+      librarian/SKILL.md
+
+[Prompts]
+  user
+    npm:pi-package-test
+      /explain
+      /review
+
+[Extensions]
+  user
+    npm:@aliou/pi-guardrails
+      index.ts
+    npm:@tmustier/pi-files-widget
+      index.ts
+    npm:pi-interactive-shell
+      index.ts
+    npm:pi-mcp-adapter
+      index.ts
+    npm:pi-package-test
+      confirm-destructive.ts
+      custom-footer.ts
+      shitty-extensions/extensions/memory-mode.ts
+      shitty-extensions/extensions/oracle.ts
+    npm:pi-powerline-footer
+      index.ts
+    npm:pi-rewind-hook
+      index.ts
+    npm:pi-screenshots-picker
+      index.ts
+    npm:pi-super-curl
+      index.ts
+    npm:pi-wakatime
+      index.ts
+    npm:pi-web-access
+      index.ts
+  project
+    ~/repos/h11/piflow/src/index.ts
+
+[Themes]
+  user
+    npm:pi-package-test
+      funky.json
+
+
+────────────────────────────────────────────────────────────────────────────────
+ Update Available
+ New version 0.52.9 is available. Run: pnpm install -g
+ @mariozechner/pi-coding-agent
+ Changelog:
+ https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/CHANGELOG.
+ md
+────────────────────────────────────────────────────────────────────────────────
+
+
+ status
+
+
+ Crafting clarification-focused status plan
+
+ Goal
+
+ Provide the exact repository/workflow status you want, with verified evidence,
+ without making implementation changes.
+
+ Context (auto-filled)
+
+ - Auto-context loaded (1 file): README.md (32 chars)
+ - Known run/build/test commands: Unknown (must ask user if needed)
+
+ Plan
+
+ - [P1] Confirm what “status” means for this request (e.g., git/worktree state,
+ task progress, build/lint health, or combined).
+ - [P2] After approval, run only read-only checks for the confirmed scope and
+ return a concise status summary with evidence.
+
+ Assumptions
+
+ - [A1] “status” likely refers to project/repository state, but the exact scope
+ is not yet explicit.
+ - [A2] This is a read-only request and should not require file modifications
+ or commits.
+
+ Questions (blocking)
+
+ - [Q1] What exact status do you want: git/worktree, task/progress, build/lint
+ health, or all?
+ - [Q2] If you want build/lint health, which command should I use in this repo?
+ - [Q3] Do you want a brief summary or detailed output?
+
+ Checkpoints
+
+ - [C1] Confirm status scope
+     - Proof: Your explicit confirmation of requested status categories and
+ output depth.
+     - Commit: None (no code change).
+ - [C2] Collect read-only status evidence
+     - Proof: Captured outputs for each requested signal (e.g., branch/worktree
+ state, command results).
+     - Commit: None (no code change).
+ - [C3] Deliver final status report
+     - Proof: Structured Markdown report that maps 1:1 to requested scope.
+     - Commit: None (no code change).
+
+ Checkpoint 1 saved
+
+ Revising complete plan schema
+
+ Goal
+
+ Provide a simple, read-only repository status report with explicit acceptance
+ criteria.
+
+ Context (auto-filled)
+
+ - Auto-context loaded (1 file): README.md (32 chars)
+ - Known run/build/test commands: Unknown (must ask user if needed)
+
+ Plan
+
+ - [P1] Define explicit acceptance criteria for this status task:
+     - AC1: Report current branch and ahead/behind info.
+     - AC2: Report working tree state (clean/dirty) and
+ staged/unstaged/untracked presence.
+     - AC3: Report latest commit (short SHA + subject).
+ - [P2] Use the simpler approach: run only minimal read-only git checks (no
+ build/lint/tests, no file edits).
+ - [P3] Return a concise Markdown status summary that maps each acceptance
+ criterion to evidence.
+
+ Assumptions
+
+ - [A1] “Pick simpler approach” means git/worktree status only
+
+ Warning: Bouldering mode not active. Start with /start-work first.
+
+ Steering: deep
+ ↳ Alt+Up to edit all queued messages
+
+ π  | ◈ GPT-5.3 Codex | think:high | 📁 h11 | ⎇ main *6 +1 ?28 | ◫ 3.1%/272k ⚡
+ ──────────────────────────────────────────────────────────────────────────────
+ >
+ ──────────────────────────────────────────────────────────────────────────────
+ (sub) | ◆ 1 checkpoint  ·  flow: planning

@@ -1,0 +1,12 @@
+{
+  "name": "pi-agent-pack",
+  "version": "0.1.0",
+  "private": false,
+  "keywords": [
+    "pi-package",
+    "pi-agents"
+  ],
+  "files": [
+    "agents/**/*.md"
+  ]
+}

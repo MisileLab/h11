@@ -1,5 +1,6 @@
 {
   "packages": [
-    "../piflow"
+    "pi-flow-enforcer",
+    "pi-agent-pack"
   ]
 }

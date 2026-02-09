@@ -1,0 +1,394 @@
+ • explore: Codebase explorer
+ • librarian: External knowledge researcher
+ • metis: Gap analysis reviewer
+ • momus: Quality gate critic
+ • multimodal-looker: Visual/media analyzer
+ • oracle: Architecture deep-dive consultant
+ • prometheus: Strategic planning consultant
+ • sisyphus-junior: Task executor
+ • api-tester: Lightweight agent that sends API requests and returns concise
+ results. Use for testing endpoints without cluttering the main conversation.
+
+ ⠧ Working... (escape to interrupt)
+
+────────────────────────────────────────────────────────────────────────────────
+
+ Missing success definition or acceptance criteria. (blocking)
+
+ → Add explicit acceptance criteria
+   Use checkpoint proof as success criteria
+
+ ↑↓ navigate  enter select  escape/ctrl+c cancel
+
+────────────────────────────────────────────────────────────────────────────────
+ (sub) | ◆ 0 checkpoints  ·  flow: planning
+
+ pi v0.52.8
+ escape to interrupt
+ ctrl+c to clear
+ ctrl+c twice to exit
+ ctrl+d to exit (empty)
+ ctrl+z to suspend
+ ctrl+k to delete to end
+ shift+tab to cycle thinking level
+ ctrl+p/shift+ctrl+p to cycle models
+ ctrl+l to select model
+ ctrl+o to expand tools
+ ctrl+t to expand thinking
+ ctrl+g for external editor
+ / for commands
+ ! to run bash
+ !! to run bash (no context)
+ alt+enter to queue follow-up
+ alt+up to edit all queued messages
+ ctrl+v to paste image
+ drop files to attach
+
+
+ pi-flow-enforcer active (auto-start)
+
+[Context]
+  ~/.pi/agent/AGENTS.md
+  ~/repos/h11/AGENTS.md
+
+[Skills]
+  user
+    ~/.pi/agent/skills/send-request/SKILL.md
+    npm:pi-package-test
+      shitty-extensions/skills/a-nach-b/SKILL.md
+      transcribe/SKILL.md
+    npm:pi-web-access
+      librarian/SKILL.md
+
+[Prompts]
+  user
+    npm:pi-package-test
+      /explain
+      /review
+
+[Extensions]
+  user
+    npm:@aliou/pi-guardrails
+      index.ts
+    npm:@tmustier/pi-files-widget
+      index.ts
+    npm:pi-interactive-shell
+      index.ts
+    npm:pi-mcp-adapter
+      index.ts
+    npm:pi-package-test
+      confirm-destructive.ts
+      custom-footer.ts
+      shitty-extensions/extensions/memory-mode.ts
+      shitty-extensions/extensions/oracle.ts
+    npm:pi-powerline-footer
+      index.ts
+    npm:pi-rewind-hook
+      index.ts
+    npm:pi-screenshots-picker
+      index.ts
+    npm:pi-super-curl
+      index.ts
+    npm:pi-wakatime
+      index.ts
+    npm:pi-web-access
+      index.ts
+  project
+    ~/repos/h11/piflow/src/index.ts
+
+[Themes]
+  user
+    npm:pi-package-test
+      funky.json
+
+
+────────────────────────────────────────────────────────────────────────────────
+ Update Available
+ New version 0.52.9 is available. Run: pnpm install -g
+ @mariozechner/pi-coding-agent
+ Changelog:
+ https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/CHANGELOG.
+ md
+────────────────────────────────────────────────────────────────────────────────
+
+
+ status
+
+
+ Crafting clarification-focused status plan
+
+ Goal
+
+ Provide the exact repository/workflow status you want, with verified evidence,
+ without making implementation changes.
+
+ Context (auto-filled)
+
+ - Auto-context loaded (1 file): README.md (32 chars)
+ - Known run/build/test commands: Unknown (must ask user if needed)
+
+ Plan
+
+ - [P1] Confirm what “status” means for this request (e.g., git/worktree state,
+ task progress, build/lint health, or combined).
+ - [P2] After approval, run only read-only checks for the confirmed scope and
+ return a concise status summary with evidence.
+
+ Assumptions
+
+ - [A1] “status” likely refers to project/repository state, but the exact scope
+ is not yet explicit.
+ - [A2] This is a read-only request and should not require file modifications
+ or commits.
+
+ Questions (blocking)
+
+ - [Q1] What exact status do you want: git/worktree, task/progress, build/lint
+ health, or all?
+ - [Q2] If you want build/lint health, which command should I use in this repo?
+ - [Q3] Do you want a brief summary or detailed output?
+
+ Checkpoints
+
+ - [C1] Confirm status scope
+     - Proof: Your explicit confirmation of requested status categories and
+ output depth.
+     - Commit: None (no code change).
+ - [C2] Collect read-only status evidence
+     - Proof: Captured outputs for each requested signal (e.g., branch/worktree
+ state, command results).
+     - Commit: None (no code change).
+ - [C3] Deliver final status report
+     - Proof: Structured Markdown report that maps 1:1 to requested scope.
+     - Commit: None (no code change).
+
+ Checkpoint 1 saved
+
+ Revising complete plan schema
+
+ Goal
+
+ Provide a simple, read-only repository status report with explicit acceptance
+ criteria.
+
+ Context (auto-filled)
+
+ - Auto-context loaded (1 file): README.md (32 chars)
+ - Known run/build/test commands: Unknown (must ask user if needed)
+
+ Plan
+
+ - [P1] Define explicit acceptance criteria for this status task:
+     - AC1: Report current branch and ahead/behind info.
+     - AC2: Report working tree state (clean/dirty) and
+ staged/unstaged/untracked presence.
+     - AC3: Report latest commit (short SHA + subject).
+ - [P2] Use the simpler approach: run only minimal read-only git checks (no
+ build/lint/tests, no file edits).
+ - [P3] Return a concise Markdown status summary that maps each acceptance
+ criterion to evidence.
+
+ Assumptions
+
+ - [A1] “Pick simpler approach” means git/worktree status only.
+ - [A2] No implementation or file modification is required.
+ - [A3] No commit is needed for this status-only task.
+
+ Questions (blocking)
+
+ - [Q1] Please confirm scope: should I limit “status” to git/worktree + latest
+ commit only (and skip build/lint health)?
+
+ Checkpoints
+
+ - [C1] Scope + acceptance criteria locked
+     - Proof: Explicit user confirmation of git-only scope and AC1–AC3.
+     - Commit: None (no code change).
+ - [C2] Read-only status evidence collected
+     - Proof: Captured command outputs covering branch/ahead-behind, working
+ tree state, and latest commit.
+     - Commit: None (no code change).
+ - [C3] Final status report delivered
+     - Proof: Final Markdown includes AC1–AC3 with pass/evidence mapping.
+     - Commit: None (no code change).
+
+ Warning: Bouldering mode not active. Start with /start-work first.
+
+
+ deep
+
+
+ Checkpoint 1 saved
+
+ Revising plan for deep detail
+
+ Goal
+
+ Deliver a deep, evidence-backed git status report (read-only) with explicit
+ acceptance criteria and no implementation changes.
+
+ Context (auto-filled)
+
+ - Auto-context loaded (1 file): README.md (32 chars)
+ - Known run/build/test commands: Unknown (must ask user if needed)
+
+ Plan
+
+ - [P1] Lock acceptance criteria for a deep status report (git-only,
+ read-only):
+     - AC1: Current branch + upstream tracking + ahead/behind.
+     - AC2: Working tree summary (staged/unstaged/untracked, clean/dirty).
+     - AC3: Latest commit (short SHA, author, date, subject).
+     - AC4: Recent history snapshot (last 5 commits, one-line each).
+     - AC5: Remote overview (configured remotes and fetch/push URLs).
+     - AC6: Stash/submodule indicators (present/absent).
+ - [P2] Execute minimal, read-only git inspection commands only (no
+ build/lint/test, no edits).
+ - [P3] Produce a structured Markdown report mapping AC1–AC6 to concrete
+ evidence and a final pass/fail checklist.
+
+ Assumptions
+
+ - [A1] “deep” means more detailed output depth, not broader scope beyond git
+ status.
+ - [A2] Simpler approach still applies: git-only checks, no runtime/build
+ validation.
+ - [A3] No code/file changes and no commit are required.
+
+ Questions (blocking)
+
+ - [Q1] None.
+
+ Checkpoints
+
+ - [C1] Acceptance criteria finalized for deep git-only status
+     - Proof: AC1–AC6 explicitly listed and agreed in plan.
+     - Commit: None (no code change).
+ - [C2] Read-only evidence collection completed
+     - Proof: Command outputs captured for branch/tracking, worktree state,
+ latest commit, recent history, remotes, stash/submodules.
+     - Commit: None (no code change).
+ - [C3] Final deep status report delivered
+     - Proof: Markdown report includes AC1–AC6 evidence mapping and overall
+ checklist result.
+     - Commit: None (no code change).
+
+ ```markdown
+   # Goal
+
+   Revise plan schema to incorporate a dedicated mitigation step as implied by
+ prior user input, including a likely [P4] mitigation and checkpoint, while
+ maintaining minimal blocking questions.
+
+   ## Context
+
+   * Auto-filled from environment and prior discussions.
+   * User confirmed preference to include dedicated mitigation step.
+   * No current blocking ambiguity detected.
+
+   ## Plan
+
+   1. Incorporate a dedicated mitigation step focused on fallback actions if
+ evidence is missing or commands fail.
+   2. Add a checkpoint verifying readiness for mitigation execution, ensuring
+ mitigation can be enacted if needed.
+   3. Maintain the minimal number of blocking questions, currently none.
+   4. Structure checkpoints clearly with corresponding proof and commit
+ identifiers.
+
+   ## Questions (blocking)
+
+   - [Q1] None
+
+   ## Checkpoints
+
+   - Checkpoint 1: Confirm mitigation step is integrated in the plan
+ documentation.
+     Proof: Updated plan document committed.
+
+   - Checkpoint 2: Validate readiness for mitigation execution (e.g., fallback
+ commands, evidence verification).
+     Proof: Mitigation readiness tests committed.
+
+   - Checkpoint 3: Confirm no blocking ambiguity remains to halt
+ implementation.
+     Proof: User confirmation or absence of new questions.
+
+   ## Mitigation
+
+   Implement a dedicated fallback strategy triggered when critical evidence is
+ missing or commands fail. This mitigation includes a checkpoint to verify
+ readiness and the ability to execute fallback procedures automatically.
+ ```
+
+
+ Goal
+
+ Deliver a deep, read-only git status report with explicit acceptance criteria,
+ evidence mapping, and a dedicated mitigation path for inspection failures.
+
+ Context (auto-filled)
+
+ - Auto-context loaded (1 file): README.md (32 chars)
+ - Known run/build/test commands: Unknown (must ask user if needed)
+
+ Plan
+
+ - [P1] Lock deep git-only acceptance criteria:
+     - AC1: Current branch + upstream + ahead/behind.
+     - AC2: Working tree state (staged/unstaged/untracked, clean/dirty).
+     - AC3: Latest commit metadata (short SHA, author, date, subject).
+     - AC4: Recent history snapshot (last 5 commits).
+     - AC5: Remote configuration summary (fetch/push URLs).
+     - AC6: Stash and submodule indicators.
+ - [P2] Collect evidence using minimal read-only git checks only (no file
+ edits, no build/lint/test).
+ - [P3] Produce a structured Markdown report mapping AC1–AC6 to concrete
+ evidence and a final pass/fail checklist.
+ - [P4] Add dedicated mitigation step: if any primary inspection command fails
+ or output is ambiguous, run predefined fallback read-only commands for that
+ criterion and clearly mark confidence/limitations in the final report.
+
+ Assumptions
+
+ - [A1] “Deep” means more detailed git status depth, not expanding into
+ build/test health.
+ - [A2] Simpler approach remains in effect: git-only, read-only.
+ - [A3] No code changes or commits are required.
+
+ Questions (blocking)
+
+ - [Q1] None.
+
+ Checkpoints
+
+ - [C1] Acceptance criteria + mitigation path finalized
+     - Proof: AC1–AC6 and fallback/limitation rules explicitly listed in plan.
+     - Commit: None (no code change).
+ - [C2] Primary read-only evidence collection completed
+     - Proof: Captured outputs for branch/tracking, worktree, latest commit,
+ recent history, remotes, stash/submodules.
+     - Commit: None (no code change).
+ - [C3] Mitigation execution (conditional) completed
+     - Proof: For any failed/ambiguous criterion, fallback outputs captured and
+ linked to that criterion with confidence note.
+     - Commit: None (no code change).
+ - [C4] Final deep status report delivered
+     - Proof: Markdown report includes AC1–AC6 evidence mapping, mitigation
+ notes (if any), and overall checklist result.
+     - Commit: None (no code change).
+
+ Checkpoint 2 saved
+
+ π  | ◈ GPT-5.3 Codex | think:high | 📁 h11 | ⎇ main *6 +1 ?28 | ◫ 3.5%/272k ⚡
+ ──────────────────────────────────────────────────────────────────────────────
+ >
+ ──────────────────────────────────────────────────────────────────────────────
+ cache in: 15k | (sub) | ◆ 2 checkpoints  ·  flow: planning
+
+
+
+
+
+
+
