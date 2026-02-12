@@ -1,0 +1,75 @@
+[
+  {
+    "id": "strike_scalar",
+    "name": "Cold Strike",
+    "owner": "scalar",
+    "costAP": 1,
+    "baseHitChance": 0.8,
+    "keywords": ["Converge"],
+    "effects": [{ "type": "damage", "value": 12, "target": "enemy" }],
+    "description": "Deal 12. Repeated hits on same target scale by Converge."
+  },
+  {
+    "id": "guard_scalar",
+    "name": "Silent Guard",
+    "owner": "scalar",
+    "costAP": 1,
+    "baseHitChance": 0.95,
+    "keywords": ["Stealth"],
+    "effects": [{ "type": "shield", "value": 10, "target": "scalar" }],
+    "description": "Gain 10 shield. No Detection gain."
+  },
+  {
+    "id": "precision_spike",
+    "name": "Precision Spike",
+    "owner": "scalar",
+    "costAP": 2,
+    "baseHitChance": 0.6,
+    "keywords": ["Overload", "Link"],
+    "effects": [{ "type": "damage", "value": 25, "target": "enemy" }],
+    "description": "Heavy damage with low base hit. Overload raises Detection."
+  },
+  {
+    "id": "scatter_noise",
+    "name": "Scatter Noise",
+    "owner": "scalar",
+    "costAP": 1,
+    "baseHitChance": 0.9,
+    "keywords": ["Scatter", "Stealth"],
+    "effects": [{ "type": "intentShift", "value": 0.1, "target": "all-enemies" }],
+    "description": "Shift all enemy intents away from attack by 10%p."
+  },
+  {
+    "id": "compute_ping",
+    "name": "Compute Ping",
+    "owner": "crystal",
+    "costAP": 1,
+    "baseHitChance": 1,
+    "keywords": ["Compute", "Link"],
+    "effects": [{ "type": "ppGain", "value": 1, "target": "scalar" }],
+    "description": "Crystal computes intent fidelity. Gain 1 PP."
+  },
+  {
+    "id": "crystal_patch",
+    "name": "Field Restore",
+    "owner": "crystal",
+    "costAP": 1,
+    "baseHitChance": 1,
+    "keywords": ["Compute"],
+    "effects": [{ "type": "recoverCrystal", "value": 20, "target": "crystal" }],
+    "description": "Restore Crystal in field when downed."
+  },
+  {
+    "id": "link_drive",
+    "name": "Link Drive",
+    "owner": "scalar",
+    "costAP": 1,
+    "baseHitChance": 0.75,
+    "keywords": ["Link"],
+    "effects": [
+      { "type": "damage", "value": 10, "target": "enemy" },
+      { "type": "ppGain", "value": 1, "target": "scalar" }
+    ],
+    "description": "If chained with Crystal card, bonus strike ignites."
+  }
+]

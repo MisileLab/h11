@@ -1,0 +1,26 @@
+[
+  {
+    "key": "Overload",
+    "summary": "Power spikes at the cost of Detection increase."
+  },
+  {
+    "key": "Converge",
+    "summary": "Repeated hits on one target gain damage."
+  },
+  {
+    "key": "Scatter",
+    "summary": "Disturb probability across multiple enemies."
+  },
+  {
+    "key": "Stealth",
+    "summary": "No Detection gain when using PP/card."
+  },
+  {
+    "key": "Compute",
+    "summary": "Crystal info support and PP economy."
+  },
+  {
+    "key": "Link",
+    "summary": "Alternating Scalar/Crystal card grants bonus."
+  }
+]
