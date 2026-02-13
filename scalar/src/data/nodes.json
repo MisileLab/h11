@@ -1,8 +1,0 @@
-[
-  { "type": "battle", "icon": "B", "weight": 48 },
-  { "type": "event", "icon": "E", "weight": 16 },
-  { "type": "shop", "icon": "$", "weight": 10 },
-  { "type": "hideout", "icon": "H", "weight": 10 },
-  { "type": "elite", "icon": "!", "weight": 16 },
-  { "type": "boss", "icon": "G", "weight": 0 }
-]
