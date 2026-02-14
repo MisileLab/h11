@@ -1,5 +1,0 @@
-{"type":"session","version":3,"id":"ee31eb66-96b8-4e49-b3f4-24aa83f19b7f","timestamp":"2026-02-09T01:37:27.003Z","cwd":"/Users/misile/repos/h11"}
-{"type":"agent_start"}
-{"type":"turn_start"}
-{"type":"message_start","message":{"role":"custom","customType":"task0-spike","content":"{\"name\":\"spike-trigger\",\"triggered\":true}","display":true,"timestamp":1770601047008}}
-{"type":"message_end","message":{"role":"custom","customType":"task0-spike","content":"{\"name\":\"spike-trigger\",\"triggered\":true}","display":true,"timestamp":1770601047008}}
