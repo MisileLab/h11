@@ -163,15 +163,9 @@
 </style>
 
 <script>
+// @ts-nocheck
   class NeuralNetworkVisualizer {
-    neurons: NodeListOf<Element>;
-    connections: NodeListOf<Element>;
-    outputElement: HTMLElement | null;
-    words: string[];
-    currentWordIndex: number;
-    onComplete: (() => void) | null;
-
-    constructor(onComplete?: () => void) {
+    constructor(onComplete) {
       this.neurons = document.querySelectorAll('.neuron');
       this.connections = document.querySelectorAll('.connection');
       this.outputElement = document.getElementById('output-result');
@@ -183,7 +177,6 @@
       const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const isMobile = window.matchMedia('(max-width: 639px)').matches;
 
-      // Start animation automatically after a short delay if not reduced motion/mobile
       if (!isReducedMotion && !isMobile) {
         setTimeout(() => this.startAnimation(), 1500);
       }
@@ -194,46 +187,37 @@
         this.outputElement.textContent = '';
       }
       
-      // Reset all elements
-      this.neurons.forEach((neuron: Element) => {
-        (neuron as HTMLElement).classList.remove('active');
+      this.neurons.forEach((neuron) => {
+        neuron.classList.remove('active');
       });
-      this.connections.forEach((conn: Element) => {
-        (conn as HTMLElement).classList.remove('active');
+      this.connections.forEach((conn) => {
+        conn.classList.remove('active');
       });
       
-      // Start forward propagation
       await this.forwardPropagate();
-      
-      // Wait a moment before calling completion callback
       await this.wait(500);
       
-      // Call completion callback if provided
       if (this.onComplete) {
         this.onComplete();
       }
     }
     
     async forwardPropagate() {
-      // Activate input layer
       const inputNeurons = document.querySelectorAll('[data-layer="input"]');
       await this.activateNeurons(inputNeurons, 300);
       
-      // Propagate to hidden layer 1
       const inputToHidden1 = document.querySelectorAll('[data-to^="hidden1"]');
       await this.activateConnections(inputToHidden1, 200);
       
       const hidden1Neurons = document.querySelectorAll('[data-layer="hidden1"]');
       await this.activateNeurons(hidden1Neurons, 300);
       
-      // Propagate to hidden layer 2
       const hidden1ToHidden2 = document.querySelectorAll('[data-to^="hidden2"]');
       await this.activateConnections(hidden1ToHidden2, 200);
       
       const hidden2Neurons = document.querySelectorAll('[data-layer="hidden2"]');
       await this.activateNeurons(hidden2Neurons, 300);
       
-      // Propagate to output layer
       const hidden2ToOutput = document.querySelectorAll('[data-to^="output"]');
       await this.activateConnections(hidden2ToOutput, 200);
       
@@ -241,34 +225,32 @@
       await this.activateNeurons(outputNeurons, 500);
     }
     
-    async activateNeurons(neurons: NodeListOf<Element>, delay: number) {
-      return new Promise<void>(resolve => {
-        neurons.forEach((neuron: Element, index: number) => {
+    async activateNeurons(neurons, delay) {
+      return new Promise((resolve) => {
+        neurons.forEach((neuron, index) => {
           setTimeout(() => {
-            // 펄스 애니메이션 없이 바로 활성화 상태로 변경
-            (neuron as HTMLElement).classList.add('active');
+            neuron.classList.add('active');
           }, index * 100);
         });
         setTimeout(resolve, delay);
       });
     }
     
-    async activateConnections(connections: NodeListOf<Element>, delay: number) {
-      return new Promise<void>(resolve => {
-        connections.forEach((conn: Element, index: number) => {
+    async activateConnections(connections, delay) {
+      return new Promise((resolve) => {
+        connections.forEach((conn, index) => {
           setTimeout(() => {
-            (conn as HTMLElement).classList.add('active');
+            conn.classList.add('active');
           }, index * 20);
         });
         setTimeout(resolve, delay);
       });
     }
     
-    wait(ms: number) {
-      return new Promise<void>(resolve => setTimeout(resolve, ms));
+    wait(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
     }
   }
   
-  // Make the class globally available
-  (window as any).NeuralNetworkVisualizer = NeuralNetworkVisualizer;
+  window.NeuralNetworkVisualizer = NeuralNetworkVisualizer;
 </script>
