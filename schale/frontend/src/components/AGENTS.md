@@ -11,7 +11,6 @@ Shared Astro components and TypeScript utilities.
 | Content wrapper | `content.astro` | Blog/news container |
 | Post item | `post.astro` | Blog list item |
 | Modal | `modal.astro` | Dialog wrapper |
-| Visual | `neural-network.astro` | SVG animation |
 | API client | `request.ts` | Fetch helpers |
 | Utilities | `lib.ts` | `DataType`, `getTextContent` |
 
