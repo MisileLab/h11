@@ -64,3 +64,7 @@
 - Over-abstraction: None
 - Packet spam: Client debounced; server lacks rate limit (OP-gated, acceptable)
 - Cache leak: None (TTL cleanup works correctly)
+
+- [HUD Rendering Fix 2026-02-17] Implemented whitespace/control-char normalization (replace \r\n\t with spaces, collapse repeated whitespace, trim) + pixel-width based truncation instead of fixed 80-char limit. Normalizer regex: `[\\r\\n\\t\\u0000-\\u001F]` → space, then collapse with ` +` pattern. Truncation iterates character-by-character measuring pixel width via textRenderer.getWidth() until fits within 80% screen width minus ellipsis. Early-return if normalized string is empty. Extracted magic numbers to named constants (MAX_DISPLAY_WIDTH_PERCENT, PADDING, Y_OFFSET_FROM_BOTTOM, colors). Build verified successful.
+
+- [Text Color ARGB Fix 2026-02-17] Changed TEXT_COLOR from 0xFFFFFF (RGB, transparent in 1.21.6+) to 0xFFFFFFFF (ARGB full alpha). Applied .toInt() cast on drawText() call to match color parameter type requirement (Int, not Long). HUD text now renders with full opacity.
