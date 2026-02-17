@@ -56,14 +56,15 @@ object CommandBlockDetector {
         currentTargetPos = targetPos
 
         val cached = cache[targetPos]
-        if (cached != null) {
-            val (command, timestamp) = cached
-            if (System.currentTimeMillis() - timestamp <= CACHE_TTL_MS) {
-                currentCommand = command
-                return
-            }
-            cache.remove(targetPos)
-        }
+         if (cached != null) {
+             val (command, timestamp) = cached
+             if (command.isEmpty() || System.currentTimeMillis() - timestamp > CACHE_TTL_MS) {
+                 cache.remove(targetPos)
+             } else {
+                 currentCommand = command
+                 return
+             }
+         }
 
         currentCommand = null
 
@@ -83,11 +84,18 @@ object CommandBlockDetector {
     }
 
     fun handleResponse(pos: BlockPos, command: String) {
-        cache[pos] = Pair(command, System.currentTimeMillis())
-        if (pos == currentTargetPos) {
-            currentCommand = command
-        }
-    }
+         if (command.isEmpty()) {
+             cache.remove(pos)
+             if (pos == currentTargetPos) {
+                 currentCommand = null
+             }
+         } else {
+             cache[pos] = Pair(command, System.currentTimeMillis())
+             if (pos == currentTargetPos) {
+                 currentCommand = command
+             }
+         }
+     }
 
     private fun clearExpiredCacheEntries() {
         val now = System.currentTimeMillis()
