@@ -1,0 +1,27 @@
+=== TASK 5: Server Entry Point Verification ===
+
+File: commandpreview/src/main/kotlin/xyz/misile/commandpreview/Commandpreview.kt
+
+REQUIRED REGISTRATIONS: 2 total
+
+1. CommandPreviewNetworking.registerPayloadTypes() ✓
+   Location: Line 8
+   Status: PRESENT
+
+2. CommandPreviewNetworking.registerServerHandler() ✓
+   Location: Line 9
+   Status: PRESENT
+
+GREP VERIFICATION:
+$ grep -c "registerPayloadTypes\|registerServerHandler" commandpreview/src/main/kotlin/xyz/misile/commandpreview/Commandpreview.kt
+Result: 2 matches ✓
+
+IMPLEMENTATION DETAILS:
+- registerPayloadTypes(): Registers both C2S (CommandPreviewRequestPayload) and S2C (CommandPreviewResponsePayload) payload types via PayloadTypeRegistry
+- registerServerHandler(): Registers the server-side C2S handler that:
+  * Checks player has OP level 2 (GAMEMASTERS permission)
+  * Fetches CommandBlockBlockEntity at requested position
+  * Reads command string from block entity
+  * Sends S2C response with command data
+
+RESULT: ✓ ALL SERVER REGISTRATIONS PRESENT AND WIRED
