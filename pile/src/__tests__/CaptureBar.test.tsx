@@ -71,7 +71,7 @@ describe('CaptureBar Component', () => {
       await waitFor(() => {
         expect(invokeMock).toHaveBeenCalledWith('save_item', expect.objectContaining({
           content: 'test content',
-          content_type: 'text'
+          contentType: 'text'
         }))
       })
     })
@@ -86,7 +86,7 @@ describe('CaptureBar Component', () => {
       await waitFor(() => {
         expect(invokeMock).toHaveBeenCalledWith('save_item', expect.objectContaining({
           content: 'important note',
-          content_type: 'text'
+          contentType: 'text'
         }))
       })
 
@@ -110,7 +110,7 @@ describe('CaptureBar Component', () => {
 
       expect(invokeMock).toHaveBeenCalledWith('save_item', expect.objectContaining({
         content: 'important note',
-        content_type: 'text'
+        contentType: 'text'
       }))
       expect(invokeMock).not.toHaveBeenCalledWith('close_capture_window')
     })
@@ -172,7 +172,7 @@ describe('CaptureBar Component', () => {
       await waitFor(() => {
         expect(invokeMock).toHaveBeenCalledWith('save_item', expect.objectContaining({
           content: 'https://example.com',
-          content_type: 'url'
+          contentType: 'url'
         }))
       })
     })
