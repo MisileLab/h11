@@ -1,9 +1,21 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
+import CaptureBar from "./pages/CaptureBar";
+import PileWindow from "./pages/PileWindow";
 
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-);
+const path = window.location.pathname;
+const root = document.getElementById("root") as HTMLElement;
+
+if (path === "/capture") {
+  ReactDOM.createRoot(root).render(
+    <React.StrictMode>
+      <CaptureBar />
+    </React.StrictMode>,
+  );
+} else {
+  ReactDOM.createRoot(root).render(
+    <React.StrictMode>
+      <PileWindow />
+    </React.StrictMode>,
+  );
+}

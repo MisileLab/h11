@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "pile",
+  "productName": "Pile",
   "version": "0.1.0",
   "identifier": "xyz.misile.pile",
   "build": {
@@ -14,7 +14,8 @@
       {
         "title": "pile",
         "width": 800,
-        "height": 600
+        "height": 600,
+        "visible": false
       }
     ],
     "security": {
