@@ -1,11 +1,13 @@
 pub mod db;
 pub mod embedding;
 pub mod search;
+pub mod source_app;
 
 use crate::db::{delete_item, get_items, save_item};
 use crate::db::{init_db, AppDb};
 use crate::embedding::{init_embedding_model, is_model_cached, EmbeddingModelState, EmbeddingStatus, EmbeddingState};
 use crate::search::search_items;
+use crate::source_app::CapturedSourceApp;
 use std::sync::{Arc, Mutex};
 use tauri::menu::{MenuBuilder, MenuItemBuilder};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent, TrayIcon};
@@ -67,6 +69,12 @@ fn create_capture_window(app: &tauri::AppHandle) {
 }
 
 fn handle_capture_hotkey(app: &tauri::AppHandle) {
+    if let Some(state) = app.try_state::<CapturedSourceApp>() {
+        if let Ok(mut captured) = state.0.lock() {
+            *captured = crate::source_app::get_frontmost_app();
+        }
+    }
+
     let existing_capture = app.get_webview_window(CAPTURE_WINDOW_LABEL);
 
     if should_create_capture_window(existing_capture.is_some()) {
@@ -153,6 +161,8 @@ pub fn run() {
 
              let embedding_status = EmbeddingState(Mutex::new(EmbeddingStatus::NotReady));
              app.manage(embedding_status);
+
+             app.manage(CapturedSourceApp(Mutex::new(None)));
 
              let tray_icon_state = TrayIconState(Arc::new(Mutex::new(None)));
              app.manage(tray_icon_state);

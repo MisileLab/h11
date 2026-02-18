@@ -1,4 +1,5 @@
 use crate::embedding::{spawn_embedding_pipeline, EmbeddingModelState};
+use crate::source_app::CapturedSourceApp;
 use chrono::Utc;
 use rusqlite::ffi::sqlite3_auto_extension;
 use rusqlite::params;
@@ -85,11 +86,12 @@ pub fn save_item_with_connection(
     conn: &Connection,
     content: &str,
     content_type: &str,
+    source_app: Option<&str>,
 ) -> std::result::Result<Item, String> {
     let created_at = Utc::now().timestamp();
     conn.execute(
         "INSERT INTO items (content, content_type, source_app, created_at, embedding) VALUES (?1, ?2, ?3, ?4, ?5)",
-        params![content, content_type, Option::<String>::None, created_at, Option::<Vec<u8>>::None],
+        params![content, content_type, source_app, created_at, Option::<Vec<u8>>::None],
     )
     .map_err(|error| error.to_string())?;
 
@@ -154,6 +156,7 @@ pub fn delete_item_with_connection(conn: &Connection, id: i64) -> std::result::R
 #[tauri::command]
 pub fn save_item(
     state: State<'_, AppDb>,
+    captured_source: State<'_, CapturedSourceApp>,
     embedding_state: State<'_, EmbeddingModelState>,
     content: String,
     content_type: String,
@@ -161,9 +164,16 @@ pub fn save_item(
     let db = Arc::clone(&state.inner().0);
     let model = Arc::clone(&embedding_state.inner().0);
 
+    let source_app = captured_source
+        .inner()
+        .0
+        .lock()
+        .map_err(|error| error.to_string())?
+        .take();
+
     let saved = {
         let connection = db.lock().map_err(|error| error.to_string())?;
-        save_item_with_connection(&connection, &content, &content_type)?
+        save_item_with_connection(&connection, &content, &content_type, source_app.as_deref())?
     };
 
     spawn_embedding_pipeline(db, model, saved.id, saved.content.clone());
@@ -350,7 +360,7 @@ mod tests {
         let dir = test_db_dir("save-item-creates-row");
         let conn = super::init_db(&dir).expect("init_db should succeed");
 
-        let saved = super::save_item_with_connection(&conn, "first", "text")
+        let saved = super::save_item_with_connection(&conn, "first", "text", None)
             .expect("save_item_with_connection should succeed");
 
         assert!(saved.id > 0);
@@ -441,7 +451,7 @@ mod tests {
         let dir = test_db_dir("embedding-stored");
         let conn = super::init_db(&dir).expect("init_db should succeed");
 
-        let saved = super::save_item_with_connection(&conn, "embedding me", "text")
+        let saved = super::save_item_with_connection(&conn, "embedding me", "text", None)
             .expect("save_item_with_connection should succeed");
 
         let embedding: Vec<f32> = (0..EMBEDDING_DIMENSIONS)
