@@ -10,7 +10,7 @@ use std::error::Error;
 use std::fs;
 use std::path::Path;
 use std::sync::{Arc, Mutex, Once};
-use tauri::State;
+use tauri::{AppHandle, Manager, State};
 
 pub type Result<T> = std::result::Result<T, Box<dyn Error>>;
 
@@ -155,14 +155,13 @@ pub fn delete_item_with_connection(conn: &Connection, id: i64) -> std::result::R
 
 #[tauri::command]
 pub fn save_item(
+    app: AppHandle,
     state: State<'_, AppDb>,
     captured_source: State<'_, CapturedSourceApp>,
-    embedding_state: State<'_, EmbeddingModelState>,
     content: String,
     content_type: String,
 ) -> std::result::Result<Item, String> {
     let db = Arc::clone(&state.inner().0);
-    let model = Arc::clone(&embedding_state.inner().0);
 
     let source_app = captured_source
         .inner()
@@ -176,7 +175,10 @@ pub fn save_item(
         save_item_with_connection(&connection, &content, &content_type, source_app.as_deref())?
     };
 
-    spawn_embedding_pipeline(db, model, saved.id, saved.content.clone());
+    if let Some(embedding_state) = app.try_state::<EmbeddingModelState>() {
+        let model = Arc::clone(&embedding_state.inner().0);
+        spawn_embedding_pipeline(db, model, saved.id, saved.content.clone());
+    }
 
     Ok(saved)
 }
