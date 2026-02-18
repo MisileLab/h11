@@ -5,12 +5,14 @@ pub mod source_app;
 
 use crate::db::{delete_item, get_items, save_item};
 use crate::db::{init_db, AppDb};
-use crate::embedding::{init_embedding_model, is_model_cached, EmbeddingModelState, EmbeddingStatus, EmbeddingState};
+use crate::embedding::{
+    init_embedding_model, is_model_cached, EmbeddingModelState, EmbeddingState, EmbeddingStatus,
+};
 use crate::search::search_items;
 use crate::source_app::CapturedSourceApp;
 use std::sync::{Arc, Mutex};
 use tauri::menu::{MenuBuilder, MenuItemBuilder};
-use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent, TrayIcon};
+use tauri::tray::{MouseButton, MouseButtonState, TrayIcon, TrayIconBuilder, TrayIconEvent};
 use tauri::{ActivationPolicy, Manager, RunEvent, WebviewUrl, WebviewWindow, WebviewWindowBuilder};
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, ShortcutState};
 use tauri_plugin_positioner::{Position, WindowExt};
@@ -104,7 +106,7 @@ fn create_pile_window(app: &tauri::AppHandle) -> Option<WebviewWindow> {
 
     match builder.build() {
         Ok(window) => {
-            let _ = window.move_window(Position::TrayCenter);
+            let _ = window.move_window(Position::Center);
             Some(window)
         }
         Err(error) => {
@@ -144,14 +146,19 @@ fn close_capture_window(app: tauri::AppHandle) {
 
 #[tauri::command]
 fn get_embedding_status(state: tauri::State<'_, EmbeddingState>) -> EmbeddingStatus {
-    state.0.lock().ok().map(|status| *status).unwrap_or(EmbeddingStatus::NotReady)
+    state
+        .0
+        .lock()
+        .ok()
+        .map(|status| *status)
+        .unwrap_or(EmbeddingStatus::NotReady)
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .setup(|app| {
-        #[cfg(target_os = "macos")]
+            #[cfg(target_os = "macos")]
             let _ = app.set_activation_policy(ActivationPolicy::Accessory);
 
             let app_data_dir = app.path().app_data_dir()?;
@@ -159,56 +166,58 @@ pub fn run() {
                 init_db(&app_data_dir).map_err(|error| tauri::Error::Setup(error.into()))?;
             app.manage(AppDb(Arc::new(Mutex::new(connection))));
 
-             let embedding_status = EmbeddingState(Mutex::new(EmbeddingStatus::NotReady));
-             app.manage(embedding_status);
+            let embedding_status = EmbeddingState(Mutex::new(EmbeddingStatus::NotReady));
+            app.manage(embedding_status);
 
-             app.manage(CapturedSourceApp(Mutex::new(None)));
+            app.manage(CapturedSourceApp(Mutex::new(None)));
 
-             let tray_icon_state = TrayIconState(Arc::new(Mutex::new(None)));
-             app.manage(tray_icon_state);
+            let tray_icon_state = TrayIconState(Arc::new(Mutex::new(None)));
+            app.manage(tray_icon_state);
 
-             let app_handle = app.app_handle().clone();
-             let app_data_dir_clone = app_data_dir.clone();
-             std::thread::spawn(move || {
-                 if !is_model_cached(&app_data_dir_clone) {
-                     if let Some(state) = app_handle.try_state::<EmbeddingState>() {
-                         if let Ok(mut status) = state.0.lock() {
-                             *status = EmbeddingStatus::Downloading;
-                         }
-                     }
+            let app_handle = app.app_handle().clone();
+            let app_data_dir_clone = app_data_dir.clone();
+            std::thread::spawn(move || {
+                if !is_model_cached(&app_data_dir_clone) {
+                    if let Some(state) = app_handle.try_state::<EmbeddingState>() {
+                        if let Ok(mut status) = state.0.lock() {
+                            *status = EmbeddingStatus::Downloading;
+                        }
+                    }
 
-                     if let Some(tray_state) = app_handle.try_state::<TrayIconState>() {
-                         if let Ok(lock) = tray_state.0.lock() {
-                             if let Some(tray) = lock.as_ref() {
-                                 let _ = tray.set_tooltip(Some("Pile is downloading search model..."));
-                             }
-                         }
-                     }
-                 }
+                    if let Some(tray_state) = app_handle.try_state::<TrayIconState>() {
+                        if let Ok(lock) = tray_state.0.lock() {
+                            if let Some(tray) = lock.as_ref() {
+                                let _ =
+                                    tray.set_tooltip(Some("Pile is downloading search model..."));
+                            }
+                        }
+                    }
+                }
 
-                 match init_embedding_model(&app_data_dir_clone) {
-                     Ok(embedding_model) => {
-                         if let Some(state) = app_handle.try_state::<EmbeddingState>() {
-                             if let Ok(mut status) = state.0.lock() {
-                                 *status = EmbeddingStatus::Ready;
-                             }
-                         }
+                match init_embedding_model(&app_data_dir_clone) {
+                    Ok(embedding_model) => {
+                        if let Some(state) = app_handle.try_state::<EmbeddingState>() {
+                            if let Ok(mut status) = state.0.lock() {
+                                *status = EmbeddingStatus::Ready;
+                            }
+                        }
 
-                         if let Some(tray_state) = app_handle.try_state::<TrayIconState>() {
-                             if let Ok(lock) = tray_state.0.lock() {
-                                 if let Some(tray) = lock.as_ref() {
-                                     let _ = tray.set_tooltip(Some("Pile is ready"));
-                                 }
-                             }
-                         }
+                        if let Some(tray_state) = app_handle.try_state::<TrayIconState>() {
+                            if let Ok(lock) = tray_state.0.lock() {
+                                if let Some(tray) = lock.as_ref() {
+                                    let _ = tray.set_tooltip(Some("Pile is ready"));
+                                }
+                            }
+                        }
 
-                         app_handle.manage(EmbeddingModelState(Arc::new(Mutex::new(embedding_model))));
-                     }
-                     Err(error) => {
-                         eprintln!("warning: embedding model initialization failed: {error}");
-                     }
-                 }
-             });
+                        app_handle
+                            .manage(EmbeddingModelState(Arc::new(Mutex::new(embedding_model))));
+                    }
+                    Err(error) => {
+                        eprintln!("warning: embedding model initialization failed: {error}");
+                    }
+                }
+            });
 
             let open_pile = MenuItemBuilder::with_id("open_pile", "Open Pile").build(app)?;
             let quit = MenuItemBuilder::with_id("quit", "Quit").build(app)?;
@@ -218,43 +227,47 @@ pub fn run() {
                 .item(&quit)
                 .build()?;
 
-             let tray_icon = TrayIconBuilder::new()
-                 .menu(&tray_menu)
-                 .show_menu_on_left_click(false)
-                 .on_tray_icon_event(|tray, event| {
-                     tauri_plugin_positioner::on_tray_event(tray.app_handle(), &event);
+            let tray_icon = TrayIconBuilder::new()
+                .menu(&tray_menu)
+                .show_menu_on_left_click(false)
+                .on_tray_icon_event(|tray, event| {
+                    tauri_plugin_positioner::on_tray_event(tray.app_handle(), &event);
 
-                     if let TrayIconEvent::Click {
-                         button: MouseButton::Left,
-                         button_state: MouseButtonState::Up,
-                         ..
-                     } = event
-                     {
-                         toggle_pile_window(tray.app_handle());
-                     }
-                 })
-                 .on_menu_event(|app, event| match event.id().as_ref() {
-                     "open_pile" => {
-                         toggle_pile_window(app);
-                     }
-                     "quit" => {
-                         app.exit(0);
-                     }
-                     _ => {}
-                 })
-                 .build(app)?;
+                    if let TrayIconEvent::Click {
+                        button: MouseButton::Left,
+                        button_state: MouseButtonState::Up,
+                        ..
+                    } = event
+                    {
+                        toggle_pile_window(tray.app_handle());
+                    }
+                })
+                .on_menu_event(|app, event| match event.id().as_ref() {
+                    "open_pile" => {
+                        toggle_pile_window(app);
+                    }
+                    "quit" => {
+                        app.exit(0);
+                    }
+                    _ => {}
+                })
+                .build(app)?;
 
-             if let Some(tray_state) = app.try_state::<TrayIconState>() {
-                 if let Ok(mut state) = tray_state.0.lock() {
-                     *state = Some(tray_icon);
-                 }
-             }
+            if let Some(tray_state) = app.try_state::<TrayIconState>() {
+                if let Ok(mut state) = tray_state.0.lock() {
+                    *state = Some(tray_icon);
+                }
+            }
 
             if let Err(error) = app.global_shortcut().register(capture_shortcut_string()) {
                 eprintln!(
                     "warning: failed to register global shortcut {}: {error}",
                     capture_shortcut_string()
                 );
+            }
+
+            if cfg!(debug_assertions) {
+                toggle_pile_window(app.app_handle());
             }
 
             Ok(())

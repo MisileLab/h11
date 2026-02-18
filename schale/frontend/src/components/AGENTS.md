@@ -2,19 +2,21 @@
 # COMPONENTS
 
 ## OVERVIEW
-Shared Astro components and TypeScript utilities.
+Shared Astro components (including layouts) and TypeScript utilities.
 
 ## WHERE TO LOOK
 | Task | Location | Notes |
 | --- | --- | --- |
-| Base layout | `base.astro` | Meta tags, fonts |
-| Content wrapper | `content.astro` | Blog/news container |
-| Post item | `post.astro` | Blog list item |
-| Modal | `modal.astro` | Dialog wrapper |
-| API client | `request.ts` | Fetch helpers |
-| Utilities | `lib.ts` | `DataType`, `getTextContent` |
+| Base layout | `base.astro` | HTML shell, meta tags, fonts, onion-location header |
+| Content wrapper | `content.astro` | Blog/news article; draft guard; scoped prose styles |
+| Post item | `post.astro` | Blog/news list card; routes by `DataType` |
+| Modal | `modal.astro` | HTML dialog wrapper |
+| API client | `request.ts` | `fetchAPILow()`, `StatusError`, env-aware URLs (clearnet/onion) |
+| Utilities | `lib.ts` | `DataType` enum (`blog`/`news`), `getTextContent()` |
 
 ## CONVENTIONS
-- Export a `Props` interface for component inputs.
+- Export `Props` interface for component inputs.
 - Named exports only (no default exports in TS files).
-- Throw explicit errors for fetch failures (see `request.ts`).
+- Throw explicit `StatusError` for fetch failures (never swallow errors).
+- `content.astro` throws in PROD if `date === 0` (draft guard).
+- `base.astro` auto-detects lang from URL pathname (`/ko` → `"ko"`, else `"en"`).

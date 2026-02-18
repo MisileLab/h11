@@ -141,7 +141,7 @@ export default function PileWindow() {
   }
 
   return (
-    <div className={cn('flex h-full flex-col bg-background text-foreground')}>
+    <div className={cn('flex h-full min-h-0 flex-col overflow-hidden bg-background text-foreground')}>
       <div className={cn('shrink-0 border-b border-border p-3')}>
         <input
           ref={searchRef}
@@ -162,7 +162,7 @@ export default function PileWindow() {
         </div>
       </div>
 
-      <div className={cn('flex-1 overflow-y-auto')}>
+      <div className={cn('min-h-0 flex-1 overflow-y-auto')}>
         {loading ? null : items.length === 0 ? (
           <div
             className={cn(
