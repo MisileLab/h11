@@ -58,7 +58,7 @@ export default function CaptureBar() {
     try {
       await invoke('save_item', {
         content: content,
-        content_type: contentType
+        contentType
       })
 
       setShowSaveFlash(true)
