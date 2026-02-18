@@ -175,23 +175,17 @@ export default function PileWindow() {
         ) : (
           <ul className={cn('divide-y divide-border')}>
             {items.map((item) => (
-              <li
-                key={item.id}
-                className={cn(
-                  'group relative cursor-pointer px-3 py-2 text-sm',
-                  'transition-colors hover:bg-accent'
-                )}
-                onClick={(e) => {
-                  if ((e.target as HTMLElement).closest('button')) return
-                  handleCopy(item)
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    handleCopy(item)
-                  }
-                }}
-              >
+               <li
+                 key={item.id}
+                 className={cn(
+                   'group relative cursor-pointer px-3 py-2 text-sm',
+                   'transition-colors hover:bg-accent'
+                 )}
+                 onClick={(e) => {
+                   if ((e.target as HTMLElement).closest('button')) return
+                   handleCopy(item)
+                 }}
+               >
                 <div className="flex items-start gap-2">
                   <span
                     className="shrink-0"
