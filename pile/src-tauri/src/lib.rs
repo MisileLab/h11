@@ -1,3 +1,8 @@
+pub mod db;
+
+use crate::db::{delete_item, get_items, save_item};
+use crate::db::{init_db, AppDb};
+use std::sync::Mutex;
 use tauri::menu::{MenuBuilder, MenuItemBuilder};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 use tauri::{ActivationPolicy, Manager, RunEvent};
@@ -25,6 +30,11 @@ pub fn run() {
         .setup(|app| {
             #[cfg(target_os = "macos")]
             let _ = app.set_activation_policy(ActivationPolicy::Accessory);
+
+            let app_data_dir = app.path().app_data_dir()?;
+            let connection =
+                init_db(&app_data_dir).map_err(|error| tauri::Error::Setup(error.into()))?;
+            app.manage(AppDb(Mutex::new(connection)));
 
             let open_pile = MenuItemBuilder::with_id("open_pile", "Open Pile").build(app)?;
             let quit = MenuItemBuilder::with_id("quit", "Quit").build(app)?;
@@ -65,6 +75,7 @@ pub fn run() {
         .plugin(tauri_plugin_positioner::init())
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_plugin_clipboard_manager::init())
+        .invoke_handler(tauri::generate_handler![save_item, get_items, delete_item])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")
         .run(|_app, event| {
