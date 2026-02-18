@@ -24,7 +24,7 @@ tauri-plugin-positioner = { version = "2", features = ["tray-icon"] }
 tauri-plugin-clipboard-manager = "2"
 rusqlite = { version = "0.38", features = ["bundled"] }
 sqlite-vec = "0.1.6"
-fastembed = "4"
+fastembed = "5"
 uuid = { version = "1", features = ["v4"] }
 chrono = { version = "0.4", features = ["serde"] }
 tokio = { version = "1", features = ["rt-multi-thread"] }
