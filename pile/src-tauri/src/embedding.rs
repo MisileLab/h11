@@ -21,12 +21,13 @@ pub struct EmbeddingState(pub Mutex<EmbeddingStatus>);
 
 pub struct EmbeddingModelState(pub Arc<Mutex<TextEmbedding>>);
 
-pub fn init_embedding_model(cache_dir: &Path) -> std::result::Result<TextEmbedding, Box<dyn Error>> {
+pub fn init_embedding_model(
+    cache_dir: &Path,
+) -> std::result::Result<TextEmbedding, Box<dyn Error>> {
     std::env::set_var(FASTEMBED_CACHE_DIR_ENV, cache_dir);
 
     let embedding_model = TextEmbedding::try_new(
-        InitOptions::new(FastembedEmbeddingModel::AllMiniLML6V2)
-            .with_show_download_progress(true),
+        InitOptions::new(FastembedEmbeddingModel::AllMiniLML6V2).with_show_download_progress(true),
     )?;
 
     Ok(embedding_model)
@@ -116,7 +117,7 @@ pub fn spawn_embedding_pipeline(
     item_id: i64,
     content: String,
 ) {
-    tokio::spawn(async move {
+    std::thread::spawn(move || {
         let embedding_result = (|| {
             let mut model_guard = model.lock().map_err(|error| error.to_string())?;
             generate_embedding(&mut model_guard, &content)
