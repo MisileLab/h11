@@ -7,7 +7,7 @@ use crate::embedding::{init_embedding_model, is_model_cached, EmbeddingModelStat
 use std::sync::{Arc, Mutex};
 use tauri::menu::{MenuBuilder, MenuItemBuilder};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent, TrayIcon};
-use tauri::{ActivationPolicy, Manager, RunEvent, WebviewUrl, WebviewWindowBuilder};
+use tauri::{ActivationPolicy, Manager, RunEvent, WebviewUrl, WebviewWindow, WebviewWindowBuilder};
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, ShortcutState};
 use tauri_plugin_positioner::{Position, WindowExt};
 
@@ -86,16 +86,44 @@ fn hide_capture_window(app: &tauri::AppHandle) {
     sync_activation_policy(app);
 }
 
+fn create_pile_window(app: &tauri::AppHandle) -> Option<WebviewWindow> {
+    let builder = WebviewWindowBuilder::new(app, PILE_WINDOW_LABEL, WebviewUrl::App("/".into()))
+        .inner_size(400.0, 600.0)
+        .decorations(true)
+        .visible(true);
+
+    match builder.build() {
+        Ok(window) => {
+            let _ = window.move_window(Position::TrayCenter);
+            Some(window)
+        }
+        Err(error) => {
+            eprintln!("warning: failed to create pile window: {error}");
+            None
+        }
+    }
+}
+
+fn show_and_focus_pile_window(app: &tauri::AppHandle, window: &WebviewWindow) {
+    let _ = window.show();
+    let _ = window.set_focus();
+    sync_activation_policy(app);
+}
+
 fn toggle_pile_window(app: &tauri::AppHandle) {
     if let Some(window) = app.get_webview_window(PILE_WINDOW_LABEL) {
         if window.is_visible().unwrap_or(false) {
             let _ = window.hide();
+            sync_activation_policy(app);
         } else {
-            let _ = window.show();
-            let _ = window.set_focus();
+            show_and_focus_pile_window(app, &window);
         }
 
-        sync_activation_policy(app);
+        return;
+    }
+
+    if let Some(window) = create_pile_window(app) {
+        show_and_focus_pile_window(app, &window);
     }
 }
 
