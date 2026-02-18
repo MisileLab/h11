@@ -1,9 +1,11 @@
 pub mod db;
 pub mod embedding;
+pub mod search;
 
 use crate::db::{delete_item, get_items, save_item};
 use crate::db::{init_db, AppDb};
 use crate::embedding::{init_embedding_model, is_model_cached, EmbeddingModelState, EmbeddingStatus, EmbeddingState};
+use crate::search::search_items;
 use std::sync::{Arc, Mutex};
 use tauri::menu::{MenuBuilder, MenuItemBuilder};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent, TrayIcon};
@@ -262,6 +264,7 @@ pub fn run() {
             save_item,
             get_items,
             delete_item,
+            search_items,
             close_capture_window,
             get_embedding_status
         ])

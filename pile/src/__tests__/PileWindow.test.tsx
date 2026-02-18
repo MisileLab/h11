@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor, fireEvent } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { render, screen, waitFor, fireEvent, act } from '@testing-library/react'
 import PileWindow from '../pages/PileWindow'
 import type { Item } from '../types'
 
@@ -235,6 +235,225 @@ describe('PileWindow Component', () => {
       })
 
       expect(writeTextMock).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Search (T19)', () => {
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('debounces search — no invoke per keystroke', async () => {
+      invokeMock.mockImplementation((cmd: string) => {
+        if (cmd === 'get_items') return Promise.resolve(mockItems)
+        if (cmd === 'search_items') return Promise.resolve([])
+        if (cmd === 'get_embedding_status') return Promise.resolve('NotReady')
+        return Promise.resolve(null)
+      })
+
+      render(<PileWindow />)
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(0)
+      })
+
+      vi.clearAllMocks()
+      invokeMock.mockImplementation((cmd: string) => {
+        if (cmd === 'search_items') return Promise.resolve([])
+        if (cmd === 'get_embedding_status') return Promise.resolve('NotReady')
+        return Promise.resolve(mockItems)
+      })
+
+      const input = screen.getByPlaceholderText('Search...')
+      fireEvent.change(input, { target: { value: 'h' } })
+      fireEvent.change(input, { target: { value: 'he' } })
+      fireEvent.change(input, { target: { value: 'hel' } })
+
+      expect(
+        invokeMock.mock.calls.filter((c: unknown[]) => c[0] === 'search_items')
+      ).toHaveLength(0)
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(200)
+      })
+
+      const searchCalls = invokeMock.mock.calls.filter(
+        (c: unknown[]) => c[0] === 'search_items'
+      )
+      expect(searchCalls).toHaveLength(1)
+      expect(searchCalls[0]).toEqual([
+        'search_items',
+        { query: 'hel', limit: 10 }
+      ])
+    })
+
+    it('updates displayed results from search_items', async () => {
+      const searchResults = [
+        {
+          id: 99,
+          content: 'search match result',
+          content_type: 'text',
+          source_app: null,
+          created_at: 1700009000
+        }
+      ]
+      invokeMock.mockImplementation((cmd: string) => {
+        if (cmd === 'get_items') return Promise.resolve(mockItems)
+        if (cmd === 'search_items') return Promise.resolve(searchResults)
+        if (cmd === 'get_embedding_status') return Promise.resolve('NotReady')
+        return Promise.resolve(null)
+      })
+
+      render(<PileWindow />)
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(0)
+      })
+
+      const input = screen.getByPlaceholderText('Search...')
+      fireEvent.change(input, { target: { value: 'search match' } })
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(200)
+      })
+
+      const listItems = screen.getAllByRole('listitem')
+      expect(listItems).toHaveLength(1)
+      expect(listItems[0]).toHaveTextContent('search match result')
+      expect(screen.queryByText('newest item')).not.toBeInTheDocument()
+    })
+
+    it('empty search shows recent items via get_items', async () => {
+      invokeMock.mockImplementation((cmd: string) => {
+        if (cmd === 'get_items') return Promise.resolve(mockItems)
+        if (cmd === 'search_items')
+          return Promise.resolve([
+            {
+              id: 99,
+              content: 'transient',
+              content_type: 'text',
+              source_app: null,
+              created_at: 1700009000
+            }
+          ])
+        if (cmd === 'get_embedding_status') return Promise.resolve('NotReady')
+        return Promise.resolve(null)
+      })
+
+      render(<PileWindow />)
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(0)
+      })
+
+      const input = screen.getByPlaceholderText('Search...')
+      fireEvent.change(input, { target: { value: 'test' } })
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(200)
+      })
+
+      vi.clearAllMocks()
+      invokeMock.mockImplementation((cmd: string) => {
+        if (cmd === 'get_items') return Promise.resolve(mockItems)
+        if (cmd === 'get_embedding_status') return Promise.resolve('NotReady')
+        return Promise.resolve(null)
+      })
+
+      fireEvent.change(input, { target: { value: '' } })
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(200)
+      })
+
+      expect(invokeMock).toHaveBeenCalledWith('get_items', {
+        limit: 50,
+        offset: 0
+      })
+      expect(screen.getByText('newest item')).toBeInTheDocument()
+    })
+
+    it('highlights query matches with <mark>', async () => {
+      const searchResults = [
+        {
+          id: 99,
+          content: 'hello world greeting',
+          content_type: 'text',
+          source_app: null,
+          created_at: 1700009000
+        }
+      ]
+      invokeMock.mockImplementation((cmd: string) => {
+        if (cmd === 'get_items') return Promise.resolve(mockItems)
+        if (cmd === 'search_items') return Promise.resolve(searchResults)
+        if (cmd === 'get_embedding_status') return Promise.resolve('NotReady')
+        return Promise.resolve(null)
+      })
+
+      render(<PileWindow />)
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(0)
+      })
+
+      const input = screen.getByPlaceholderText('Search...')
+      fireEvent.change(input, { target: { value: 'hello' } })
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(200)
+      })
+
+      const mark = document.querySelector('mark')
+      expect(mark).not.toBeNull()
+      expect(mark!.textContent).toBe('hello')
+    })
+
+    it('shows loading text when embedding not ready', async () => {
+      invokeMock.mockImplementation((cmd: string) => {
+        if (cmd === 'get_items') return Promise.resolve([])
+        if (cmd === 'get_embedding_status') return Promise.resolve('Downloading')
+        return Promise.resolve(null)
+      })
+
+      render(<PileWindow />)
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(5000)
+      })
+
+      expect(
+        screen.getByText('🔍 Semantic search loading...')
+      ).toBeInTheDocument()
+    })
+
+    it('shows ready text when embedding ready', async () => {
+      invokeMock.mockImplementation((cmd: string) => {
+        if (cmd === 'get_items') return Promise.resolve([])
+        if (cmd === 'get_embedding_status') return Promise.resolve('Ready')
+        return Promise.resolve(null)
+      })
+
+      render(<PileWindow />)
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(5000)
+      })
+
+      expect(
+        screen.getByText('✓ Semantic search ready')
+      ).toBeInTheDocument()
+    })
+
+    it('polls get_embedding_status on interval', async () => {
+      invokeMock.mockImplementation((cmd: string) => {
+        if (cmd === 'get_items') return Promise.resolve([])
+        if (cmd === 'get_embedding_status') return Promise.resolve('NotReady')
+        return Promise.resolve(null)
+      })
+
+      render(<PileWindow />)
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(15000)
+      })
+
+      const statusCalls = invokeMock.mock.calls.filter(
+        (c: unknown[]) => c[0] === 'get_embedding_status'
+      )
+      expect(statusCalls.length).toBeGreaterThan(1)
     })
   })
 })

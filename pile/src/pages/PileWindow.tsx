@@ -23,11 +23,26 @@ function getTypeIcon(contentType: string): string {
   }
 }
 
+function highlightText(text: string, searchQuery: string) {
+  if (!searchQuery.trim()) return text
+  const escaped = searchQuery.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const parts = text.split(new RegExp(`(${escaped})`, 'gi'))
+  if (parts.length === 1) return text
+  return parts.map((part, i) =>
+    part.toLowerCase() === searchQuery.trim().toLowerCase()
+      ? <mark key={i}>{part}</mark>
+      : part
+  )
+}
+
 export default function PileWindow() {
   const searchRef = useRef<HTMLInputElement>(null)
   const [items, setItems] = useState<Item[]>([])
   const [loading, setLoading] = useState(true)
   const [copiedId, setCopiedId] = useState<number | null>(null)
+  const [query, setQuery] = useState('')
+  const [embeddingStatus, setEmbeddingStatus] = useState('NotReady')
+  const isFirstRender = useRef(true)
 
   useEffect(() => {
     searchRef.current?.focus()
@@ -48,6 +63,62 @@ export default function PileWindow() {
       }
     }
     void fetchItems()
+  }, [])
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+    const timer = setTimeout(async () => {
+      try {
+        if (query.trim() === '') {
+          const result = await invoke<Item[]>('get_items', {
+            limit: 50,
+            offset: 0
+          })
+          setItems(result)
+        } else {
+          const result = await invoke<Item[]>('search_items', {
+            query,
+            limit: 10
+          })
+          setItems(result)
+        }
+      } catch (error) {
+        console.error('Search failed:', error)
+      }
+    }, 200)
+    return () => clearTimeout(timer)
+  }, [query])
+
+  useEffect(() => {
+    let active = true
+    let interval: ReturnType<typeof setInterval>
+    const poll = async () => {
+      try {
+        const status = await invoke<string>('get_embedding_status')
+        if (
+          active &&
+          (status === 'NotReady' ||
+            status === 'Downloading' ||
+            status === 'Ready')
+        ) {
+          setEmbeddingStatus(status)
+          if (status === 'Ready') {
+            clearInterval(interval)
+          }
+        }
+      } catch {
+        // ignore polling errors
+      }
+    }
+    interval = setInterval(poll, 3000)
+    void poll()
+    return () => {
+      active = false
+      clearInterval(interval)
+    }
   }, [])
 
   async function handleCopy(item: Item) {
@@ -76,12 +147,19 @@ export default function PileWindow() {
           ref={searchRef}
           type="text"
           placeholder="Search..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
           className={cn(
             'w-full rounded-md border border-input bg-secondary px-3 py-2',
             'text-sm text-foreground placeholder:text-muted-foreground',
             'outline-none ring-ring focus:ring-2'
           )}
         />
+        <div className="mt-1 text-xs text-muted-foreground">
+          {embeddingStatus === 'Ready'
+            ? '✓ Semantic search ready'
+            : '🔍 Semantic search loading...'}
+        </div>
       </div>
 
       <div className={cn('flex-1 overflow-y-auto')}>
@@ -124,7 +202,7 @@ export default function PileWindow() {
                   </span>
                   <div className="min-w-0 flex-1">
                     <span className="line-clamp-2 break-all text-foreground">
-                      {item.content}
+                      {highlightText(item.content, query)}
                     </span>
                     <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
                       <time dateTime={new Date(item.created_at * 1000).toISOString()}>
