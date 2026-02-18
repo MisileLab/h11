@@ -1,3 +1,4 @@
+use crate::embedding::{spawn_embedding_pipeline, EmbeddingModelState};
 use chrono::Utc;
 use rusqlite::ffi::sqlite3_auto_extension;
 use rusqlite::params;
@@ -7,12 +8,12 @@ use sqlite_vec::sqlite3_vec_init;
 use std::error::Error;
 use std::fs;
 use std::path::Path;
-use std::sync::{Mutex, Once};
+use std::sync::{Arc, Mutex, Once};
 use tauri::State;
 
 pub type Result<T> = std::result::Result<T, Box<dyn Error>>;
 
-pub struct AppDb(pub Mutex<Connection>);
+pub struct AppDb(pub Arc<Mutex<Connection>>);
 
 #[derive(Debug, Clone, Serialize)]
 pub struct Item {
@@ -153,11 +154,21 @@ pub fn delete_item_with_connection(conn: &Connection, id: i64) -> std::result::R
 #[tauri::command]
 pub fn save_item(
     state: State<'_, AppDb>,
+    embedding_state: State<'_, EmbeddingModelState>,
     content: String,
     content_type: String,
 ) -> std::result::Result<Item, String> {
-    let connection = state.0.lock().map_err(|error| error.to_string())?;
-    save_item_with_connection(&connection, &content, &content_type)
+    let db = Arc::clone(&state.inner().0);
+    let model = Arc::clone(&embedding_state.inner().0);
+
+    let saved = {
+        let connection = db.lock().map_err(|error| error.to_string())?;
+        save_item_with_connection(&connection, &content, &content_type)?
+    };
+
+    spawn_embedding_pipeline(db, model, saved.id, saved.content.clone());
+
+    Ok(saved)
 }
 
 #[tauri::command]
@@ -166,18 +177,21 @@ pub fn get_items(
     limit: Option<i64>,
     offset: Option<i64>,
 ) -> std::result::Result<Vec<Item>, String> {
-    let connection = state.0.lock().map_err(|error| error.to_string())?;
+    let connection = state.inner().0.lock().map_err(|error| error.to_string())?;
     get_items_with_connection(&connection, limit, offset)
 }
 
 #[tauri::command]
 pub fn delete_item(state: State<'_, AppDb>, id: i64) -> std::result::Result<(), String> {
-    let connection = state.0.lock().map_err(|error| error.to_string())?;
+    let connection = state.inner().0.lock().map_err(|error| error.to_string())?;
     delete_item_with_connection(&connection, id)
 }
 
 #[cfg(test)]
 mod tests {
+    use crate::embedding::{
+        blob_to_embedding, store_embedding_with_connection, EMBEDDING_DIMENSIONS,
+    };
     use rusqlite::params;
     use std::path::PathBuf;
     use uuid::Uuid;
@@ -420,5 +434,43 @@ mod tests {
 
         assert_eq!(item_count, 0);
         assert_eq!(embedding_count, 0);
+    }
+
+    #[test]
+    fn test_embedding_stored_in_item_embeddings() {
+        let dir = test_db_dir("embedding-stored");
+        let conn = super::init_db(&dir).expect("init_db should succeed");
+
+        let saved = super::save_item_with_connection(&conn, "embedding me", "text")
+            .expect("save_item_with_connection should succeed");
+
+        let embedding: Vec<f32> = (0..EMBEDDING_DIMENSIONS)
+            .map(|index| (index as f32) / 100.0)
+            .collect();
+
+        store_embedding_with_connection(&conn, saved.id, &embedding)
+            .expect("store_embedding_with_connection should succeed");
+
+        let embedding_count: i64 = conn
+            .query_row(
+                "SELECT COUNT(*) FROM item_embeddings WHERE rowid = ?1",
+                params![saved.id],
+                |row| row.get::<_, i64>(0),
+            )
+            .expect("embedding row count query should succeed");
+
+        let item_blob: Vec<u8> = conn
+            .query_row(
+                "SELECT embedding FROM items WHERE id = ?1",
+                params![saved.id],
+                |row| row.get::<_, Vec<u8>>(0),
+            )
+            .expect("item embedding blob should exist");
+
+        assert_eq!(embedding_count, 1);
+        assert_eq!(item_blob.len(), EMBEDDING_DIMENSIONS * 4);
+
+        let restored = blob_to_embedding(&item_blob).expect("blob should deserialize");
+        assert_eq!(restored, embedding);
     }
 }
