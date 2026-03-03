@@ -1,18 +1,18 @@
 FROM node:25-alpine AS base
 WORKDIR /app
-RUN rm -f /usr/local/bin/yarn /usr/local/bin/yarnpkg && npm install -g corepack
+RUN corepack enable
 
 FROM base AS deps
-COPY package.json yarn.lock .yarnrc.yml ./
-RUN yarn install --immutable
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
 FROM deps AS build
 COPY . .
-RUN yarn build
+RUN pnpm build
 
 FROM base AS runtime-deps
-COPY package.json yarn.lock .yarnrc.yml ./
-RUN yarn workspaces focus --production
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm deploy --prod /prod-deps
 
 FROM node:25-alpine AS runtime
 WORKDIR /app
@@ -21,7 +21,7 @@ ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=4321
 COPY --from=build /app/dist ./dist
-COPY --from=runtime-deps /app/node_modules ./node_modules
+COPY --from=runtime-deps /prod-deps/node_modules ./node_modules
 COPY package.json ./package.json
 RUN chown -R appuser:appgroup /app
 USER appuser

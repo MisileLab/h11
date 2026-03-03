@@ -12,7 +12,7 @@ Monorepo with three products: Schale (Astro SSR site), Pile (Tauri desktop app),
 h11/
 ├── .github/          # CI workflows (Docker publish, OpenCode agents)
 ├── schale/           # Astro SSR website + Python scripts
-│   ├── frontend/     # Astro app (Yarn 4, Tailwind v4, Node SSR)
+│   ├── frontend/     # Astro app (pnpm 10, Tailwind v4, Node SSR)
 │   └── scripts/      # Interactive Python utilities
 ├── pile/             # Tauri + React desktop app (pnpm, Rust backend)
 ├── commandpreview/   # Minecraft Fabric mod (Kotlin, Gradle)
@@ -35,7 +35,7 @@ h11/
 ## CONVENTIONS
 - Conventional commits with optional scopes: `feat(schale):`, `fix(pile):`.
 - One commit per feature or fix; keep diffs minimal.
-- Each product has its own package manager: Schale=Yarn 4, Pile=pnpm 10, CommandPreview=Gradle.
+- Each product has its own package manager: Schale=pnpm 10, Pile=pnpm 10, CommandPreview=Gradle.
 - No shared root `package.json`; monorepo structure is organizational only.
 - Font assets in `schale/frontend/public/fonts` are ~1.5 GB; avoid moving.
 
@@ -49,7 +49,10 @@ h11/
 ```bash
 # Schale (Astro)
 cd schale/frontend
-yarn dev              # Dev server
+pnpm dev              # Dev server
+pnpm build            # astro check + astro build
+pnpm lint             # oxlint + eslint
+pnpm format           # oxfmt
 yarn build            # astro check + astro build
 yarn lint             # oxlint + eslint
 yarn format           # oxfmt

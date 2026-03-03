@@ -7,7 +7,7 @@ Astro SSR website with interactive Python scripts.
 ## STRUCTURE
 ```
 schale/
-├── frontend/    # Astro app (SSR, Yarn 4)
+├── frontend/    # Astro app (SSR, pnpm 10)
 └── scripts/     # Python utilities (interactive stdin)
 ```
 

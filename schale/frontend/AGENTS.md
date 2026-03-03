@@ -2,7 +2,7 @@
 # FRONTEND
 
 ## OVERVIEW
-Astro SSR app: Tailwind v4 via Vite, Node standalone adapter, Yarn 4.
+Astro SSR app: Tailwind v4 via Vite, Node standalone adapter, pnpm 10.
 
 ## STRUCTURE
 ```
@@ -12,7 +12,7 @@ frontend/
 ├── Dockerfile        # Multi-stage Alpine build; non-root user (UID 1001)
 ├── astro.config.mjs  # SSR, sitemap filter, Tailwind v4 plugin
 ├── eslint.config.js  # Flat config: oxlint + astro + TS parser
-└── .yarnrc.yml       # nodeLinker: node-modules
+├── pnpm-lock.yaml   # Lockfile
 ```
 
 ## WHERE TO LOOK
@@ -30,6 +30,6 @@ frontend/
 - TypeScript strict via `astro/tsconfigs/strict`.
 - Named exports only in TS files (no default exports).
 - Linting: `oxlint` + `eslint`; formatting: `oxfmt` (not Prettier).
-- Yarn 4 with `nodeLinker: node-modules` (see `.yarnrc.yml`).
+- pnpm 10 with corepack (see package.json `packageManager`).
 - Layout components live in `src/components/` — never create `src/layouts/`.
-- Docker: multi-stage Node 25 Alpine, port 4321, `yarn install --immutable`.
+- Docker: multi-stage Node 25 Alpine, port 4321, `pnpm install --frozen-lockfile`.
