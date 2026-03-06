@@ -1,6 +1,6 @@
 FROM node:25-alpine AS base
 WORKDIR /app
-RUN npm install -g corepack@latest && corepack enable
+RUN npm install -g pnpm@10.30.3
 
 FROM base AS deps
 COPY package.json pnpm-lock.yaml ./
@@ -12,7 +12,7 @@ RUN pnpm build
 
 FROM base AS runtime-deps
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm deploy --prod /prod-deps
+RUN pnpm install --prod --frozen-lockfile
 
 FROM node:25-alpine AS runtime
 WORKDIR /app
@@ -21,7 +21,7 @@ ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=4321
 COPY --from=build /app/dist ./dist
-COPY --from=runtime-deps /prod-deps/node_modules ./node_modules
+COPY --from=runtime-deps /app/node_modules ./node_modules
 COPY package.json ./package.json
 RUN chown -R appuser:appgroup /app
 USER appuser
