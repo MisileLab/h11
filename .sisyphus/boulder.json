@@ -1,9 +1,12 @@
 {
-  "active_plan": "/Users/misile/repos/h11/.sisyphus/plans/command-preview.md",
-  "started_at": "2026-02-17T07:13:41.149Z",
+  "active_plan": "/Users/misile/repos/h11/.sisyphus/plans/lapis-v1.md",
+  "started_at": "2026-03-08T00:16:08.082Z",
   "session_ids": [
-    "ses_3959f501affe16jpXD2btpaXI8"
+    "ses_3373f4a33ffeKURllkdI7pjvPm",
+    "ses_3299743cbffeWo1qeMFDikUeZf",
+    "ses_3281aa738ffejte8sxK3rlAouY"
   ],
-  "plan_name": "command-preview",
-  "agent": "atlas"
+  "plan_name": "lapis-v1",
+  "agent": "atlas",
+  "worktree_path": "/Users/misile/repos/h11-atlas-lapis-v1"
 }

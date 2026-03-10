@@ -5,18 +5,24 @@
 **Branch:** main
 
 ## OVERVIEW
-Monorepo with three products: Schale (Astro SSR site), Pile (Tauri desktop app), and CommandPreview (Minecraft Fabric mod).
+Monorepo with five products: Schale (Astro SSR site), Pile (Tauri desktop app), CommandPreview (Minecraft Fabric mod), DamageTrackerMod (STS2 C# mod), and Lapis (Rust VCS).
 
 ## STRUCTURE
 ```
 h11/
-├── .github/          # CI workflows (Docker publish, OpenCode agents)
-├── schale/           # Astro SSR website + Python scripts
-│   ├── frontend/     # Astro app (pnpm 10, Tailwind v4, Node SSR)
-│   └── scripts/      # Interactive Python utilities
-├── pile/             # Tauri + React desktop app (pnpm, Rust backend)
-├── commandpreview/   # Minecraft Fabric mod (Kotlin, Gradle)
-└── .opencode/        # OpenCode tooling config
+├── .github/           # CI workflows (Docker publish, OpenCode agents)
+├── schale/            # Astro SSR website + Python scripts
+│   ├── frontend/      # Astro app (pnpm 10, Tailwind v4, Node SSR)
+│   └── scripts/       # Interactive Python utilities
+├── pile/              # Tauri + React desktop app (pnpm, Rust backend)
+├── commandpreview/    # Minecraft Fabric mod (Kotlin, Gradle)
+├── DamageTrackerMod/  # STS2 damage tracker mod (C#, .NET 9, Godot 5)
+│   └── src/           # ModEntry, UI, Hooks, Data, Network modules
+├── lapis/             # Block-level VCS for large binaries (Rust, Cargo)
+│   └── src/           # chunking, crypto, fuse, index, repo, server, store, transfer, vcs
+├── docs/              # Research & documentation
+│   └── research/      # Lapis VCS risk mitigation docs
+└── .opencode/         # OpenCode tooling config
 ```
 
 ## WHERE TO LOOK
@@ -30,12 +36,15 @@ h11/
 | Pile frontend | `pile/src` | React + shadcn/ui + Tailwind v4 |
 | Pile backend | `pile/src-tauri/src` | Rust: SQLite DB, search, embeddings |
 | CommandPreview | `commandpreview/src` | Kotlin Fabric mod (client-side) |
+| DamageTrackerMod | `DamageTrackerMod/src` | C# STS2 mod (Harmony hooks, Godot 5) |
+| Lapis VCS | `lapis/src` | Rust: fastcdc, BLAKE3, SQLite, Axum server |
+| Lapis docs | `docs/research/` | Production risk mitigation analysis |
 | CI workflows | `.github/workflows` | Docker publish + OpenCode agent/review |
 
 ## CONVENTIONS
-- Conventional commits with optional scopes: `feat(schale):`, `fix(pile):`.
+- Conventional commits with optional scopes: `feat(schale):`, `fix(pile):`, `feat(lapis):`.
 - One commit per feature or fix; keep diffs minimal.
-- Each product has its own package manager: Schale=pnpm 10, Pile=pnpm 10, CommandPreview=Gradle.
+- Each product has its own package manager: Schale=pnpm 10, Pile=pnpm 10, CommandPreview=Gradle, DamageTrackerMod=dotnet, Lapis=Cargo.
 - No shared root `package.json`; monorepo structure is organizational only.
 - Font assets in `schale/frontend/public/fonts` are ~1.5 GB; avoid moving.
 
@@ -66,6 +75,16 @@ pnpm test             # vitest
 # CommandPreview (Fabric)
 cd commandpreview
 ./gradlew build       # Build mod JAR
+
+# DamageTrackerMod (STS2)
+cd DamageTrackerMod
+dotnet build          # Build mod DLL
+
+# Lapis (VCS)
+cd lapis
+cargo build           # Build library + CLI
+cargo run -- --help   # CLI help
+cargo test            # Run tests
 ```
 
 ## NOTES
