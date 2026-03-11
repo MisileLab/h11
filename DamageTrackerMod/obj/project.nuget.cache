@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "+1yagFrqFPY=",
+  "success": true,
+  "projectFilePath": "/Users/misile/repos/h11/DamageTrackerMod/DamageTrackerMod.csproj",
+  "expectedPackageFiles": [
+    "/Users/misile/.nuget/packages/microsoft.netcore.app.ref/7.0.20/microsoft.netcore.app.ref.7.0.20.nupkg.sha512",
+    "/Users/misile/.nuget/packages/microsoft.aspnetcore.app.ref/7.0.20/microsoft.aspnetcore.app.ref.7.0.20.nupkg.sha512"
+  ],
+  "logs": []
+}

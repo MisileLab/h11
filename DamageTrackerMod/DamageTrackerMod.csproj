@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <OutputType>Library</OutputType>
+    <AssemblyName>DamageTracker</AssemblyName>
+  </PropertyGroup>
+
+  <!-- Placeholder for STS2 references -->
+  <!-- <ItemGroup>
+    <Reference Include="sts2.dll" />
+  </ItemGroup> -->
+
+</Project>

@@ -1,0 +1,12 @@
+/Users/misile/repos/h11/DamageTrackerMod/bin/Debug/net7.0/DamageTracker.deps.json
+/Users/misile/repos/h11/DamageTrackerMod/bin/Debug/net7.0/DamageTracker.dll
+/Users/misile/repos/h11/DamageTrackerMod/bin/Debug/net7.0/DamageTracker.pdb
+/Users/misile/repos/h11/DamageTrackerMod/obj/Debug/net7.0/DamageTrackerMod.GeneratedMSBuildEditorConfig.editorconfig
+/Users/misile/repos/h11/DamageTrackerMod/obj/Debug/net7.0/DamageTrackerMod.AssemblyInfoInputs.cache
+/Users/misile/repos/h11/DamageTrackerMod/obj/Debug/net7.0/DamageTrackerMod.AssemblyInfo.cs
+/Users/misile/repos/h11/DamageTrackerMod/obj/Debug/net7.0/DamageTrackerMod.csproj.CoreCompileInputs.cache
+/Users/misile/repos/h11/DamageTrackerMod/obj/Debug/net7.0/DamageTrackerMod.sourcelink.json
+/Users/misile/repos/h11/DamageTrackerMod/obj/Debug/net7.0/DamageTracker.dll
+/Users/misile/repos/h11/DamageTrackerMod/obj/Debug/net7.0/refint/DamageTracker.dll
+/Users/misile/repos/h11/DamageTrackerMod/obj/Debug/net7.0/DamageTracker.pdb
+/Users/misile/repos/h11/DamageTrackerMod/obj/Debug/net7.0/ref/DamageTracker.dll

@@ -1,0 +1,12 @@
+
+# Godot.gitignore by ignofierplus
+.godot/
+.nomedia
+.import/
+export.cfg
+export_credentials.cfg
+*.tmp
+*.translation
+.mono/
+data_*/
+mono_crash.*.json
