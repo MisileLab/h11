@@ -1,0 +1,48 @@
+# Multi-stage build for frontend
+FROM node:20-alpine as builder
+
+WORKDIR /tmp/build
+
+# Install pnpm
+RUN npm install -g pnpm
+
+# Copy frontend source
+COPY frontend/ .
+
+# Install dependencies and build with standalone output
+RUN CI=true pnpm install --frozen-lockfile && \
+    CI=true pnpm run build
+
+# Runtime stage - minimal Next.js standalone
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Create non-root user (use high GID to avoid conflicts with base image)
+RUN addgroup -g 10001 appuser && \
+    adduser -D -u 10001 -G appuser appuser
+
+# Copy standalone output from builder
+# .next/standalone contains: .next/, server.js, package.json, node_modules (minimal)
+COPY --from=builder /tmp/build/.next/standalone .
+
+# Copy static assets (required for images, CSS, fonts)
+COPY --from=builder /tmp/build/.next/static ./.next/static
+
+# Change ownership to appuser
+RUN chown -R appuser:appuser /app
+
+USER appuser
+
+ENV NODE_ENV=production \
+    NEXT_PUBLIC_API_URL=http://localhost:8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 --start-period=40s \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
+
+# Expose port
+EXPOSE 3000
+
+# Run Next.js standalone server (self-contained, no pnpm needed in runtime)
+CMD ["node", "server.js"]

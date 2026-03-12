@@ -1,0 +1,7 @@
+/* biome-ignore lint/suspicious/noUnknownAtRules: tailwind directives are standard here */
+@tailwind base;
+/* biome-ignore lint/suspicious/noUnknownAtRules: tailwind directives are standard here */
+@tailwind components;
+/* biome-ignore lint/suspicious/noUnknownAtRules: tailwind directives are standard here */
+@tailwind utilities;
+

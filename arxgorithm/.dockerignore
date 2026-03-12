@@ -1,0 +1,51 @@
+# Backend ignores
+**/.venv
+.venv
+__pycache__
+.pytest_cache
+*.pyc
+*.pyo
+*.egg-info
+dist
+build
+.env
+.env.local
+.DS_Store
+
+# Frontend ignores
+node_modules
+.next
+.env.local
+.env*.local
+dist
+build
+coverage
+.DS_Store
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Development
+.env.example
+.env.local.example
+README.md
+tests
+vitest.setup.ts
+vitest.config.ts
+pytest.ini
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml

@@ -1,0 +1,62 @@
+# Multi-stage build for backend
+FROM python:3.11-slim as builder
+
+WORKDIR /tmp/build
+
+# Install system dependencies for building
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy backend source
+COPY backend/ .
+
+# Install uv
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/root/.local/bin:$PATH"
+
+# Install dependencies to a wheel directory for transport
+RUN uv pip compile pyproject.toml --output-file requirements.txt
+
+# Runtime stage
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install only runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    sqlite3 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create non-root user
+RUN useradd -m -u 1000 appuser
+
+# Copy application code
+COPY backend/app/ /app/app/
+COPY backend/pyproject.toml /app/
+
+# Create venv at final location and install dependencies
+RUN python -m venv /app/.venv && \
+    /app/.venv/bin/pip install --upgrade pip setuptools wheel && \
+    /app/.venv/bin/pip install -e .
+
+ENV PATH="/app/.venv/bin:$PATH" \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+# Change ownership to appuser
+RUN chown -R appuser:appuser /app
+
+USER appuser
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 --start-period=40s \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Expose port
+EXPOSE 8000
+
+# Run FastAPI app with uvicorn
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

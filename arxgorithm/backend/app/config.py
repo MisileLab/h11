@@ -1,0 +1,65 @@
+"""
+Application configuration using pydantic-settings.
+
+All configuration is loaded from environment variables.
+Required fields fail fast if missing; optional OAuth secrets default to None.
+"""
+
+import sys
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    """Application configuration with environment variable loading."""
+
+    model_config = SettingsConfigDict(
+        extra="ignore",
+    )
+
+    # arXiv API Configuration
+    arxiv_rate_limit: float
+    """Rate limit (seconds) between arXiv API requests."""
+
+    # Nebius Embedding Service (required)
+    nebius_api_key: str
+    """API key for Nebius embedding service."""
+
+    nebius_api_url: str
+    """Base URL for Nebius API."""
+
+    # Gemini Summary Service (required)
+    gemini_api_key: str
+    """API key for Google Gemini API."""
+
+    # OAuth Providers (optional - app works without OAuth for anonymous mode)
+    google_client_id: str | None = None
+    """Google OAuth client ID. Optional for anonymous-only mode."""
+
+    google_client_secret: str | None = None
+    """Google OAuth client secret. Optional for anonymous-only mode."""
+
+    github_client_id: str | None = None
+    """GitHub OAuth client ID. Optional for anonymous-only mode."""
+
+    github_client_secret: str | None = None
+    """GitHub OAuth client secret. Optional for anonymous-only mode."""
+
+    # Session Management (required)
+    session_secret: str
+    """Secret key for session signing. Must be changed in production."""
+
+    # Database (required)
+    database_url: str
+    """Database connection URL (e.g., sqlite:///./arxgorithm.db)."""
+
+    # URL Configuration (required)
+    backend_url: str
+    """Base URL of the backend API for OAuth callback URIs (e.g., http://localhost:8000)."""
+
+    frontend_url: str
+    """Base URL of frontend for CORS and post-login redirects."""
+
+
+def get_settings() -> Settings:
+    """Get application settings. Instantiated on-demand to support testing."""
+    return Settings()
