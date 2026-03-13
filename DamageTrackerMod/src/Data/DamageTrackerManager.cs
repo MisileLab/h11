@@ -1,5 +1,6 @@
 namespace DamageTracker.Data;
 
+using System;
 using System.Collections.Generic;
 
 public class DamageTrackerManager
@@ -45,6 +46,40 @@ public class DamageTrackerManager
         foreach (var tracker in _playerTrackers.Values)
         {
             tracker.ResetAll();
+        }
+    }
+
+    public void RecordDamage(int playerId, int amount, bool isDealt, string source, string target)
+    {
+        if (amount <= 0)
+        {
+            return;
+        }
+
+        PlayerDamageTracker tracker = GetTracker(playerId);
+
+        tracker.Events.Add(new DamageEvent
+        {
+            Source = string.IsNullOrWhiteSpace(source) ? "Unknown" : source,
+            Target = string.IsNullOrWhiteSpace(target) ? "Unknown" : target,
+            Amount = amount,
+            IsDealt = isDealt,
+            Timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
+        });
+
+        if (isDealt)
+        {
+            tracker.TotalDealt += amount;
+        }
+        else
+        {
+            tracker.TotalTaken += amount;
+        }
+
+        string sourceKey = string.IsNullOrWhiteSpace(source) ? "Unknown" : source;
+        if (!tracker.DamageBySource.TryAdd(sourceKey, amount))
+        {
+            tracker.DamageBySource[sourceKey] += amount;
         }
     }
 }

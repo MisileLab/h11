@@ -1,16 +1,43 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <OutputType>Library</OutputType>
     <AssemblyName>DamageTracker</AssemblyName>
+    <LangVersion>latest</LangVersion>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <GodotSharpPath Condition="'$(GodotSharpPath)' == ''">$(MSBuildProjectDirectory)/lib/GodotSharp.dll</GodotSharpPath>
+    <HarmonyXPath Condition="'$(HarmonyXPath)' == ''">$(MSBuildProjectDirectory)/lib/HarmonyX.dll</HarmonyXPath>
+    <UseDamageTrackerStubs Condition="!Exists('$(GodotSharpPath)') or !Exists('$(HarmonyXPath)')">true</UseDamageTrackerStubs>
+    <DefineConstants Condition="'$(UseDamageTrackerStubs)' == 'true'">$(DefineConstants);DAMAGE_TRACKER_STUBS</DefineConstants>
   </PropertyGroup>
 
-  <!-- Placeholder for STS2 references -->
-  <!-- <ItemGroup>
-    <Reference Include="sts2.dll" />
-  </ItemGroup> -->
+  <ItemGroup>
+    <Compile Include="src/**/*.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseDamageTrackerStubs)' == 'true'">
+    <Compile Include="Stubs/**/*.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('$(GodotSharpPath)')">
+    <Reference Include="GodotSharp">
+      <HintPath>$(GodotSharpPath)</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('$(HarmonyXPath)')">
+    <Reference Include="HarmonyX">
+      <HintPath>$(HarmonyXPath)</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseDamageTrackerStubs)' != 'true'">
+    <PackageReference Include="HarmonyX" Version="2.10.2" />
+  </ItemGroup>
 
 </Project>

@@ -1,11 +1,10 @@
 {
-  "active_plan": "/Users/misile/repos/h11/.sisyphus/plans/arxgorithm.md",
-  "started_at": "2026-03-11T08:26:25.914Z",
+  "active_plan": "/Users/misile/repos/h11/.sisyphus/plans/play-review-scraper.md",
+  "started_at": "2026-03-13T05:12:44.716Z",
   "session_ids": [
-    "ses_32462131bffeaSAGrSGwl5z6sR",
-    "ses_3231ae823ffeBzEce6B2Sz3Iuu"
+    "ses_31aa91031ffesqg9PJmw3OHx7b"
   ],
-  "plan_name": "arxgorithm",
+  "plan_name": "play-review-scraper",
   "agent": "atlas",
   "worktree_path": "/Users/misile/repos/h11"
 }

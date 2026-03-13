@@ -3,6 +3,7 @@ namespace DamageTracker.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text.Json;
 
 public class DamagePersistence
@@ -13,7 +14,8 @@ public class DamagePersistence
     {
         try
         {
-            EnsureDirectoryExists(BasePath);
+            string basePath = ResolveBasePath();
+            EnsureDirectoryExists(basePath);
 
             var data = new Dictionary<string, object>
             {
@@ -26,7 +28,7 @@ public class DamagePersistence
             var json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
             
             var fileName = $"{runId}.json";
-            var filePath = Path.Combine(BasePath, fileName);
+            var filePath = Path.Combine(basePath, fileName);
             var tmpPath = filePath + ".tmp";
 
             File.WriteAllText(tmpPath, json);
@@ -68,5 +70,17 @@ public class DamagePersistence
         {
             Directory.CreateDirectory(path);
         }
+    }
+
+    private static string ResolveBasePath()
+    {
+        Type? projectSettingsType = Type.GetType("Godot.ProjectSettings, GodotSharp");
+        MethodInfo? globalizePath = projectSettingsType?.GetMethod("GlobalizePath", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(string) }, null);
+        if (globalizePath?.Invoke(null, new object[] { BasePath }) is string resolvedPath && !string.IsNullOrWhiteSpace(resolvedPath))
+        {
+            return resolvedPath;
+        }
+
+        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "DamageTracker", "runs");
     }
 }

@@ -1,7 +1,27 @@
+# .NET Build Artifacts
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
 
-# Godot.gitignore by ignofierplus
+# Build outputs
+*.dll
+*.pdb
+*.exe
+*.cache
+*.deps.json
+*.runtimeconfig.json
+
+# NuGet
+packages/
+*.nupkg
+*.snupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Godot
 .godot/
-.nomedia
 .import/
 export.cfg
 export_credentials.cfg
@@ -10,3 +30,26 @@ export_credentials.cfg
 .mono/
 data_*/
 mono_crash.*.json
+*.import
+
+# IDE / Editor
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userprefs
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Backup files
+*~
+*.bak
+*.orig
