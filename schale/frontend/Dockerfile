@@ -1,6 +1,6 @@
 FROM node:25-alpine AS base
 WORKDIR /app
-RUN npm install -g pnpm@10.30.3
+RUN npm install -g pnpm@10.32.1
 
 FROM base AS deps
 COPY package.json pnpm-lock.yaml ./

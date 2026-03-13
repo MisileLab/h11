@@ -2,35 +2,41 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
     "test": "vitest run",
     "e2e": "playwright test"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.21",
-    "next": "14.2.15",
-    "react": "^18",
-    "react-dom": "^18"
+    "next": "16.1.6",
+    "react": "^19",
+    "react-dom": "^19"
   },
   "devDependencies": {
-    "@playwright/test": "^1.58.2",
+    "@eslint/js": "^10.0.1",
+    "@next/eslint-plugin-next": "^16.1.6",
+    "@playwright/test": "^1.48.2",
+    "@tailwindcss/postcss": "^4.2.1",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/node": "^25",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@typescript-eslint/eslint-plugin": "^8.57.0",
+    "@typescript-eslint/parser": "^8.57.0",
     "@vitejs/plugin-react": "^5.1.4",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.15",
+    "eslint": "^10.0.3",
+    "eslint-config-next": "16.1.6",
     "jsdom": "^28.1.0",
     "postcss": "^8",
-    "tailwindcss": "^3.4.1",
+    "tailwindcss": "^4.2.1",
     "typescript": "^5",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.0"
   }
 }

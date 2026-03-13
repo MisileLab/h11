@@ -1,29 +1,30 @@
 import js from "@eslint/js"
-import astro from "eslint-plugin-astro"
 import oxlint from "eslint-plugin-oxlint"
 import tsParser from "@typescript-eslint/parser"
-import astroParser from "astro-eslint-parser"
 
 export default [
   {
-    ignores: ["dist/", ".astro/", "node_modules/"]
+    ignores: ["dist/", ".astro/", "node_modules/", "**/*.astro"]
   },
   js.configs.recommended,
   {
     files: ["**/*.{js,mjs,cjs,ts,tsx}"],
     languageOptions: {
       parser: tsParser,
-      sourceType: "module"
-    }
-  },
-  ...astro.configs.recommended,
-  {
-    files: ["**/*.astro"],
-    languageOptions: {
-      parser: astroParser,
-      parserOptions: {
-        parser: tsParser,
-        extraFileExtensions: [".astro"]
+      sourceType: "module",
+      globals: {
+        // Browser globals
+        HTMLElement: "readonly",
+        location: "readonly",
+        FormData: "readonly",
+        Headers: "readonly",
+        fetch: "readonly",
+        Response: "readonly",
+        navigator: "readonly",
+        window: "readonly",
+        document: "readonly",
+        // Node globals (for middleware.ts)
+        process: "readonly"
       }
     }
   },

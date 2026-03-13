@@ -36,7 +36,8 @@ describe('PaperDetailPage', () => {
   it('shows loading state initially', async () => {
     vi.mocked(api.get).mockImplementation(() => new Promise(() => {}));
     
-    render(<PaperPage params={{ arxiv_id: '1234.56789' }} />);
+    const ui = await PaperPage({ params: Promise.resolve({ arxiv_id: '1234.56789' }) });
+    render(ui);
     
     const spinners = document.querySelectorAll('.animate-spin');
     expect(spinners.length).toBeGreaterThan(0);
@@ -53,7 +54,8 @@ describe('PaperDetailPage', () => {
       return {};
     });
 
-    render(<PaperPage params={{ arxiv_id: '1234.56789' }} />);
+    const ui = await PaperPage({ params: Promise.resolve({ arxiv_id: '1234.56789' }) });
+    render(ui);
 
     await waitFor(() => {
       expect(screen.getByText('Test Paper Title')).toBeInTheDocument();
@@ -76,7 +78,8 @@ describe('PaperDetailPage', () => {
       return {};
     });
 
-    render(<PaperPage params={{ arxiv_id: '1234.56789' }} />);
+    const ui = await PaperPage({ params: Promise.resolve({ arxiv_id: '1234.56789' }) });
+    render(ui);
 
     await waitFor(() => {
       expect(screen.getByText('Test Paper Title')).toBeInTheDocument();
@@ -98,7 +101,8 @@ describe('PaperDetailPage', () => {
     
     vi.mocked(api.post).mockResolvedValueOnce({ arxiv_id: '1234.56789', status: 'queued' });
 
-    render(<PaperPage params={{ arxiv_id: '1234.56789' }} />);
+    const ui = await PaperPage({ params: Promise.resolve({ arxiv_id: '1234.56789' }) });
+    render(ui);
 
     await waitFor(() => {
       expect(screen.getByText('Generate Summary')).toBeInTheDocument();
@@ -126,7 +130,8 @@ describe('PaperDetailPage', () => {
     vi.mocked(api.post).mockResolvedValueOnce({});
     vi.mocked(api.delete).mockResolvedValueOnce({});
 
-    render(<PaperPage params={{ arxiv_id: '1234.56789' }} />);
+    const ui = await PaperPage({ params: Promise.resolve({ arxiv_id: '1234.56789' }) });
+    render(ui);
 
     await waitFor(() => {
       expect(screen.getByText('Save')).toBeInTheDocument();
@@ -152,7 +157,8 @@ describe('PaperDetailPage', () => {
   it('handles error state (404)', async () => {
     vi.mocked(api.get).mockRejectedValueOnce(new ApiError(404, 'Paper not found'));
 
-    render(<PaperPage params={{ arxiv_id: 'invalid-id' }} />);
+    const ui = await PaperPage({ params: Promise.resolve({ arxiv_id: 'invalid-id' }) });
+    render(ui);
 
     await waitFor(() => {
       expect(screen.getByText('Paper not found.')).toBeInTheDocument();
