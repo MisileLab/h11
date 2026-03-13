@@ -38,7 +38,7 @@ qbsdiff = "0.1"
 fuser = "0.14"
 libc = "0.2"
 regex = { version = "1.12", optional = true }
-const-oid = { version = "0.9", optional = true }
+const-oid = { version = "0.10", optional = true }
 sha2 = { version = "0.10", optional = true }
 sigstore = { version = "0.13.0", default-features = false, features = ["bundle", "sigstore-trust-root", "native-tls"], optional = true }
 sigstore_oidc = { package = "sigstore-oidc", version = "0.6.4", default-features = false, features = ["browser", "native-tls"], optional = true }
