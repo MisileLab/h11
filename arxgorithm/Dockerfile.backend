@@ -35,6 +35,7 @@ RUN useradd -m -u 1000 appuser
 
 # Copy application code
 COPY backend/app/ /app/app/
+COPY backend/docker-entrypoint.sh /app/docker-entrypoint.sh
 COPY backend/pyproject.toml /app/
 
 # Create venv at final location and install dependencies
@@ -46,10 +47,10 @@ ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
 
-# Change ownership to appuser
-RUN chown -R appuser:appuser /app
-
-USER appuser
+# Prepare writable app/runtime paths and entrypoint
+RUN chmod +x /app/docker-entrypoint.sh && \
+    mkdir -p /data && \
+    chown -R appuser:appuser /app /data
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 --start-period=40s \
@@ -58,5 +59,5 @@ HEALTHCHECK --interval=30s --timeout=10s --retries=3 --start-period=40s \
 # Expose port
 EXPOSE 8000
 
-# Run FastAPI app with uvicorn
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run FastAPI app with runtime directory fixups before dropping privileges
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
