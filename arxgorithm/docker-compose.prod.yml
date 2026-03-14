@@ -15,8 +15,8 @@ services:
       # Database (persist in volume)
       - DATABASE_URL=sqlite:////data/arxgorithm.db
       # URLs (override from .env for container networking)
-      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
-      - BACKEND_URL=${BACKEND_URL:-http://localhost:8000}
+      - FRONTEND_URL=${FRONTEND_URL:-https://arxgorithm.misile.xyz}
+      - BACKEND_URL=${BACKEND_URL:-https://arxgorithmb.misile.xyz}
     
     volumes:
       - arxgorithm-data:/data
@@ -43,7 +43,7 @@ services:
     ports:
       - "${FRONTEND_PORT:-3000}:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=${BACKEND_URL:-http://localhost:8000}
+      - NEXT_PUBLIC_API_URL=${BACKEND_URL:-https://arxgorithmb.misile.xyz}
       - HOSTNAME=0.0.0.0
     
     healthcheck:
