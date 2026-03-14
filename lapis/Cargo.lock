@@ -2250,7 +2250,7 @@ dependencies = [
  "sigstore_protobuf_specs",
  "sqlx",
  "tempfile",
- "thiserror 1.0.69",
+ "thiserror 2.0.18",
  "tokio",
  "tower 0.4.13",
  "tower-http",
