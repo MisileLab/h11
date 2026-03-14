@@ -29,13 +29,18 @@ COPY --from=builder /tmp/build/.next/standalone .
 # Copy static assets (required for images, CSS, fonts)
 COPY --from=builder /tmp/build/.next/static ./.next/static
 
+# Copy public folder (for static files served directly)
+COPY --from=builder /tmp/build/public ./public
+
+# Copy .env.production for runtime config (will be created in next stage)
+COPY --from=builder /tmp/build/.env.production ./.env.production
+
 # Change ownership to appuser
 RUN chown -R appuser:appuser /app
 
 USER appuser
 
-ENV NODE_ENV=production \
-    NEXT_PUBLIC_API_URL=http://localhost:8000
+ENV NODE_ENV=production
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 --start-period=40s \
