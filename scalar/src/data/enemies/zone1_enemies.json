@@ -1,0 +1,57 @@
+[
+  {
+    "id": "drifter_01",
+    "name": "Drifter",
+    "description": "A lonely wanderer entity. Attacks in groups of 3.",
+    "k_value": 2,
+    "hp": 8,
+    "ai_type": "basic_attacker",
+    "loot_table": ["copper_coin", "copper_coin", "weak_relic"],
+    "resistances": {},
+    "special_abilities": []
+  },
+  {
+    "id": "echo_02",
+    "name": "Echo",
+    "description": "A reflected signal. Mimics opponent actions with delay.",
+    "k_value": 2,
+    "hp": 6,
+    "ai_type": "mirror",
+    "loot_table": ["copper_coin", "signal_fragment"],
+    "resistances": {"reflect": 0.5},
+    "special_abilities": ["mirror_last_action"]
+  },
+  {
+    "id": "static_03",
+    "name": "Static Burst",
+    "description": "Chaotic interference. Attacks randomly and buffs itself.",
+    "k_value": 3,
+    "hp": 10,
+    "ai_type": "aggressive_buffer",
+    "loot_table": ["copper_coin", "weak_relic"],
+    "resistances": {"stun": 0.7},
+    "special_abilities": ["random_attack", "self_buff"]
+  },
+  {
+    "id": "harmonizer_04",
+    "name": "Harmonizer",
+    "description": "Seeks frequency alignment. Modifies party stats gradually.",
+    "k_value": 3,
+    "hp": 7,
+    "ai_type": "debuffer",
+    "loot_table": ["copper_coin", "harmonic_shard"],
+    "resistances": {},
+    "special_abilities": ["debuff_party_v", "restore_self"]
+  },
+  {
+    "id": "noise_05",
+    "name": "Noise Entity",
+    "description": "Pure distortion. Creates interference fields.",
+    "k_value": 4,
+    "hp": 12,
+    "ai_type": "controller",
+    "loot_table": ["copper_coin", "copper_coin", "common_relic"],
+    "resistances": {"silence": 0.6},
+    "special_abilities": ["interference_field", "weaken_all"]
+  }
+]

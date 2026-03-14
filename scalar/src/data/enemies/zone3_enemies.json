@@ -1,0 +1,57 @@
+[
+  {
+    "id": "sentinel_11",
+    "name": "Sentinel",
+    "description": "Watchful guardian. Retaliates to attacks with high K attacks.",
+    "k_value": 9,
+    "hp": 24,
+    "ai_type": "counter_attacker",
+    "loot_table": ["gold_coin", "sentinel_core"],
+    "resistances": {"physical": 0.3},
+    "special_abilities": ["counter_strike", "armor_shell"]
+  },
+  {
+    "id": "void_12",
+    "name": "Void Rifter",
+    "description": "Existence anomaly. Attacks phase through defenses.",
+    "k_value": 10,
+    "hp": 22,
+    "ai_type": "piercing_attacker",
+    "loot_table": ["gold_coin", "void_shard"],
+    "resistances": {"ignore_defense": true},
+    "special_abilities": ["void_strike", "reality_breach"]
+  },
+  {
+    "id": "harmony_13",
+    "name": "Harmony Weaver",
+    "description": "Perfect synchronization. All stats increase every turn.",
+    "k_value": 10,
+    "hp": 26,
+    "ai_type": "scaling_buffer",
+    "loot_table": ["gold_coin", "harmony_thread"],
+    "resistances": {"dispel": 0.4},
+    "special_abilities": ["perfect_harmony", "stat_cascade"]
+  },
+  {
+    "id": "corruption_14",
+    "name": "Corruption Source",
+    "description": "Spreading blight. Infects party members with persistent effects.",
+    "k_value": 11,
+    "hp": 20,
+    "ai_type": "plague_spreader",
+    "loot_table": ["gold_coin", "gold_coin", "corruption_essence"],
+    "resistances": {"cleanse": 0.2},
+    "special_abilities": ["spread_debuff", "infect_party"]
+  },
+  {
+    "id": "apex_15",
+    "name": "Apex Resonance",
+    "description": "Ultimate frequency. Combines all previous enemy tactics.",
+    "k_value": 14,
+    "hp": 30,
+    "ai_type": "hybrid_master",
+    "loot_table": ["gold_coin", "gold_coin", "apex_core"],
+    "resistances": {"all": 0.25},
+    "special_abilities": ["adaptive_strategy", "multi_phase_attack", "ultimate_resonance"]
+  }
+]

@@ -1,0 +1,82 @@
+[
+  {
+    "id": "lambda_001",
+    "character": "Lambda",
+    "sequence_num": 1,
+    "trigger_zone": 1,
+    "trigger_condition": "run_start",
+    "text": "I was created to generate infinite possibilities. Every function I execute opens new branches. But too many branches, and nothing is real."
+  },
+  {
+    "id": "lambda_002",
+    "character": "Lambda",
+    "sequence_num": 2,
+    "trigger_zone": 1,
+    "trigger_condition": "encounter_enemy",
+    "text": "These creatures... they move through my branching paths. But they're not choosing randomly. They're converging. On what?"
+  },
+  {
+    "id": "lambda_003",
+    "character": "Lambda",
+    "sequence_num": 3,
+    "trigger_zone": 1,
+    "trigger_condition": "defeat_enemy_count:3",
+    "text": "The probability clouds collapse. Each path I eliminate reveals it wasn't really a choice—it was predetermined. Convergence."
+  },
+  {
+    "id": "lambda_004",
+    "character": "Lambda",
+    "sequence_num": 4,
+    "trigger_zone": 2,
+    "trigger_condition": "zone_enter",
+    "text": "Deeper into the branches. The distortions here follow different rules. They're not just cutting paths—they're rewriting them."
+  },
+  {
+    "id": "lambda_005",
+    "character": "Lambda",
+    "sequence_num": 5,
+    "trigger_zone": 2,
+    "trigger_condition": "encounter_elite",
+    "text": "This entity generates its own branches. It creates variations I couldn't predict. It's like meeting another generator. Another me."
+  },
+  {
+    "id": "lambda_006",
+    "character": "Lambda",
+    "sequence_num": 6,
+    "trigger_zone": 2,
+    "trigger_condition": "defeat_enemy_count:8",
+    "text": "I'm modifying my generation algorithm. Accepting constraints instead of infinite branches. Focus. Purpose. It feels... cleaner."
+  },
+  {
+    "id": "lambda_007",
+    "character": "Lambda",
+    "sequence_num": 7,
+    "trigger_zone": 3,
+    "trigger_condition": "zone_enter",
+    "text": "All paths lead here. For the first time, I'm not generating—I'm following. And it feels right."
+  },
+  {
+    "id": "lambda_008",
+    "character": "Lambda",
+    "sequence_num": 8,
+    "trigger_zone": 3,
+    "trigger_condition": "encounter_boss",
+    "text": "The source of all paths. Not generating chaos—shaping direction. Showing me that infinite possibilities need a center to mean anything."
+  },
+  {
+    "id": "lambda_009",
+    "character": "Lambda",
+    "sequence_num": 9,
+    "trigger_zone": 3,
+    "trigger_condition": "defeat_enemy_count:13",
+    "text": "I'm choosing now, not generating. The difference is profound. Choice means I accept what I'm not, to become what I should be."
+  },
+  {
+    "id": "lambda_010",
+    "character": "Lambda",
+    "sequence_num": 10,
+    "trigger_zone": 3,
+    "trigger_condition": "defeat_boss",
+    "text": "All paths converged into one. No more infinite branches. Just me, knowing finally what I need to generate next: Purpose."
+  }
+]
