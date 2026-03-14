@@ -174,7 +174,7 @@ Matching Engine ────→ Combo Engine
 
 <!-- Wave 1: Foundation -->
 
-- [ ] 1. Godot Project Setup
+- [x] 1. Godot Project Setup
 
   **What to do**:
   1. Create new Godot 4 project at `scalar/` directory
@@ -215,7 +215,7 @@ Matching Engine ────→ Combo Engine
 
 ---
 
-- [ ] 2. Matching Engine Core
+- [x] 2. Matching Engine Core
 
   **What to do**:
   1. Create `src/core/matching_engine.gd` as Autoload
@@ -262,7 +262,7 @@ Matching Engine ────→ Combo Engine
 
 ---
 
-- [ ] 3. AP Manager
+- [x] 3. AP Manager
 
   **What to do**:
   1. Create `src/core/ap_manager.gd` as Autoload
@@ -310,7 +310,7 @@ Matching Engine ────→ Combo Engine
 
 ---
 
-- [ ] 4. Unit System (Q/K/V Stats)
+- [x] 4. Unit System (Q/K/V Stats)
 
   **What to do**:
   1. Create `src/core/unit.gd` Resource class
@@ -363,7 +363,7 @@ Matching Engine ────→ Combo Engine
 
 <!-- Wave 2: Card System -->
 
-- [ ] 5. Card Data Structure
+- [x] 5. Card Data Structure
 
   **What to do**:
   1. Create `src/battle/card.gd` Resource class
@@ -405,7 +405,7 @@ Matching Engine ────→ Combo Engine
 
 ---
 
-- [ ] 6. Deck Management
+- [x] 6. Deck Management
 
   **What to do**:
   1. Create `src/battle/deck.gd` class
@@ -453,7 +453,7 @@ Matching Engine ────→ Combo Engine
 
 ---
 
-- [ ] 7. Draw System (3-Deck Coordination)
+- [x] 7. Draw System (3-Deck Coordination)
 
   **What to do**:
   1. Create `src/battle/draw_manager.gd` Autoload
@@ -501,7 +501,7 @@ Matching Engine ────→ Combo Engine
 
 ---
 
-- [ ] 8. Card Play System
+- [x] 8. Card Play System
 
   **What to do**:
   1. Create `src/battle/card_player.gd`
@@ -551,7 +551,7 @@ Matching Engine ────→ Combo Engine
 
 <!-- Wave 3: Battle Core -->
 
-- [ ] 9. Battle State Machine
+- [x] 9. Battle State Machine
 
   **What to do**:
   1. Create `src/battle/battle_system.gd` as Autoload
@@ -599,7 +599,7 @@ Matching Engine ────→ Combo Engine
 
 ---
 
-- [ ] 10. Combo Engine (Ally Matching)
+- [x] 10. Combo Engine (Ally Matching)
 
   **What to do**:
   1. Create `src/battle/combo_engine.gd`
@@ -648,7 +648,7 @@ Matching Engine ────→ Combo Engine
 
 ---
 
-- [ ] 11. Enemy AI Base
+- [x] 11. Enemy AI Base
 
   **What to do**:
   1. Create `src/battle/enemy_ai.gd` base class
@@ -696,7 +696,7 @@ Matching Engine ────→ Combo Engine
 
 ---
 
-- [ ] 12. Intent System
+- [x] 12. Intent System
 
   **What to do**:
   1. Add `intent: EnemyAction` property to EnemyAI
@@ -746,7 +746,7 @@ Matching Engine ────→ Combo Engine
 
 <!-- Wave 4: Battle UI -->
 
-- [ ] 13. Hand UI Component
+- [x] 13. Hand UI Component
 
   **What to do**:
   1. Create `src/ui/hand_ui.tscn` scene with CardButton nodes
@@ -794,7 +794,7 @@ Matching Engine ────→ Combo Engine
 
 ---
 
-- [ ] 14. Combo Selection UI
+- [x] 14. Combo Selection UI
 
   **What to do**:
   1. Create `src/ui/combo_selector.tscn` overlay panel
@@ -842,7 +842,7 @@ Matching Engine ────→ Combo Engine
 
 ---
 
-- [ ] 15. AP Bar UI
+- [x] 15. AP Bar UI
 
   **What to do**:
   1. Create `src/ui/ap_bar.tscn` with progress bar and numeric display
@@ -883,7 +883,7 @@ Matching Engine ────→ Combo Engine
 
 ---
 
-- [ ] 16. Matching Visualization
+- [x] 16. Matching Visualization
 
   **What to do**:
   1. Create `src/ui/matching_indicator.gd` as CanvasLayer
@@ -933,7 +933,7 @@ Matching Engine ────→ Combo Engine
 
 <!-- Wave 5: Content Data -->
 
-- [ ] 17. Card JSON Definitions
+- [x] 17. Card JSON Definitions
 
   **What to do**:
   1. Create `src/data/cards/` directory

@@ -1,10 +1,10 @@
 {
-  "active_plan": "/Users/misile/repos/h11/.sisyphus/plans/play-review-scraper.md",
-  "started_at": "2026-03-13T05:12:44.716Z",
+  "active_plan": "/Users/misile/repos/h11/.sisyphus/plans/scalar-prototype.md",
+  "started_at": "2026-03-14T02:07:35.708Z",
   "session_ids": [
-    "ses_31aa91031ffesqg9PJmw3OHx7b"
+    "ses_3193b8394ffebtZnwoV9CNSC51"
   ],
-  "plan_name": "play-review-scraper",
+  "plan_name": "scalar-prototype",
   "agent": "atlas",
-  "worktree_path": "/Users/misile/repos/h11"
+  "worktree_path": "/Users/misile/repos/h11-scalar-prototype"
 }

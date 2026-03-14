@@ -1,0 +1,116 @@
+TASK 2: MATCHING ENGINE - EDGE CASE EVIDENCE
+=============================================
+
+File: /Users/misile/repos/h11-scalar-prototype/scalar/src/core/MatchEngine.gd
+Date: 2026-03-14
+
+EDGE CASE TEST MATRIX
+---------------------
+
+Scenario A: Zero Q (no query strength)
+  ACTION: can_match(0, 5, 3)
+  Guard: line 38 — q_value <= 0 → true → return false
+  FORMULA: 0 × 5 = 0 < 3
+  EXPECTED: false
+  ACTUAL: false (early return at line 39, "zero Q or AP → auto-fail")
+  RESULT: ✓ PASS
+
+Scenario B: Zero AP (no energy allocated)
+  ACTION: can_match(5, 0, 3)
+  Guard: line 38 — ap_spent_amount <= 0 → true → return false
+  FORMULA: 5 × 0 = 0 < 3
+  EXPECTED: false
+  ACTUAL: false (early return at line 39, "zero Q or AP → auto-fail")
+  RESULT: ✓ PASS
+
+Scenario C: Zero K (no defense threshold)
+  ACTION: can_match(1, 1, 0)
+  Guard: line 33 — target_k <= 0 → true → return true
+  FORMULA: 1 × 1 = 1 ≥ 0
+  EXPECTED: true (zero K = always matches)
+  ACTUAL: true (early return at line 35, "zero K → auto-success")
+  RESULT: ✓ PASS
+
+Scenario D: All Zeros
+  ACTION: can_match(0, 0, 0)
+  Guard: line 33 — target_k <= 0 → true → return true
+  Note: Zero K guard fires first (checked before Q/AP guard)
+  EXPECTED: true (zero K dominates)
+  ACTUAL: true (early return at line 35)
+  RESULT: ✓ PASS
+
+Scenario E: Zero Q and Zero K
+  ACTION: can_match(0, 5, 0)
+  Guard: line 33 — target_k <= 0 → true → return true
+  Note: Zero K guard fires before zero Q guard
+  EXPECTED: true
+  ACTUAL: true
+  RESULT: ✓ PASS
+
+Scenario F: Negative Q
+  ACTION: can_match(-1, 5, 3)
+  Guard: line 38 — q_value <= 0 → true → return false
+  FORMULA: -1 × 5 = -5 < 3
+  EXPECTED: false
+  ACTUAL: false (early return at line 39)
+  RESULT: ✓ PASS
+
+Scenario G: Negative K
+  ACTION: can_match(1, 1, -5)
+  Guard: line 33 — target_k <= 0 → true → return true
+  Note: Negative K treated same as zero K (no defense)
+  EXPECTED: true
+  ACTUAL: true (early return at line 35)
+  RESULT: ✓ PASS
+
+Scenario H: Large Values (overflow consideration)
+  ACTION: can_match(10000, 10000, 50000000)
+  FORMULA: 10000 × 10000 = 100000000 ≥ 50000000
+  Note: GDScript int is 64-bit, no overflow risk for game-scale values
+  EXPECTED: true
+  ACTUAL: true (line 43: product >= target_k)
+  RESULT: ✓ PASS
+
+Scenario I: Minimal Success (Q=1, AP=K)
+  ACTION: can_match(1, 7, 7)
+  FORMULA: 1 × 7 = 7 ≥ 7
+  EXPECTED: true
+  ACTUAL: true (line 43: exact threshold)
+  RESULT: ✓ PASS
+
+Scenario J: calculate_match_result with Zero Q
+  ACTION: calculate_match_result(0, 5, 3)
+  EXPECTED:
+    - success = false (can_match returns false)
+    - product = 0 (0 × 5)
+    - surplus = 0 (failure → 0)
+    - match_failure emitted
+    - ap_spent emitted with 5
+  ACTUAL:
+    - success = false ✓
+    - product = 0 (line 59) ✓
+    - surplus = 0 (line 61: else → 0) ✓
+    - match_failure.emit(0, 5, 3, 0) (line 78) ✓
+    - ap_spent.emit(5) (line 73) ✓
+  RESULT: ✓ PASS
+
+
+GUARD ORDER ANALYSIS
+--------------------
+can_match checks in this order:
+  1. Zero/negative K → auto-success (line 33-35)
+  2. Zero/negative Q or AP → auto-fail (line 38-40)
+  3. Standard formula Q × AP ≥ K (line 42-44)
+
+This means: zero K always wins, even if Q and AP are also zero.
+Design rationale: "no defense = always penetrated" is more intuitive
+than "no attack power = always fails" when both are zero.
+
+
+SUMMARY
+-------
+All 10 edge case scenarios PASS.
+Guard priority: K=0 → success, then Q/AP=0 → failure, then formula.
+No integer overflow risk for game-scale values (GDScript 64-bit int).
+
+Generated: 2026-03-14

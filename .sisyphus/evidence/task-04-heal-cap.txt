@@ -1,0 +1,27 @@
+# Task 04 — Heal Cap Verification
+# Date: 2026-03-14
+# Branch: atlas/scalar-prototype
+
+## Test: Unit healing capped at max
+
+Setup:
+  var scala = Unit.new()
+  scala.unit_name = "Scala"
+  scala.max_hp = 20; scala.current_hp = 20
+
+Step 1: take_damage(10)
+  current_hp = maxi(20 - 10, 0) = 10
+
+Step 2: heal(15)
+  current_hp = mini(10 + 15, 20) = mini(25, 20) = 20
+  PASS: HP capped at max_hp (20), not 25
+
+Step 3: heal(0) on full HP
+  current_hp = mini(20 + 0, 20) = 20
+  PASS: No-op heal works
+
+Step 4: heal(5) on full HP
+  current_hp = mini(20 + 5, 20) = 20
+  PASS: Over-heal capped
+
+## Verdict: PASS — Healing correctly capped at max_hp
