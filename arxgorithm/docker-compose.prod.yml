@@ -1,0 +1,74 @@
+# Production Docker Compose for arXgorithm
+# Uses pre-built images from GitHub Container Registry
+# Usage: docker compose -f docker-compose.prod.yml up -d
+
+services:
+  backend:
+    image: ${DOCKER_REGISTRY:-ghcr.io}/${DOCKER_OWNER:-misilelab}/arxgorithm-backend:${IMAGE_TAG:-latest}
+    container_name: arxgorithm-backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    env_file:
+      - .env
+    environment:
+      # Database (persist in volume)
+      - DATABASE_URL=sqlite:////data/arxgorithm.db
+      # URLs (override from .env for container networking)
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
+      - BACKEND_URL=${BACKEND_URL:-http://localhost:8000}
+    
+    volumes:
+      - arxgorithm-data:/data
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    networks:
+      - arxgorithm-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  frontend:
+    image: ${DOCKER_REGISTRY:-ghcr.io}/${DOCKER_OWNER:-misilelab}/arxgorithm-frontend:${IMAGE_TAG:-latest}
+    container_name: arxgorithm-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=${BACKEND_URL:-http://localhost:8000}
+      - HOSTNAME=0.0.0.0
+    
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    depends_on:
+      backend:
+        condition: service_healthy
+    
+    networks:
+      - arxgorithm-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  arxgorithm-data:
+    driver: local
+
+networks:
+  arxgorithm-network:
+    driver: bridge
