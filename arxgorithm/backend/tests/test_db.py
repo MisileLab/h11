@@ -1,11 +1,12 @@
-"""Tests for database schema and initialization."""
-
+import importlib
 import sqlite3
 import struct
+from pathlib import Path
 
 import pytest
+from fastapi.testclient import TestClient
 
-from app.db import init_db
+from app.db import database_url_to_path, init_db
 
 
 @pytest.mark.asyncio
@@ -265,3 +266,36 @@ async def test_indexes_created():
     }
 
     assert expected_indexes.issubset(indexes)
+
+
+def test_database_url_to_path_handles_absolute_sqlite_urls():
+    assert (
+        database_url_to_path("sqlite:////data/arxgorithm.db") == "/data/arxgorithm.db"
+    )
+
+
+def test_main_startup_initializes_file_database(monkeypatch, tmp_path):
+    db_path = tmp_path / "startup.db"
+
+    monkeypatch.setenv("ARXIV_RATE_LIMIT", "3.0")
+    monkeypatch.setenv("SALAD_EMBEDDING_URL", "https://test.salad.cloud")
+    monkeypatch.setenv("GEMINI_API_KEY", "test-key")
+    monkeypatch.setenv("SESSION_SECRET", "test-secret")
+    monkeypatch.setenv("DATABASE_URL", f"sqlite:///{db_path}")
+    monkeypatch.setenv("BACKEND_URL", "http://localhost:8000")
+    monkeypatch.setenv("FRONTEND_URL", "http://localhost:3000")
+
+    main_module = importlib.import_module("app.main")
+    reloaded_main = importlib.reload(main_module)
+
+    with TestClient(reloaded_main.app) as client:
+        response = client.get("/health")
+        assert response.status_code == 200
+
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='reading_list'"
+    )
+    assert cursor.fetchone() is not None
+    conn.close()

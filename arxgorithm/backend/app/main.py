@@ -1,5 +1,6 @@
 """FastAPI application entry point."""
 
+from contextlib import asynccontextmanager
 import os
 
 from fastapi import FastAPI
@@ -12,12 +13,23 @@ from app.api.reading_list import router as reading_list_router
 from app.api.recommendations import router as recommendations_router
 from app.api.search import router as search_router
 from app.config import get_settings
+from app.db import database_url_to_path, init_db
 from app.middleware import AnonymousTrackingMiddleware
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    settings = get_settings()
+    db_conn = await init_db(database_url_to_path(settings.database_url))
+    db_conn.close()
+    yield
+
 
 app = FastAPI(
     title="arXgorithm API",
     description="Paper recommendation engine with arXiv integration",
     version="0.1.0",
+    lifespan=lifespan,
 )
 
 # CORS: Allow the configured frontend origin to call the API from the browser.

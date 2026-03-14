@@ -6,6 +6,14 @@ from pathlib import Path
 import sqlite_vec
 
 
+def database_url_to_path(database_url: str) -> str:
+    if database_url.startswith("sqlite:///"):
+        return database_url[10:]
+    if database_url.startswith("sqlite://"):
+        return database_url[9:]
+    raise ValueError(f"Invalid database URL format: {database_url}")
+
+
 async def init_db(db_path: str) -> sqlite3.Connection:
     """
     Initialize SQLite database with sqlite-vec extension and schema.
@@ -16,7 +24,9 @@ async def init_db(db_path: str) -> sqlite3.Connection:
     Returns:
         sqlite3.Connection object connected to initialized database.
     """
-    # Create connection
+    if db_path != ":memory:":
+        Path(db_path).parent.mkdir(parents=True, exist_ok=True)
+
     conn = sqlite3.connect(db_path)
 
     # Enable loading extensions
@@ -52,13 +62,6 @@ def get_db_connection(database_url: str) -> sqlite3.Connection:
     Raises:
         ValueError: If URL format is invalid
     """
-    # Extract path from sqlite:// URL format
-    if database_url.startswith("sqlite:///"):
-        db_path = database_url[10:]
-    elif database_url.startswith("sqlite://"):
-        db_path = database_url[9:]
-    else:
-        raise ValueError(f"Invalid database URL format: {database_url}")
-
+    db_path = database_url_to_path(database_url)
     conn = sqlite3.connect(db_path)
     return conn
