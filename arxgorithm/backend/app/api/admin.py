@@ -1,31 +1,24 @@
 """Admin API endpoints for ingestion control and TEI management."""
 
-from datetime import datetime
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.api.dependencies import User, get_current_user
+from app.api.ingestion import _bg_service
 from app.config import get_settings
-from app.services.background_ingestion import BackgroundIngestionService
 from app.services.saladcloud import SaladCloudService
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
-_background_service: BackgroundIngestionService | None = None
 
-
-def set_background_service(service: BackgroundIngestionService) -> None:
-    global _background_service
-    _background_service = service
-
-
-def get_background_service() -> BackgroundIngestionService:
-    if _background_service is None:
+def get_background_service():
+    """Get the background ingestion service set by main.py."""
+    if _bg_service is None:
         raise HTTPException(
             status_code=503, detail="Background service not initialized"
         )
-    return _background_service
+    return _bg_service
 
 
 def require_admin(user: User = Depends(get_current_user)) -> User:
@@ -38,7 +31,7 @@ def require_admin(user: User = Depends(get_current_user)) -> User:
 @router.get("/ingestion/status")
 async def get_ingestion_status(
     _: User = Depends(require_admin),
-    service: BackgroundIngestionService = Depends(get_background_service),
+    service=Depends(get_background_service),
 ) -> dict[str, Any]:
     return {
         "running": service.running,
@@ -53,7 +46,7 @@ async def get_ingestion_status(
 @router.post("/ingestion/trigger")
 async def trigger_ingestion(
     _: User = Depends(require_admin),
-    service: BackgroundIngestionService = Depends(get_background_service),
+    service=Depends(get_background_service),
 ) -> dict[str, str]:
     await service.run_ingestion_cycle()
     return {"status": "triggered"}
