@@ -33,7 +33,7 @@ if not _session_secret:
 
 app.add_middleware(
     CORSMiddleware,  # type: ignore[arg-type]
-    allow_origins=[_settings.frontend_url],
+    allow_origins=_settings.get_cors_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

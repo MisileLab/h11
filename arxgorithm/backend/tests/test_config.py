@@ -19,15 +19,16 @@ class TestSettingsValidation:
         )
 
         try:
-            from app.config import Settings
+            from app.config import get_settings
 
-            config = Settings()
+            config = get_settings()
             assert config.arxiv_rate_limit == 3.0
             assert config.salad_embedding_url == "https://test.salad.cloud"
             assert config.gemini_api_key == "test-gemini-key"
             assert config.session_secret == "test-secret"
             assert config.database_url == "sqlite:///./test.db"
             assert config.frontend_url == "http://localhost:3000"
+            assert "http://localhost:3000" in config.get_cors_origins()
         finally:
             for key in [
                 "ARXIV_RATE_LIMIT",
@@ -53,10 +54,10 @@ class TestSettingsValidation:
         ]:
             os.environ.pop(key, None)
 
-        from app.config import Settings
+        from app.config import get_settings
 
         with pytest.raises(ValidationError):
-            Settings()
+            get_settings()
 
     def test_optional_oauth_fields_can_be_present(self):
         os.environ.update(
@@ -77,9 +78,9 @@ class TestSettingsValidation:
         )
 
         try:
-            from app.config import Settings
+            from app.config import get_settings
 
-            config = Settings()
+            config = get_settings()
             assert config.google_client_id == "google-id"
             assert config.google_client_secret == "google-secret"
             assert config.github_client_id == "github-id"
@@ -116,10 +117,10 @@ class TestSettingsValidation:
         )
 
         try:
-            from app.config import Settings
+            from app.config import get_settings
 
             with pytest.raises(ValidationError):
-                Settings()
+                get_settings()
         finally:
             for key in [
                 "ARXIV_RATE_LIMIT",
@@ -138,3 +139,79 @@ class TestSettingsValidation:
 
         field = Settings.model_fields["arxiv_rate_limit"]
         assert field.annotation == float or str(field.annotation) == "float"
+
+    def test_cors_origins_include_production_and_configured_frontend(self):
+        os.environ.update(
+            {
+                "ARXIV_RATE_LIMIT": "3.0",
+                "SALAD_EMBEDDING_URL": "https://test.salad.cloud",
+                "SALAD_API_KEY": "",
+                "GEMINI_API_KEY": "test-gemini-key",
+                "SESSION_SECRET": "test-secret",
+                "DATABASE_URL": "sqlite:///./test.db",
+                "BACKEND_URL": "https://arxgorithmb.misile.xyz",
+                "FRONTEND_URL": "https://staging.example.com",
+            }
+        )
+
+        try:
+            from app.config import get_settings
+
+            config = get_settings()
+            assert config.get_cors_origins() == [
+                "https://staging.example.com",
+                "http://localhost:3000",
+                "https://arxgorithm.misile.xyz",
+            ]
+        finally:
+            for key in [
+                "ARXIV_RATE_LIMIT",
+                "SALAD_EMBEDDING_URL",
+                "SALAD_API_KEY",
+                "GEMINI_API_KEY",
+                "SESSION_SECRET",
+                "DATABASE_URL",
+                "BACKEND_URL",
+                "FRONTEND_URL",
+            ]:
+                os.environ.pop(key, None)
+
+    def test_cors_origins_include_additional_env_overrides(self):
+        os.environ.update(
+            {
+                "ARXIV_RATE_LIMIT": "3.0",
+                "SALAD_EMBEDDING_URL": "https://test.salad.cloud",
+                "SALAD_API_KEY": "",
+                "GEMINI_API_KEY": "test-gemini-key",
+                "SESSION_SECRET": "test-secret",
+                "DATABASE_URL": "sqlite:///./test.db",
+                "BACKEND_URL": "https://arxgorithmb.misile.xyz",
+                "FRONTEND_URL": "https://staging.example.com",
+                "CORS_ALLOWED_ORIGINS": "https://preview.example.com, https://alt.example.com",
+            }
+        )
+
+        try:
+            from app.config import get_settings
+
+            config = get_settings()
+            assert config.get_cors_origins() == [
+                "https://staging.example.com",
+                "http://localhost:3000",
+                "https://arxgorithm.misile.xyz",
+                "https://preview.example.com",
+                "https://alt.example.com",
+            ]
+        finally:
+            for key in [
+                "ARXIV_RATE_LIMIT",
+                "SALAD_EMBEDDING_URL",
+                "SALAD_API_KEY",
+                "GEMINI_API_KEY",
+                "SESSION_SECRET",
+                "DATABASE_URL",
+                "BACKEND_URL",
+                "FRONTEND_URL",
+                "CORS_ALLOWED_ORIGINS",
+            ]:
+                os.environ.pop(key, None)

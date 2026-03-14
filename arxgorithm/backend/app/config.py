@@ -9,6 +9,18 @@ import sys
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+def _unique_non_empty(values: list[str]) -> list[str]:
+    seen: set[str] = set()
+    result: list[str] = []
+    for value in values:
+        normalized = value.strip()
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        result.append(normalized)
+    return result
+
+
 class Settings(BaseSettings):
     """Application configuration with environment variable loading."""
 
@@ -59,7 +71,25 @@ class Settings(BaseSettings):
     frontend_url: str
     """Base URL of frontend for CORS and post-login redirects."""
 
+    cors_allowed_origins: str | None = None
+    """Optional comma-separated list of additional allowed CORS origins."""
+
+    def get_cors_origins(self) -> list[str]:
+        configured_origins = []
+        if self.cors_allowed_origins:
+            configured_origins = self.cors_allowed_origins.split(",")
+
+        return _unique_non_empty(
+            [
+                self.frontend_url,
+                "http://localhost:3000",
+                "https://arxgorithm.misile.xyz",
+                *configured_origins,
+            ]
+        )
+
 
 def get_settings() -> Settings:
     """Get application settings. Instantiated on-demand to support testing."""
-    return Settings()
+    settings_factory = Settings
+    return settings_factory()
