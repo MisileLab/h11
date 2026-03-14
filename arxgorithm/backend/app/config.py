@@ -54,7 +54,7 @@ class Settings(BaseSettings):
     """GitHub OAuth client ID. Optional for anonymous-only mode."""
 
     github_client_secret: str | None = None
-    """GitHub OAuth client secret. Optional for anonymous-only mode."""
+    """GitHub OAuth client secret. Optional for anonymous-only mode"""
 
     # Session Management (required)
     session_secret: str
@@ -63,6 +63,16 @@ class Settings(BaseSettings):
     # Database (required)
     database_url: str
     """Database connection URL (e.g., sqlite:///./arxgorithm.db)."""
+
+    # Background Ingestion Scheduler
+    ingestion_enabled: bool = True
+    ingestion_interval_hours: int = 6
+    ingestion_categories: str = "cs.AI,cs.LG,cs.CL,cs.CV,cs.CR,cs.FL,cs.LO,cs.PL,cs.SC,cs.NA,cs.AR,cs.ET,cs.CY,cs.DB,cs.MS,cs.OH,cs.PF,cs.SI,cs.SO,cs.MM,cs.CG,cs.LG,cs.CL,cs.CV,cs.CR,cs.FL,cs.LO,cs.PL,cs.SC,cs.NA,cs.AR,cs.ET,cs.CY,cs.DB,cs.MS,cs.OH,cs.PF,cs.SI,cs.SO"
+    ingestion_citation_threshold: int = 100
+    ingestion_max_papers_per_category: int = 50
+
+    # Semantic Scholar API (optional)
+    semantic_scholar_api_key: str | None = None
 
     # URL Configuration (required)
     backend_url: str

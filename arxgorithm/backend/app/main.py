@@ -1,5 +1,6 @@
 """FastAPI application entry point."""
 
+import logging
 from contextlib import asynccontextmanager
 import os
 
@@ -8,21 +9,54 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.api.auth import router as auth_router
+from app.api.ingestion import router as ingestion_router, set_background_service
 from app.api.papers import router as papers_router
 from app.api.reading_list import router as reading_list_router
 from app.api.recommendations import router as recommendations_router
 from app.api.search import router as search_router
 from app.config import get_settings
-from app.db import database_url_to_path, init_db
+from app.db import database_url_to_path, get_db_connection, init_db
+from app.http_client import HTTPClient
 from app.middleware import AnonymousTrackingMiddleware
+from app.services.arxiv import ArxivClient
+from app.services.background_ingestion import BackgroundIngestionService
+from app.services.embedding import EmbeddingService
+from app.services.semantic_scholar import SemanticScholarClient
+
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     settings = get_settings()
-    db_conn = await init_db(database_url_to_path(settings.database_url))
+    db_path = database_url_to_path(settings.database_url)
+    db_conn = await init_db(db_path)
     db_conn.close()
+
+    arxiv_db_conn = get_db_connection(settings.database_url)
+    arxiv_client = ArxivClient(arxiv_db_conn)
+    http_client = HTTPClient()
+    embedding_service = EmbeddingService(settings, db_path)
+    semantic_scholar = SemanticScholarClient(
+        http_client, api_key=settings.semantic_scholar_api_key
+    )
+    bg_service = BackgroundIngestionService(
+        settings=settings,
+        arxiv_client=arxiv_client,
+        embedding_service=embedding_service,
+        semantic_scholar=semantic_scholar,
+        db_path=db_path,
+    )
+    set_background_service(bg_service)
+
+    if settings.ingestion_enabled:
+        bg_service.start_scheduler()
+        logger.info("Background ingestion scheduler started")
+
     yield
+
+    bg_service.stop_scheduler()
+    arxiv_db_conn.close()
 
 
 app = FastAPI(
