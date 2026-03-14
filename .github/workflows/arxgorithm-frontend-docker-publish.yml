@@ -45,6 +45,8 @@ jobs:
         with:
           context: arxgorithm
           file: arxgorithm/Dockerfile.frontend
+          build-args: |
+            NEXT_PUBLIC_API_URL=https://arxgorithmb.misile.xyz
           push: ${{ env.ACT != 'true' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
