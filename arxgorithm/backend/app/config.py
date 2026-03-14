@@ -20,12 +20,15 @@ class Settings(BaseSettings):
     arxiv_rate_limit: float
     """Rate limit (seconds) between arXiv API requests."""
 
-    # Nebius Embedding Service (required)
-    nebius_api_key: str
-    """API key for Nebius embedding service."""
+    # SaladCloud Embedding Service (required)
+    salad_api_key: str
+    """API key for SaladCloud inference endpoint."""
 
-    nebius_api_url: str
-    """Base URL for Nebius API."""
+    salad_organization_name: str
+    """SaladCloud organization name."""
+
+    salad_inference_endpoint_name: str
+    """SaladCloud inference endpoint name for Qwen3-Embedding-8B."""
 
     # Gemini Summary Service (required)
     gemini_api_key: str

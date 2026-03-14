@@ -1,5 +1,6 @@
-"""Embedding service using Nebius API with SQLite caching."""
+"""Embedding service using SaladCloud Inference Endpoints with SQLite caching."""
 
+import asyncio
 import hashlib
 import logging
 import sqlite3
@@ -17,10 +18,11 @@ logger = logging.getLogger(__name__)
 
 class EmbeddingService:
     """
-    Service for generating text embeddings via Nebius API.
+    Service for generating text embeddings via SaladCloud Inference Endpoints.
 
     Features:
-    - Calls Nebius embeddings endpoint with bearer token authentication
+    - Creates async jobs on SaladCloud inference endpoint for Qwen3-Embedding-8B
+    - Polls for job completion with retry logic
     - Caches embeddings in SQLite using text hash as key
     - 1-hour TTL for cached embeddings (or longer for durability)
     - Returns list of floats (1024 dimensions for Qwen3-Embedding-8B)
@@ -46,7 +48,7 @@ class EmbeddingService:
         Initialize embedding service.
 
         Args:
-            settings: Application settings (for Nebius API key and URL).
+            settings: Application settings (for SaladCloud API key and endpoint).
             db_path: Path to SQLite database for caching.
             http_client: Optional HTTPClient instance (creates new if not provided).
         """
@@ -56,7 +58,7 @@ class EmbeddingService:
 
     async def embed(self, text: str) -> list[float]:
         """
-        Generate embedding for text via Nebius API with cache.
+        Generate embedding for text via SaladCloud API with cache.
 
         Args:
             text: Text to embed.
@@ -75,8 +77,8 @@ class EmbeddingService:
         if cached is not None:
             return cached
 
-        # Call Nebius API
-        embedding = await self._call_nebius_api(text)
+        # Call SaladCloud API
+        embedding = await self._call_saladcloud_api(text)
 
         # Store in cache
         await self._cache_embedding(text_hash, embedding)
@@ -176,9 +178,17 @@ class EmbeddingService:
         )
         await db.commit()
 
-    async def _call_nebius_api(self, text: str) -> list[float]:
+    async def _call_saladcloud_api(self, text: str) -> list[float]:
         """
-        Call Nebius embeddings API.
+        Call SaladCloud Inference Endpoint for embeddings (async job-based).
+
+        Creates a job, polls for completion, and extracts the embedding.
+
+        Job lifecycle:
+        1. POST job with text input → get job_id
+        2. Poll GET /jobs/{job_id} with exponential backoff (0.5s, 1s, 2s, 5s max)
+        3. When status="succeeded", extract embeddings from output
+        4. Timeout after 5 minutes
 
         Args:
             text: Text to embed.
@@ -187,61 +197,128 @@ class EmbeddingService:
             List of floats (1024 dimensions).
 
         Raises:
-            ExternalServiceError: If API call fails.
+            ExternalServiceError: If API call fails, timeout, or output format invalid.
         """
-        # Normalize base URL: remove /v1 suffix if present, then append /v1/embeddings
-        # This ensures consistency with .env.example which includes /v1 in the base URL
-        base_url = self.settings.nebius_api_url.rstrip("/")
-        if base_url.endswith("/v1"):
-            base_url = base_url[:-3]  # Remove /v1 suffix
-        url = f"{base_url}/v1/embeddings"
+        base_url = "https://api.salad.com/api/public"
+        org = self.settings.salad_organization_name
+        endpoint = self.settings.salad_inference_endpoint_name
+
+        create_url = (
+            f"{base_url}/organizations/{org}/inference-endpoints/{endpoint}/jobs"
+        )
         headers = {
-            "Authorization": f"Bearer {self.settings.nebius_api_key}",
+            "Salad-Api-Key": self.settings.salad_api_key,
             "Content-Type": "application/json",
         }
 
-        request_body = {
-            "model": self.MODEL_ID,
+        job_input = {
             "input": text,
-            "encoding_format": "float",
         }
 
         try:
-            response = await self.http_client.post(
-                url,
-                json_data=request_body,
+            # Step 1: Create job
+            job_response = await self.http_client.post(
+                create_url,
+                json_data=job_input,
                 headers=headers,
-                service="Nebius",
+                service="SaladCloud",
             )
 
-            # Extract embedding from response
-            # Expected format: {"data": [{"embedding": [float, ...]}], ...}
-            if "data" not in response or not response["data"]:
+            job_id = job_response.get("id")
+            if not job_id:
                 raise ExternalServiceError(
-                    service="Nebius",
-                    message="Nebius: invalid response format (missing data)",
+                    service="SaladCloud",
+                    message="SaladCloud: job creation failed (missing id)",
                 )
 
-            embedding = response["data"][0].get("embedding")
-            if embedding is None:
-                raise ExternalServiceError(
-                    service="Nebius",
-                    message="Nebius: invalid response format (missing embedding)",
+            result_url = f"{create_url}/{job_id}"
+
+            # Step 2: Poll for completion with timeout
+            backoff_times = [0.5, 1.0, 2.0, 5.0]  # exponential backoff up to 5s
+            backoff_idx = 0
+            start_time = time.time()
+            max_wait_seconds = 300  # 5 minute timeout
+
+            while True:
+                elapsed = time.time() - start_time
+                if elapsed > max_wait_seconds:
+                    raise ExternalServiceError(
+                        service="SaladCloud",
+                        message=f"SaladCloud: job polling timeout ({max_wait_seconds}s)",
+                    )
+
+                job_status = await self.http_client.get(
+                    result_url,
+                    headers=headers,
+                    service="SaladCloud",
                 )
 
-            # Validate dimension
-            if len(embedding) != self.EMBEDDING_DIMENSION:
-                raise ExternalServiceError(
-                    service="Nebius",
-                    message=f"Nebius: unexpected embedding dimension {len(embedding)}, expected {self.EMBEDDING_DIMENSION}",
-                )
+                status = job_status.get("status")
+                
+                # Step 3: Check final states
+                if status == "succeeded":
+                    output = job_status.get("output")
+                    if output is None:
+                        raise ExternalServiceError(
+                            service="SaladCloud",
+                            message="SaladCloud: job succeeded but missing output",
+                        )
 
-            return embedding
+                    # Extract embedding from output
+                    # Expected format: {"embeddings": [[0.1, 0.2, ..., 0.3]]}
+                    embeddings_list = (
+                        output.get("embeddings")
+                        if isinstance(output, dict)
+                        else None
+                    )
+                    
+                    if (
+                        not embeddings_list
+                        or not isinstance(embeddings_list, list)
+                        or len(embeddings_list) == 0
+                    ):
+                        raise ExternalServiceError(
+                            service="SaladCloud",
+                            message="SaladCloud: invalid output format (missing or empty embeddings array)",
+                        )
+
+                    embedding = embeddings_list[0]
+                    
+                    if not isinstance(embedding, list):
+                        raise ExternalServiceError(
+                            service="SaladCloud",
+                            message="SaladCloud: invalid embedding format (expected array)",
+                        )
+
+                    if len(embedding) != self.EMBEDDING_DIMENSION:
+                        raise ExternalServiceError(
+                            service="SaladCloud",
+                            message=f"SaladCloud: unexpected embedding dimension {len(embedding)}, expected {self.EMBEDDING_DIMENSION}",
+                        )
+
+                    return embedding
+
+                if status == "failed":
+                    raise ExternalServiceError(
+                        service="SaladCloud",
+                        message="SaladCloud: job failed (after max retries)",
+                    )
+
+                if status == "cancelled":
+                    raise ExternalServiceError(
+                        service="SaladCloud",
+                        message="SaladCloud: job was cancelled",
+                    )
+
+                # Still pending/running: wait and retry
+                wait_time = backoff_times[min(backoff_idx, len(backoff_times) - 1)]
+                backoff_idx += 1
+                await asyncio.sleep(wait_time)
 
         except ExternalServiceError:
             raise
         except Exception as e:
             raise ExternalServiceError(
-                service="Nebius",
-                message=f"Nebius: {e}",
+                service="SaladCloud",
+                message=f"SaladCloud API error: {str(e)}",
             )
