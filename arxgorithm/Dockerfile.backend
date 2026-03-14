@@ -1,5 +1,5 @@
 # Multi-stage build for backend
-FROM python:3.13-slim as builder
+FROM python:3.14-slim as builder
 
 WORKDIR /tmp/build
 
@@ -20,7 +20,7 @@ ENV PATH="/root/.local/bin:$PATH"
 RUN uv pip compile pyproject.toml --output-file requirements.txt
 
 # Runtime stage
-FROM python:3.13-slim
+FROM python:3.14-slim
 
 WORKDIR /app
 
