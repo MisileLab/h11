@@ -32,8 +32,8 @@ class Settings(BaseSettings):
     arxiv_rate_limit: float
     """Rate limit (seconds) between arXiv API requests."""
 
-    # SaladCloud TEI Embedding Service (required)
-    salad_embedding_url: str
+    # SaladCloud TEI Embedding Service (optional - defaults to local)
+    salad_embedding_url: str = "http://localhost:8080"
     """Base URL for SaladCloud-hosted TEI embedding service (e.g., https://container.salad.cloud)."""
 
     salad_api_key: str | None = None
