@@ -13,8 +13,13 @@ export function Header() {
             Arxgorithm
           </span>
         </Link>
-        <div className="flex items-center gap-4">
-          {/* Add a search bar or navigation links here if needed later */}
+        <div className="flex items-center gap-3 sm:gap-4">
+          <Link
+            href="/search"
+            className="inline-flex items-center rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-gray-900"
+          >
+            Search
+          </Link>
           <AuthMenu />
         </div>
       </div>

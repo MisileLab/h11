@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import Link from 'next/link';
 import { PaperCard } from '@/components/paper-card';
 import { useRecommendations } from '@/hooks/use-recommendations';
 
@@ -52,8 +52,29 @@ export function RecommendationFeed() {
 
   if (recommendations.length === 0) {
     return (
-      <div className="w-full p-6 bg-white border border-gray-200 rounded-lg text-center">
-        <p className="text-gray-500">No recommendations available at this time.</p>
+      <div className="w-full rounded-2xl border border-dashed border-gray-300 bg-white p-8 text-center">
+        <h2 className="text-2xl font-bold tracking-tight text-gray-900">
+          {hasHistory ? 'Your recommendations need more source papers' : 'Search to start building recommendations'}
+        </h2>
+        <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-gray-600">
+          {hasHistory
+            ? 'We only recommend from papers that have already been searched and embedded. Search for more papers, then save the ones you like to strengthen your reading profile.'
+            : 'Recommendations are generated from papers you search and save. Start with a topic search, then add a few papers to your reading list to personalize the feed.'}
+        </p>
+        <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <Link
+            href="/search"
+            className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+          >
+            Search papers
+          </Link>
+          <Link
+            href="/reading-list"
+            className="inline-flex items-center justify-center rounded-lg border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-700 transition hover:border-gray-400 hover:bg-gray-50"
+          >
+            Open reading list
+          </Link>
+        </div>
       </div>
     );
   }
@@ -61,7 +82,7 @@ export function RecommendationFeed() {
   return (
     <div className="w-full">
       <h2 className="text-2xl font-bold tracking-tight text-gray-900 mb-6">
-        {hasHistory ? 'Based on your reading history' : 'Popular papers'}
+        {hasHistory ? 'Based on your reading history' : 'Recent papers'}
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {recommendations.map((paper) => (

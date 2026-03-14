@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import SearchPage from './page';
+import { SearchPageClient } from './search-page-client';
 import { api } from '@/lib/api';
 
 // Mock the API client
@@ -39,7 +39,7 @@ describe('SearchPage', () => {
   };
 
   it('renders search input and category filters', () => {
-    renderWithClient(<SearchPage />);
+    renderWithClient(<SearchPageClient />);
     
     expect(screen.getByPlaceholderText('Search papers...')).toBeInTheDocument();
     expect(screen.getByText('Artificial Intelligence')).toBeInTheDocument();
@@ -66,7 +66,7 @@ describe('SearchPage', () => {
 
     vi.mocked(api.get).mockResolvedValueOnce(mockResponse);
 
-    renderWithClient(<SearchPage />);
+    renderWithClient(<SearchPageClient />);
     
     const input = screen.getByPlaceholderText('Search papers...');
     fireEvent.change(input, { target: { value: 'test' } });
@@ -90,7 +90,7 @@ describe('SearchPage', () => {
   it('handles category selection', async () => {
     vi.mocked(api.get).mockResolvedValueOnce({ papers: [], query: 'test', count: 0 });
 
-    renderWithClient(<SearchPage />);
+    renderWithClient(<SearchPageClient />);
     
     // Select category first
     fireEvent.click(screen.getByText('Artificial Intelligence'));
@@ -109,7 +109,7 @@ describe('SearchPage', () => {
   it('displays error state on api failure', async () => {
     vi.mocked(api.get).mockRejectedValueOnce(new Error('Network error'));
 
-    renderWithClient(<SearchPage />);
+    renderWithClient(<SearchPageClient />);
     
     const input = screen.getByPlaceholderText('Search papers...');
     fireEvent.change(input, { target: { value: 'error query' } });
@@ -117,6 +117,21 @@ describe('SearchPage', () => {
     await waitFor(() => {
       expect(screen.getByTestId('search-error')).toBeInTheDocument();
       expect(screen.getByText('Network error')).toBeInTheDocument();
+    });
+  });
+
+  it('uses initial query from the URL search params', async () => {
+    vi.mocked(api.get).mockResolvedValueOnce({ papers: [], query: 'transformers', count: 0 });
+
+    renderWithClient(<SearchPageClient initialQuery="transformers" />);
+
+    const input = screen.getByPlaceholderText('Search papers...') as HTMLInputElement;
+    expect(input.value).toBe('transformers');
+
+    await waitFor(() => {
+      expect(api.get).toHaveBeenCalledWith('/api/search', {
+        params: { q: 'transformers', limit: '20' }
+      });
     });
   });
 });

@@ -3,6 +3,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Home from './page';
 import { api } from '@/lib/api';
 
+const pushMock = vi.fn();
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: pushMock }),
+  useSearchParams: () => new URLSearchParams(),
+}));
+
 vi.mock('@/lib/api', () => ({
   api: {
     get: vi.fn(),
@@ -19,6 +26,7 @@ vi.mock('@/lib/api', () => ({
 describe('HomePage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    pushMock.mockReset();
   });
 
   it('shows loading state initially', async () => {
@@ -32,7 +40,7 @@ describe('HomePage', () => {
     expect(skeletons.length).toBeGreaterThan(0);
   });
 
-  it('shows "Popular papers" when history is empty', async () => {
+  it('shows "Recent papers" when history is empty', async () => {
     const mockRecs = [
       {
         arxiv_id: '1111.2222',
@@ -59,7 +67,7 @@ describe('HomePage', () => {
     render(<Home />);
 
     await waitFor(() => {
-      expect(screen.getByText('Popular papers')).toBeInTheDocument();
+      expect(screen.getByText('Recent papers')).toBeInTheDocument();
       expect(screen.getByText('Popular Paper 1')).toBeInTheDocument();
     });
   });
@@ -81,7 +89,7 @@ describe('HomePage', () => {
     vi.mocked(api.get).mockImplementation(async (url) => {
       if (url === '/api/reading-list') {
         return { 
-          papers: [{ arxiv_id: 'some.id', saved_at: 123, ...mockRecs[0] }], 
+          papers: [{ ...mockRecs[0], saved_at: 123 }], 
           count: 1 
         };
       }
@@ -154,6 +162,25 @@ describe('HomePage', () => {
     await waitFor(() => {
       expect(screen.getByText('Failed to load recommendations')).toBeInTheDocument();
       expect(screen.getByText('Network failure')).toBeInTheDocument();
+    });
+  });
+
+  it('shows search guidance when recommendations are empty', async () => {
+    vi.mocked(api.get).mockImplementation(async (url) => {
+      if (url === '/api/reading-list') {
+        return { papers: [], count: 0 };
+      }
+      if (url === '/api/recommendations') {
+        return { papers: [] };
+      }
+      return {};
+    });
+
+    render(<Home />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Search to start building recommendations')).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Search papers' })).toHaveAttribute('href', '/search');
     });
   });
 });
