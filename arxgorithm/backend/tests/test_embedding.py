@@ -1,9 +1,9 @@
-"""Tests for EmbeddingService (SaladCloud embeddings with SQLite cache)."""
+"""Tests for EmbeddingService (SaladCloud-hosted TEI with SQLite cache)."""
 
 import hashlib
 import struct
 import time
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -14,11 +14,10 @@ from app.services.embedding import EmbeddingService
 
 @pytest.fixture
 def mock_settings():
-    """Fixture for mock SaladCloud settings."""
+    """Fixture for mock SaladCloud TEI settings."""
     settings = MagicMock(spec=Settings)
+    settings.salad_embedding_url = "https://test-embed.salad.cloud"
     settings.salad_api_key = "test-salad-key"
-    settings.salad_organization_name = "test-org"
-    settings.salad_inference_endpoint_name = "qwen3-embedding-8b"
     return settings
 
 
@@ -36,69 +35,62 @@ def embedding_service(mock_settings, tmp_path):
 
 
 @pytest.mark.asyncio
-async def test_embed_creates_saladcloud_job_on_first_call(embedding_service):
-    """Test that embed() creates a SaladCloud job for new text."""
+async def test_embed_calls_tei_api_on_first_call(embedding_service):
+    """Test that embed() calls TEI /v1/embeddings for new text."""
     text = "Test paper abstract about machine learning"
     expected_embedding = [0.1, 0.2, 0.3] + [0.0] * (1024 - 3)
 
-    # Mock job creation (POST)
-    job_response = {
-        "id": "job-123",
-        "status": "pending",
-        "input": text,
-        "output": None,
+    # TEI response format (OpenAI-compatible)
+    tei_response = {
+        "data": [{"embedding": expected_embedding}],
     }
 
-    # Mock job completion (GET)
-    completed_response = {
-        "id": "job-123",
-        "status": "succeeded",
-        "input": text,
-        "output": {"embeddings": [expected_embedding]},
-    }
-
-    embedding_service.http_client.post = AsyncMock(return_value=job_response)
-    embedding_service.http_client.get = AsyncMock(return_value=completed_response)
+    embedding_service.http_client.post = AsyncMock(return_value=tei_response)
 
     result = await embedding_service.embed(text)
 
     assert result == expected_embedding
 
-    # Verify POST was called for job creation
+    # Verify POST was called with correct params
     embedding_service.http_client.post.assert_called_once()
-    post_call = embedding_service.http_client.post.call_args
-    assert "json_data" in post_call[1]
-    assert post_call[1]["json_data"]["input"] == text
-    assert "Salad-Api-Key" in post_call[1]["headers"]
+    call_args = embedding_service.http_client.post.call_args
 
-    # Verify GET was called for polling
-    embedding_service.http_client.get.assert_called_once()
+    # Check URL
+    assert call_args[0][0] == "https://test-embed.salad.cloud/v1/embeddings"
+
+    # Check payload
+    json_data = call_args[1]["json_data"]
+    assert json_data["input"] == text
+    assert json_data["model"] == "Qwen/Qwen3-Embedding-8B"
+    assert json_data["encoding_format"] == "float"
+
+    # Check headers
+    headers = call_args[1]["headers"]
+    assert headers["Authorization"] == "Bearer test-salad-key"
+    assert headers["Content-Type"] == "application/json"
+
+    # Check service name
+    assert call_args[1]["service"] == "SaladCloud-TEI"
 
 
 @pytest.mark.asyncio
-async def test_embed_polls_for_job_completion(embedding_service):
-    """Test that embed() polls until job succeeds."""
-    text = "Polling test text"
+async def test_embed_without_api_key(embedding_service):
+    """Test that embed() works without API key (optional auth)."""
+    embedding_service.settings.salad_api_key = None
+    text = "Test without API key"
     expected_embedding = [0.5] * 1024
 
-    job_response = {"id": "job-456", "status": "pending"}
-
-    # Simulate pending → running → succeeded
-    poll_responses = [
-        {"id": "job-456", "status": "pending"},
-        {"id": "job-456", "status": "running"},
-        {"id": "job-456", "status": "succeeded", "output": {"embeddings": [expected_embedding]}},
-    ]
-
-    embedding_service.http_client.post = AsyncMock(return_value=job_response)
-    embedding_service.http_client.get = AsyncMock(side_effect=poll_responses)
+    tei_response = {"data": [{"embedding": expected_embedding}]}
+    embedding_service.http_client.post = AsyncMock(return_value=tei_response)
 
     result = await embedding_service.embed(text)
 
     assert result == expected_embedding
-    # POST once, GET three times (pending, running, succeeded)
-    assert embedding_service.http_client.post.call_count == 1
-    assert embedding_service.http_client.get.call_count == 3
+
+    # Verify no Authorization header when API key is None
+    call_args = embedding_service.http_client.post.call_args
+    headers = call_args[1]["headers"]
+    assert "Authorization" not in headers
 
 
 @pytest.mark.asyncio
@@ -107,15 +99,8 @@ async def test_embed_uses_cache_on_second_call(embedding_service):
     text = "Cache test text"
     expected_embedding = [0.5] * 1024
 
-    job_response = {"id": "job-789", "status": "pending"}
-    completed_response = {
-        "id": "job-789",
-        "status": "succeeded",
-        "output": {"embeddings": [expected_embedding]},
-    }
-
-    embedding_service.http_client.post = AsyncMock(return_value=job_response)
-    embedding_service.http_client.get = AsyncMock(return_value=completed_response)
+    tei_response = {"data": [{"embedding": expected_embedding}]}
+    embedding_service.http_client.post = AsyncMock(return_value=tei_response)
 
     # First call should hit API
     result1 = await embedding_service.embed(text)
@@ -135,15 +120,12 @@ async def test_embed_cache_expired_after_ttl(embedding_service):
     old_embedding = [0.1] * 1024
     new_embedding = [0.9] * 1024
 
-    job_response = {"id": "job-old", "status": "pending"}
-
-    embedding_service.http_client.post = AsyncMock(return_value=job_response)
-    embedding_service.http_client.get = AsyncMock(
-        side_effect=[
-            {"id": "job-old", "status": "succeeded", "output": {"embeddings": [old_embedding]}},
-            {"id": "job-new", "status": "succeeded", "output": {"embeddings": [new_embedding]}},
-        ]
-    )
+    # First response, second response
+    tei_responses = [
+        {"data": [{"embedding": old_embedding}]},
+        {"data": [{"embedding": new_embedding}]},
+    ]
+    embedding_service.http_client.post = AsyncMock(side_effect=tei_responses)
 
     # First call
     result1 = await embedding_service.embed(text)
@@ -173,126 +155,56 @@ async def test_embed_wraps_post_errors(embedding_service):
     text = "Error test text"
 
     embedding_service.http_client.post = AsyncMock(
-        side_effect=ExternalServiceError(service="SaladCloud", message="Connection failed")
+        side_effect=ExternalServiceError(
+            service="SaladCloud-TEI", message="Connection failed"
+        )
     )
 
     with pytest.raises(ExternalServiceError) as exc_info:
         await embedding_service.embed(text)
 
-    assert exc_info.value.service == "SaladCloud"
+    assert exc_info.value.service == "SaladCloud-TEI"
 
 
 @pytest.mark.asyncio
-async def test_embed_wraps_get_errors(embedding_service):
-    """Test that polling errors are wrapped in ExternalServiceError."""
-    text = "Polling error test"
+async def test_embed_handles_missing_data(embedding_service):
+    """Test that response missing 'data' key raises error."""
+    text = "Missing data test"
 
-    job_response = {"id": "job-err", "status": "pending"}
-
-    embedding_service.http_client.post = AsyncMock(return_value=job_response)
-    embedding_service.http_client.get = AsyncMock(
-        side_effect=ExternalServiceError(service="SaladCloud", message="Polling failed")
-    )
+    embedding_service.http_client.post = AsyncMock(return_value={"no_data_key": []})
 
     with pytest.raises(ExternalServiceError) as exc_info:
         await embedding_service.embed(text)
 
-    assert exc_info.value.service == "SaladCloud"
+    assert "missing data" in str(exc_info.value).lower()
 
 
 @pytest.mark.asyncio
-async def test_embed_handles_missing_job_id(embedding_service):
-    """Test that missing job ID in creation response raises error."""
-    text = "No job ID test"
+async def test_embed_handles_empty_data_array(embedding_service):
+    """Test that empty 'data' array raises error."""
+    text = "Empty data test"
+
+    embedding_service.http_client.post = AsyncMock(return_value={"data": []})
+
+    with pytest.raises(ExternalServiceError) as exc_info:
+        await embedding_service.embed(text)
+
+    assert "missing data" in str(exc_info.value).lower()
+
+
+@pytest.mark.asyncio
+async def test_embed_handles_missing_embedding(embedding_service):
+    """Test that data item missing 'embedding' key raises error."""
+    text = "Missing embedding test"
 
     embedding_service.http_client.post = AsyncMock(
-        return_value={"status": "pending"}  # Missing "id" key
+        return_value={"data": [{"no_embedding_key": 123}]}
     )
 
     with pytest.raises(ExternalServiceError) as exc_info:
         await embedding_service.embed(text)
 
-    assert "missing id" in str(exc_info.value).lower()
-
-
-@pytest.mark.asyncio
-async def test_embed_handles_missing_output(embedding_service):
-    """Test that job with missing output raises error."""
-    text = "Missing output test"
-
-    job_response = {"id": "job-noout", "status": "pending"}
-    completed_response = {"id": "job-noout", "status": "succeeded"}  # Missing "output"
-
-    embedding_service.http_client.post = AsyncMock(return_value=job_response)
-    embedding_service.http_client.get = AsyncMock(return_value=completed_response)
-
-    with pytest.raises(ExternalServiceError) as exc_info:
-        await embedding_service.embed(text)
-
-    assert "missing output" in str(exc_info.value).lower()
-
-
-@pytest.mark.asyncio
-async def test_embed_handles_invalid_embeddings_format(embedding_service):
-    """Test that invalid embeddings format raises error."""
-    text = "Invalid format test"
-
-    job_response = {"id": "job-badfmt", "status": "pending"}
-    completed_response = {
-        "id": "job-badfmt",
-        "status": "succeeded",
-        "output": {"embeddings": "not-a-list"},  # Should be a list
-    }
-
-    embedding_service.http_client.post = AsyncMock(return_value=job_response)
-    embedding_service.http_client.get = AsyncMock(return_value=completed_response)
-
-    with pytest.raises(ExternalServiceError) as exc_info:
-        await embedding_service.embed(text)
-
-    assert "empty embeddings" in str(exc_info.value).lower()
-
-
-@pytest.mark.asyncio
-async def test_embed_handles_empty_embeddings_array(embedding_service):
-    """Test that empty embeddings array raises error."""
-    text = "Empty embeddings test"
-
-    job_response = {"id": "job-empty", "status": "pending"}
-    completed_response = {
-        "id": "job-empty",
-        "status": "succeeded",
-        "output": {"embeddings": []},  # Empty array
-    }
-
-    embedding_service.http_client.post = AsyncMock(return_value=job_response)
-    embedding_service.http_client.get = AsyncMock(return_value=completed_response)
-
-    with pytest.raises(ExternalServiceError) as exc_info:
-        await embedding_service.embed(text)
-
-    assert "empty embeddings" in str(exc_info.value).lower()
-
-
-@pytest.mark.asyncio
-async def test_embed_handles_embedding_not_list(embedding_service):
-    """Test that non-list embedding raises error."""
-    text = "Embedding not list test"
-
-    job_response = {"id": "job-notlist", "status": "pending"}
-    completed_response = {
-        "id": "job-notlist",
-        "status": "succeeded",
-        "output": {"embeddings": ["not-an-embedding"]},  # String instead of list
-    }
-
-    embedding_service.http_client.post = AsyncMock(return_value=job_response)
-    embedding_service.http_client.get = AsyncMock(return_value=completed_response)
-
-    with pytest.raises(ExternalServiceError) as exc_info:
-        await embedding_service.embed(text)
-
-    assert "invalid embedding format" in str(exc_info.value).lower()
+    assert "missing embedding" in str(exc_info.value).lower()
 
 
 @pytest.mark.asyncio
@@ -301,83 +213,15 @@ async def test_embed_validates_dimension(embedding_service):
     text = "Dimension test"
     wrong_embedding = [0.5] * 512  # Should be 1024
 
-    job_response = {"id": "job-dim", "status": "pending"}
-    completed_response = {
-        "id": "job-dim",
-        "status": "succeeded",
-        "output": {"embeddings": [wrong_embedding]},
-    }
-
-    embedding_service.http_client.post = AsyncMock(return_value=job_response)
-    embedding_service.http_client.get = AsyncMock(return_value=completed_response)
+    embedding_service.http_client.post = AsyncMock(
+        return_value={"data": [{"embedding": wrong_embedding}]}
+    )
 
     with pytest.raises(ExternalServiceError) as exc_info:
         await embedding_service.embed(text)
 
-    assert "unexpected embedding dimension" in str(exc_info.value)
+    assert "dimension mismatch" in str(exc_info.value).lower()
     assert "512" in str(exc_info.value)
-
-
-@pytest.mark.asyncio
-async def test_embed_handles_job_failed(embedding_service):
-    """Test that failed job raises error."""
-    text = "Job failed test"
-
-    job_response = {"id": "job-fail", "status": "pending"}
-    failed_response = {"id": "job-fail", "status": "failed"}
-
-    embedding_service.http_client.post = AsyncMock(return_value=job_response)
-    embedding_service.http_client.get = AsyncMock(return_value=failed_response)
-
-    with pytest.raises(ExternalServiceError) as exc_info:
-        await embedding_service.embed(text)
-
-    assert "failed" in str(exc_info.value).lower()
-
-
-@pytest.mark.asyncio
-async def test_embed_handles_job_cancelled(embedding_service):
-    """Test that cancelled job raises error."""
-    text = "Job cancelled test"
-
-    job_response = {"id": "job-cancel", "status": "pending"}
-    cancelled_response = {"id": "job-cancel", "status": "cancelled"}
-
-    embedding_service.http_client.post = AsyncMock(return_value=job_response)
-    embedding_service.http_client.get = AsyncMock(return_value=cancelled_response)
-
-    with pytest.raises(ExternalServiceError) as exc_info:
-        await embedding_service.embed(text)
-
-    assert "cancelled" in str(exc_info.value).lower()
-
-
-@pytest.mark.asyncio
-async def test_embed_timeout_after_max_wait(embedding_service):
-    """Test that polling times out after maximum wait."""
-    text = "Timeout test"
-
-    job_response = {"id": "job-timeout", "status": "pending"}
-
-    embedding_service.http_client.post = AsyncMock(return_value=job_response)
-    # Always return pending (never completes)
-    embedding_service.http_client.get = AsyncMock(return_value={"id": "job-timeout", "status": "pending"})
-
-    # Patch time.time to simulate elapsed time
-    elapsed_times = [0, 1, 2, 3, 301]  # Simulate 301 seconds elapsed
-    time_idx = [0]
-
-    def mock_time():
-        result = elapsed_times[time_idx[0]]
-        if time_idx[0] < len(elapsed_times) - 1:
-            time_idx[0] += 1
-        return result
-    
-    with patch("time.time", side_effect=mock_time):
-        with pytest.raises(ExternalServiceError) as exc_info:
-            await embedding_service.embed(text)
-
-        assert "timeout" in str(exc_info.value).lower()
 
 
 @pytest.mark.asyncio
@@ -386,15 +230,8 @@ async def test_cache_deterministic_hash(embedding_service):
     text = "Deterministic cache test"
     expected_embedding = [0.7] * 1024
 
-    job_response = {"id": "job-det", "status": "pending"}
-    completed_response = {
-        "id": "job-det",
-        "status": "succeeded",
-        "output": {"embeddings": [expected_embedding]},
-    }
-
-    embedding_service.http_client.post = AsyncMock(return_value=job_response)
-    embedding_service.http_client.get = AsyncMock(return_value=completed_response)
+    tei_response = {"data": [{"embedding": expected_embedding}]}
+    embedding_service.http_client.post = AsyncMock(return_value=tei_response)
 
     # Same text, different spacing
     text_with_spaces = "Deterministic cache test"
@@ -412,16 +249,47 @@ async def test_cache_write_error_continues(embedding_service):
     text = "Cache error test"
     expected_embedding = [0.3] * 1024
 
-    job_response = {"id": "job-cacheerr", "status": "pending"}
-    completed_response = {
-        "id": "job-cacheerr",
-        "status": "succeeded",
-        "output": {"embeddings": [expected_embedding]},
-    }
-
-    embedding_service.http_client.post = AsyncMock(return_value=job_response)
-    embedding_service.http_client.get = AsyncMock(return_value=completed_response)
+    tei_response = {"data": [{"embedding": expected_embedding}]}
+    embedding_service.http_client.post = AsyncMock(return_value=tei_response)
 
     # The operation should still succeed despite cache errors being logged
     result = await embedding_service.embed(text)
     assert result == expected_embedding
+
+
+@pytest.mark.asyncio
+async def test_different_texts_different_cache_keys(embedding_service):
+    """Test that different texts produce different cache keys."""
+    text1 = "First text"
+    text2 = "Second text"
+    embedding1 = [0.1] * 1024
+    embedding2 = [0.9] * 1024
+
+    embedding_service.http_client.post = AsyncMock(
+        side_effect=[
+            {"data": [{"embedding": embedding1}]},
+            {"data": [{"embedding": embedding2}]},
+        ]
+    )
+
+    result1 = await embedding_service.embed(text1)
+    result2 = await embedding_service.embed(text2)
+
+    assert result1 == embedding1
+    assert result2 == embedding2
+    assert embedding_service.http_client.post.call_count == 2  # Both hit API
+
+
+@pytest.mark.asyncio
+async def test_service_name_in_errors(embedding_service):
+    """Test that ExternalServiceError includes 'SaladCloud-TEI' service name."""
+    text = "Service name test"
+
+    embedding_service.http_client.post = AsyncMock(
+        side_effect=ExternalServiceError(service="SaladCloud-TEI", message="Test error")
+    )
+
+    with pytest.raises(ExternalServiceError) as exc_info:
+        await embedding_service.embed(text)
+
+    assert exc_info.value.service == "SaladCloud-TEI"

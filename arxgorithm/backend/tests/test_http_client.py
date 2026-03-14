@@ -188,12 +188,12 @@ async def test_custom_error_wrapping():
         mock_client_class.return_value = mock_client
 
         with pytest.raises(ExternalServiceError) as exc_info:
-            await client.get("http://example.com", service="nebius")
+            await client.get("http://example.com", service="SaladCloud-TEI")
 
         error = exc_info.value
         assert error.status == 503
-        assert error.service == "nebius"
-        assert "nebius" in str(error)
+        assert error.service == "SaladCloud-TEI"
+        assert "SaladCloud-TEI" in str(error)
 
 
 @pytest.mark.asyncio

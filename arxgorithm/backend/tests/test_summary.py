@@ -16,8 +16,8 @@ def settings():
     """Fixture: Settings with Gemini API key."""
     return Settings(
         arxiv_rate_limit=3.0,
-        nebius_api_key="test-nebius-key",
-        nebius_api_url="https://api.nebius.com",
+        salad_embedding_url="https://test-embed.salad.cloud",
+        salad_api_key="test-salad-key",
         gemini_api_key="test-gemini-key",
         session_secret="test-session-secret",
         database_url="sqlite:///:memory:",

@@ -20,15 +20,12 @@ class Settings(BaseSettings):
     arxiv_rate_limit: float
     """Rate limit (seconds) between arXiv API requests."""
 
-    # SaladCloud Embedding Service (required)
-    salad_api_key: str
-    """API key for SaladCloud inference endpoint."""
+    # SaladCloud TEI Embedding Service (required)
+    salad_embedding_url: str
+    """Base URL for SaladCloud-hosted TEI embedding service (e.g., https://container.salad.cloud)."""
 
-    salad_organization_name: str
-    """SaladCloud organization name."""
-
-    salad_inference_endpoint_name: str
-    """SaladCloud inference endpoint name for Qwen3-Embedding-8B."""
+    salad_api_key: str | None = None
+    """Optional API key for SaladCloud embedding service authentication."""
 
     # Gemini Summary Service (required)
     gemini_api_key: str

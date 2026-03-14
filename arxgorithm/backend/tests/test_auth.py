@@ -46,8 +46,8 @@ def _settings(**overrides):
         "frontend_url": "http://localhost:3000",
         "database_url": "sqlite:///test.db",
         "arxiv_rate_limit": 1.0,
-        "nebius_api_key": "k",
-        "nebius_api_url": "http://n",
+        "salad_embedding_url": "https://test-embed.salad.cloud",
+        "salad_api_key": "k",
         "gemini_api_key": "k",
     }
     defaults.update(overrides)
