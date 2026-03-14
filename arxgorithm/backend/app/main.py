@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.api.auth import router as auth_router
+from app.api.admin import router as admin_router
 from app.api.ingestion import router as ingestion_router, set_background_service
 from app.api.papers import router as papers_router
 from app.api.reading_list import router as reading_list_router
@@ -102,6 +103,7 @@ app.include_router(search_router)
 app.include_router(papers_router)
 app.include_router(reading_list_router)
 app.include_router(recommendations_router)
+app.include_router(admin_router)
 
 
 @app.get("/health")

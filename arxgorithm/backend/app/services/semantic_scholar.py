@@ -72,8 +72,9 @@ class SemanticScholarClient:
         Returns:
             Dict mapping arxiv_id -> citation_count
         """
-        url = f"{BASE_URL}/graph/v1/paper/batch"
-        params = {"fields": "paperId,citationCount,externalIds"}
+        url = (
+            f"{BASE_URL}/graph/v1/paper/batch?fields=paperId,citationCount,externalIds"
+        )
 
         payload = {"ids": [f"ARXIV:{arxiv_id}" for arxiv_id in arxiv_ids]}
 
@@ -81,15 +82,15 @@ class SemanticScholarClient:
             response = await self.http_client.post(
                 url,
                 json_data=payload,
-                params=params,
                 headers=self._headers(),
                 service="SemanticScholar",
             )
 
-            return self._parse_batch_response(response, arxiv_ids)
+            data = response.get("data", [])
+            return self._parse_batch_response(data, arxiv_ids)
 
         except ExternalServiceError as e:
-            logger.warning("Semantic Scholar batch lookup failed: %s", e.message)
+            logger.warning("Semantic Scholar batch lookup failed: %s", str(e))
             return {arxiv_id: 0 for arxiv_id in arxiv_ids}
         except Exception as e:
             logger.error("Unexpected error in Semantic Scholar lookup: %s", e)

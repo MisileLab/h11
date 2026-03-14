@@ -74,6 +74,12 @@ class Settings(BaseSettings):
     # Semantic Scholar API (optional)
     semantic_scholar_api_key: str | None = None
 
+    # SaladCloud API
+    salad_api_key: str | None = None
+
+    # Admin
+    admin_email: str = "misileminecord@gmail.com"
+
     # URL Configuration (required)
     backend_url: str
     """Base URL of the backend API for OAuth callback URIs (e.g., http://localhost:8000)."""
