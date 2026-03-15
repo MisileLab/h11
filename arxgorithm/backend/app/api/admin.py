@@ -4,8 +4,8 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
 
+from app.api import ingestion
 from app.api.dependencies import User, get_current_user
-from app.api.ingestion import _bg_service
 from app.config import get_settings
 from app.services.saladcloud import SaladCloudService
 
@@ -14,11 +14,11 @@ router = APIRouter(prefix="/api/admin", tags=["admin"])
 
 def get_background_service():
     """Get the background ingestion service set by main.py."""
-    if _bg_service is None:
+    if ingestion._bg_service is None:
         raise HTTPException(
             status_code=503, detail="Background service not initialized"
         )
-    return _bg_service
+    return ingestion._bg_service
 
 
 def require_admin(user: User = Depends(get_current_user)) -> User:
