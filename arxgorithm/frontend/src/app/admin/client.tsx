@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { api } from '@/lib/api';
+import { api, ApiError } from '@/lib/api';
 
 interface IngestionStatus {
   running: boolean;
@@ -21,7 +21,8 @@ interface TeiStatus {
 export function AdminClient() {
   const [ingestionStatus, setIngestionStatus] = useState<IngestionStatus | null>(null);
   const [teiStatus, setTeiStatus] = useState<TeiStatus | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [forbidden, setForbidden] = useState(false);
   const [triggering, setTriggering] = useState(false);
   const [startingTei, setStartingTei] = useState(false);
   const [stoppingTei, setStoppingTei] = useState(false);
@@ -37,8 +38,13 @@ export function AdminClient() {
       ]);
       setIngestionStatus(ingestion);
       setTeiStatus(tei);
+      setForbidden(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch status');
+      if (err instanceof ApiError && err.status === 403) {
+        setForbidden(true);
+      } else {
+        setError(err instanceof Error ? err.message : 'Failed to fetch status');
+      }
     } finally {
       setLoading(false);
     }
@@ -88,6 +94,33 @@ export function AdminClient() {
       setStoppingTei(false);
     }
   };
+
+  if (forbidden) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-16">
+        <div className="bg-red-50 border-l-4 border-red-500 p-6 rounded-md">
+          <h1 className="text-2xl font-bold text-red-700 mb-2">접근 거부</h1>
+          <p className="text-red-600">
+            관리자 이메일로 로그인해야 이 페이지에 접근할 수 있습니다.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading && !ingestionStatus) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="animate-pulse">
+          <div className="h-10 bg-gray-200 rounded w-1/4 mb-8"></div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="h-64 bg-gray-100 rounded-xl"></div>
+            <div className="h-64 bg-gray-100 rounded-xl"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
