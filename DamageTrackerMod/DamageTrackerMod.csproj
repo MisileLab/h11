@@ -45,7 +45,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(UseDamageTrackerStubs)' != 'true'">
-    <PackageReference Include="HarmonyX" Version="2.10.2" />
+    <PackageReference Include="HarmonyX" Version="2.16.0" />
   </ItemGroup>
 
 </Project>
