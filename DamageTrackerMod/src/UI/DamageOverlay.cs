@@ -17,6 +17,7 @@ public partial class DamageOverlay : Control
 
     public override void _Ready()
     {
+        GD.Print("[DamageTracker] DamageOverlay ready.");
         Name = "DamageOverlay";
         MouseFilter = MouseFilterEnum.Ignore;
         SetAnchorsPreset(LayoutPreset.TopRight);
@@ -27,20 +28,30 @@ public partial class DamageOverlay : Control
 
         PanelContainer panel = new()
         {
-            MouseFilter = MouseFilterEnum.Ignore,
-            ThemeOverrideStylesPanel = new StyleBoxFlat
-            {
-                BgColor = new Color(0f, 0f, 0f, 0.55f),
-                CornerRadiusAll = 8,
-                ContentMargin = new Vector4I(14, 10, 14, 10)
-            }
+            MouseFilter = MouseFilterEnum.Ignore
         };
+
+        StyleBoxFlat panelStyle = new()
+        {
+            BgColor = new Color(0f, 0f, 0f, 0.55f),
+            CornerRadiusTopLeft = 8,
+            CornerRadiusTopRight = 8,
+            CornerRadiusBottomRight = 8,
+            CornerRadiusBottomLeft = 8,
+            ContentMarginLeft = 14,
+            ContentMarginTop = 10,
+            ContentMarginRight = 14,
+            ContentMarginBottom = 10
+        };
+
+        panel.AddThemeStyleboxOverride("panel", panelStyle);
 
         VBoxContainer content = new()
         {
-            MouseFilter = MouseFilterEnum.Ignore,
-            Separation = 4
+            MouseFilter = MouseFilterEnum.Ignore
         };
+
+        content.AddThemeConstantOverride("separation", 4);
 
         _titleLabel.Text = "Damage Tracker";
         _dealtLabel.Text = "Dealt: 0";

@@ -1,0 +1,157 @@
+[
+  {
+    "id": "lambda_01",
+    "name": "Key Defense",
+    "description": "Reinforce your Key threshold.",
+    "ap_cost": 2,
+    "type": 1,
+    "target": 0,
+    "effects": [
+      {
+        "stat_type": 1,
+        "value": 3,
+        "duration": 1
+      }
+    ]
+  },
+  {
+    "id": "lambda_02",
+    "name": "Query Decay",
+    "description": "Debuff an enemy's Query power.",
+    "ap_cost": 2,
+    "effects": [
+      {
+        "stat_type": 0,
+        "value": -2,
+        "duration": 1
+      }
+    ],
+    "type": 4,
+    "target": 3
+  },
+  {
+    "id": "lambda_03",
+    "name": "Sentinel",
+    "description": "Protect all allies with Key boost.",
+    "ap_cost": 3,
+    "effects": [
+      {
+        "stat_type": 1,
+        "value": 2,
+        "duration": 1
+      }
+    ],
+    "type": 1,
+    "target": 2
+  },
+  {
+    "id": "lambda_04",
+    "name": "Anchor",
+    "description": "Permanent Key boost to one ally.",
+    "ap_cost": 3,
+    "effects": [
+      {
+        "stat_type": 1,
+        "value": 2,
+        "duration": 0
+      }
+    ],
+    "type": 1,
+    "target": 1
+  },
+  {
+    "id": "lambda_05",
+    "name": "Last Stand",
+    "description": "Restore significant HP to an ally.",
+    "ap_cost": 3,
+    "effects": [
+      {
+        "stat_type": 3,
+        "value": 8,
+        "duration": 0
+      }
+    ],
+    "type": 3,
+    "target": 1
+  },
+  {
+    "id": "lambda_06",
+    "name": "Fortify All",
+    "description": "Heal all allies moderately.",
+    "ap_cost": 4,
+    "effects": [
+      {
+        "stat_type": 3,
+        "value": 4,
+        "duration": 0
+      }
+    ],
+    "type": 3,
+    "target": 2
+  },
+  {
+    "id": "lambda_07",
+    "name": "Value Lock",
+    "description": "Reduce enemy damage multiplier.",
+    "ap_cost": 2,
+    "effects": [
+      {
+        "stat_type": 2,
+        "value": -1,
+        "duration": 1
+      }
+    ],
+    "type": 4,
+    "target": 3
+  },
+  {
+    "id": "lambda_08",
+    "name": "Mirror Shield",
+    "description": "Reflect damage as Key defense.",
+    "ap_cost": 2,
+    "effects": [
+      {
+        "stat_type": 1,
+        "value": 1,
+        "duration": 1
+      },
+      {
+        "stat_type": 3,
+        "value": 3,
+        "duration": 0
+      }
+    ],
+    "type": 5,
+    "target": 0
+  },
+  {
+    "id": "lambda_09",
+    "name": "Crowd Control",
+    "description": "Weaken all enemies temporarily.",
+    "ap_cost": 3,
+    "effects": [
+      {
+        "stat_type": 0,
+        "value": -1,
+        "duration": 1
+      }
+    ],
+    "type": 4,
+    "target": 4
+  },
+  {
+    "id": "lambda_10",
+    "name": "Iron Resolve",
+    "description": "Massive permanent Key boost.",
+    "ap_cost": 5,
+    "type": 1,
+    "target": 0,
+    "effects": [
+      {
+        "stat_type": 1,
+        "value": 4,
+        "duration": 0
+      }
+    ]
+  }
+]

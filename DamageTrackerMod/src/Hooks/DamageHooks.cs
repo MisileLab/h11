@@ -34,7 +34,7 @@ public static class DamageHooks
     /// </summary>
     public static void Cleanup()
     {
-        _harmony?.UnpatchAll(HarmonyId);
+        _harmony?.UnpatchSelf();
         _harmony = null;
         Console.WriteLine("[DamageTracker] Harmony hooks removed");
     }

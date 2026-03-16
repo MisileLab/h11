@@ -212,6 +212,11 @@ public static class BuildingHooks
     [HarmonyPatch]
     private static class BuildingDestroyedPatch
     {
+        public static bool Prepare()
+        {
+            return ResolveBuildingDestroyedTarget() != null;
+        }
+
         public static MethodBase? TargetMethod()
         {
             return ResolveBuildingDestroyedTarget();
@@ -237,6 +242,11 @@ public static class BuildingHooks
     [HarmonyPatch]
     private static class ShapeDeliveredPatch
     {
+        public static bool Prepare()
+        {
+            return ResolveShapeDeliveredTarget() != null;
+        }
+
         public static MethodBase? TargetMethod()
         {
             return ResolveShapeDeliveredTarget();
@@ -256,6 +266,11 @@ public static class BuildingHooks
     [HarmonyPatch]
     private static class LevelCompletedPatch
     {
+        public static bool Prepare()
+        {
+            return ResolveLevelCompletedTarget() != null;
+        }
+
         public static MethodBase? TargetMethod()
         {
             return ResolveLevelCompletedTarget();
@@ -267,4 +282,5 @@ public static class BuildingHooks
             ModEntry.HandleLevelCompleted(levelName);
         }
     }
+
 }

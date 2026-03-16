@@ -1,0 +1,39 @@
+[gd_scene format=3 uid="uid://b8yqxjg3t"]
+
+[ext_resource type="Script" path="res://src/ui/matching_indicator.gd" id="1_a1b2c"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+bg_color = Color(0, 0, 0, 0.8)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+
+[node name="MatchingIndicator" type="CanvasLayer"]
+layer = 100
+script = ExtResource("1_a1b2c")
+
+[node name="DrawRect" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="FormulaLabel" type="RichTextLabel" parent="."]
+visible = false
+custom_minimum_size = Vector2(250, 30)
+offset_right = 250.0
+offset_bottom = 30.0
+mouse_filter = 2
+theme_override_font_sizes/normal_font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_bg")
+bbcode_enabled = true
+text = "[center]Q(3) × AP(2) = 6 [color=green]≥[/color] K(4) [color=green]✓[/color][/center]"
+scroll_active = false

@@ -1,89 +1,110 @@
-[
-  {
-    "id": "tunnel_oracle",
-    "name": "Tunnel Oracle",
-    "description": "Ancient guide of hidden paths. Sees all possible futures and adapts.",
-    "k_value": 6,
-    "hp": 35,
-    "ai_type": "adaptive_boss",
-    "loot_table": ["boss_reward", "oracle_essence", "rare_relic", "epic_relic"],
-    "resistances": {"foresight": 0.8},
-    "zone": 1,
-    "phases": [
-      {
-        "phase": 1,
-        "hp_threshold": 100,
-        "description": "Balanced state, uses both offense and defense",
-        "special_abilities": ["predict_action", "counter_prepare", "guidance_beam"]
-      },
-      {
-        "phase": 2,
-        "hp_threshold": 50,
-        "description": "Weakened, but becomes more aggressive",
-        "special_abilities": ["desperate_strike", "future_vision", "temporal_distortion"]
-      }
-    ]
-  },
-  {
-    "id": "broadcast_tower",
-    "name": "Broadcast Tower",
-    "description": "Transmits corrupting signals across all frequencies. Multiplies threats.",
-    "k_value": 10,
-    "hp": 45,
-    "ai_type": "amplifier_boss",
-    "loot_table": ["boss_reward", "tower_circuit", "rare_relic", "epic_relic", "legendary_relic"],
-    "resistances": {"disruption": 0.6},
-    "zone": 2,
-    "phases": [
-      {
-        "phase": 1,
-        "hp_threshold": 100,
-        "description": "Steady broadcast, summons interference fields",
-        "special_abilities": ["broadcast_surge", "signal_amplify", "summon_echo"]
-      },
-      {
-        "phase": 2,
-        "hp_threshold": 50,
-        "description": "Emergency mode, massive damage output",
-        "special_abilities": ["cascade_broadcast", "multi_channel_attack", "feedback_loop"]
-      },
-      {
-        "phase": 3,
-        "hp_threshold": 25,
-        "description": "Critical state, random chaos attacks",
-        "special_abilities": ["chaos_transmission", "system_overload"]
-      }
-    ]
-  },
-  {
-    "id": "vector",
-    "name": "Vector",
-    "description": "Pure mathematical entity. Existence itself optimized for destruction.",
-    "k_value": 18,
-    "hp": 60,
-    "ai_type": "perfect_enemy",
-    "loot_table": ["boss_reward", "vector_core", "epic_relic", "legendary_relic", "legendary_relic"],
-    "resistances": {"all": 0.4},
-    "zone": 3,
-    "phases": [
-      {
-        "phase": 1,
-        "hp_threshold": 100,
-        "description": "Calculates optimal strategy",
-        "special_abilities": ["calculate_pattern", "optimal_strike", "statistical_advantage"]
-      },
-      {
-        "phase": 2,
-        "hp_threshold": 66,
-        "description": "Increases attack frequency",
-        "special_abilities": ["multi_strike", "probability_manipulation"]
-      },
-      {
-        "phase": 3,
-        "hp_threshold": 33,
-        "description": "Enters perfect state, maximum power",
-        "special_abilities": ["perfect_form", "absolute_accuracy", "infinite_damage"]
-      }
-    ]
-  }
-]
+{
+  "bosses": [
+    {
+      "id": "tunnel_oracle",
+      "name": "Tunnel Oracle",
+      "k_value": 6,
+      "max_hp": 30,
+      "q_value": 2,
+      "v_value": 2,
+      "ai_type": "prophet",
+      "phases": [
+        {
+          "phase": 1,
+          "max_hp": 30,
+          "threshold": 100,
+          "special_abilities": ["prophecy", "temporal_distortion"],
+          "attack_pattern": "methodical"
+        },
+        {
+          "phase": 2,
+          "max_hp": 20,
+          "threshold": 50,
+          "special_abilities": ["prophecy", "temporal_distortion", "desperate_strike"],
+          "attack_pattern": "aggressive"
+        },
+        {
+          "phase": 3,
+          "max_hp": 10,
+          "threshold": 0,
+          "special_abilities": ["prophecy", "temporal_distortion", "desperate_strike", "final_vision"],
+          "attack_pattern": "chaotic"
+        }
+      ],
+      "description": "An ancient oracle dwelling in the tunnels, sees glimpses of all possible futures."
+    },
+    {
+      "id": "broadcast_tower",
+      "name": "Broadcast Tower",
+      "k_value": 10,
+      "max_hp": 40,
+      "q_value": 3,
+      "v_value": 2,
+      "ai_type": "transmitter",
+      "phases": [
+        {
+          "phase": 1,
+          "max_hp": 40,
+          "threshold": 100,
+          "special_abilities": ["signal_pulse", "data_storm"],
+          "attack_pattern": "rhythmic"
+        },
+        {
+          "phase": 2,
+          "max_hp": 30,
+          "threshold": 60,
+          "special_abilities": ["signal_pulse", "data_storm", "frequency_spike"],
+          "attack_pattern": "erratic"
+        },
+        {
+          "phase": 3,
+          "max_hp": 20,
+          "threshold": 30,
+          "special_abilities": ["signal_pulse", "data_storm", "frequency_spike", "cascade_shutdown"],
+          "attack_pattern": "desperate"
+        }
+      ],
+      "description": "A towering structure that broadcasts reality-altering signals across the land."
+    },
+    {
+      "id": "vector",
+      "name": "Vector",
+      "k_value": 18,
+      "max_hp": 50,
+      "q_value": 4,
+      "v_value": 3,
+      "ai_type": "nexus_entity",
+      "phases": [
+        {
+          "phase": 1,
+          "max_hp": 50,
+          "threshold": 100,
+          "special_abilities": ["dimensional_anchor", "entropy_cascade", "multi_strike"],
+          "attack_pattern": "calculated"
+        },
+        {
+          "phase": 2,
+          "max_hp": 40,
+          "threshold": 70,
+          "special_abilities": ["dimensional_anchor", "entropy_cascade", "multi_strike", "reality_tear"],
+          "attack_pattern": "relentless"
+        },
+        {
+          "phase": 3,
+          "max_hp": 30,
+          "threshold": 40,
+          "special_abilities": ["dimensional_anchor", "entropy_cascade", "multi_strike", "reality_tear", "singularity"],
+          "attack_pattern": "apocalyptic"
+        },
+        {
+          "phase": 4,
+          "max_hp": 20,
+          "threshold": 0,
+          "special_abilities": ["dimensional_anchor", "entropy_cascade", "multi_strike", "reality_tear", "singularity", "void_collapse"],
+          "attack_pattern": "transcendent"
+        }
+      ],
+      "description": "The ultimate convergence point of all forces. The final trial."
+    }
+  ]
+}

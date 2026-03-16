@@ -7,10 +7,12 @@ using DamageTracker.Network;
 using DamageTracker.UI;
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Modding;
 
 /// <summary>
 /// Owns lifecycle, hooks, UI, and network wiring for the damage tracker mod.
 /// </summary>
+[ModInitializer(nameof(Initialize))]
 public partial class ModEntry : Node, ISts2Mod
 {
     private const string HarmonyId = "misile.damagetracker";
@@ -39,8 +41,7 @@ public partial class ModEntry : Node, ISts2Mod
 
         if (Engine.GetMainLoop() is SceneTree tree)
         {
-            tree.Root.AddChild(entry);
-            entry.OnModLoaded();
+            tree.Root.CallDeferred("add_child", entry);
             return;
         }
 
@@ -69,9 +70,9 @@ public partial class ModEntry : Node, ISts2Mod
         _harmony.PatchAll(typeof(BuildingHooks).Assembly);
 
         StartNewRun();
-        EnsureRuntimeNodes();
+        CallDeferred(nameof(EnsureRuntimeNodesDeferred));
 
-        Console.WriteLine("[DamageTracker] Mod initialized and runtime nodes registered");
+        GD.Print("[DamageTracker] Mod initialized and runtime node setup scheduled.");
     }
 
     public void OnModUnloaded()
@@ -82,7 +83,7 @@ public partial class ModEntry : Node, ISts2Mod
         }
 
         EndCurrentRun();
-        _harmony?.UnpatchAll(HarmonyId);
+        _harmony?.UnpatchSelf();
 
         _overlayLayer?.QueueFree();
         _damageSync?.QueueFree();
@@ -133,9 +134,9 @@ public partial class ModEntry : Node, ISts2Mod
 
     public static int ResolveLocalPlayerId()
     {
-        if (_instance?._damageSync != null)
+        if (_instance?._damageSync is { } damageSync && damageSync.IsInsideTree())
         {
-            return _instance._damageSync.Multiplayer.GetUniqueId();
+            return damageSync.Multiplayer.GetUniqueId();
         }
 
         return 1;
@@ -188,9 +189,10 @@ public partial class ModEntry : Node, ISts2Mod
             Name = nameof(DamageSync)
         };
 
-        if (_damageSync.GetTree() == null)
+        if (!_damageSync.IsInsideTree())
         {
             root.AddChild(_damageSync);
+            GD.Print("[DamageTracker] DamageSync injected.");
         }
 
         if (_overlayLayer == null)
@@ -201,6 +203,7 @@ public partial class ModEntry : Node, ISts2Mod
             };
 
             root.AddChild(_overlayLayer);
+            GD.Print("[DamageTracker] Overlay layer injected.");
         }
 
         if (_overlay == null)
@@ -212,7 +215,13 @@ public partial class ModEntry : Node, ISts2Mod
 
             _overlayLayer.AddChild(_overlay);
             _overlay.Refresh();
+            GD.Print("[DamageTracker] Overlay injected.");
         }
+    }
+
+    private void EnsureRuntimeNodesDeferred()
+    {
+        EnsureRuntimeNodes();
     }
 }
 

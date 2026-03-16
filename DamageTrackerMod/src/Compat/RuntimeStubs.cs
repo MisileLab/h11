@@ -35,6 +35,11 @@ namespace Godot
             return Tree;
         }
 
+        public virtual bool IsInsideTree()
+        {
+            return Tree != null;
+        }
+
         public virtual T? GetNodeOrNull<T>(string path) where T : Node
         {
             return null;
@@ -321,6 +326,22 @@ namespace HarmonyLib
         {
             return type?.GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
         }
+    }
+}
+
+namespace MegaCrit.Sts2.Core.Modding
+{
+    using System;
+
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    public sealed class ModInitializerAttribute : Attribute
+    {
+        public ModInitializerAttribute(string methodName)
+        {
+            MethodName = methodName;
+        }
+
+        public string MethodName { get; }
     }
 }
 #endif

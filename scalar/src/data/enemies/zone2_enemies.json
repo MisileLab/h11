@@ -1,57 +1,60 @@
-[
-  {
-    "id": "phantom_06",
-    "name": "Phantom",
-    "description": "A fading apparition. Becomes harder to target over time.",
-    "k_value": 5,
-    "hp": 14,
-    "ai_type": "evasive",
-    "loot_table": ["silver_coin", "phantom_dust"],
-    "resistances": {"physical": 0.4},
-    "special_abilities": ["evasion_stack", "dodge_counter"]
-  },
-  {
-    "id": "resonator_07",
-    "name": "Resonator",
-    "description": "Amplifies frequencies. Buffs allies and strengthens attacks.",
-    "k_value": 6,
-    "hp": 16,
-    "ai_type": "support_attacker",
-    "loot_table": ["silver_coin", "amplifier_node"],
-    "resistances": {},
-    "special_abilities": ["buff_allies", "power_strike"]
-  },
-  {
-    "id": "cascade_08",
-    "name": "Cascade",
-    "description": "Cascading energy. Attacks trigger additional damage waves.",
-    "k_value": 6,
-    "hp": 18,
-    "ai_type": "chain_attacker",
-    "loot_table": ["silver_coin", "silver_coin", "cascade_prism"],
-    "resistances": {"energy": 0.5},
-    "special_abilities": ["chain_attack", "energy_wave"]
-  },
-  {
-    "id": "dissonance_09",
-    "name": "Dissonance",
-    "description": "Clashing frequencies. Applies conflicting debuffs.",
-    "k_value": 7,
-    "hp": 15,
-    "ai_type": "debuffer_advanced",
-    "loot_table": ["silver_coin", "discord_fragment"],
-    "resistances": {"harmony": 0.3},
-    "special_abilities": ["multi_debuff", "stat_confusion"]
-  },
-  {
-    "id": "amplifier_10",
-    "name": "Amplifier Demon",
-    "description": "Extreme amplification. Multiplies its own K value.",
-    "k_value": 8,
-    "hp": 20,
-    "ai_type": "scaling_threat",
-    "loot_table": ["silver_coin", "silver_coin", "rare_relic"],
-    "resistances": {"reduce": 0.2},
-    "special_abilities": ["k_multiply", "power_crescendo"]
-  }
-]
+{
+  "zone": 2,
+  "enemies": [
+    {
+      "id": "wraith",
+      "name": "Wraith",
+      "k_value": 5,
+      "max_hp": 14,
+      "q_value": 2,
+      "v_value": 2,
+      "ai_type": "ethereal",
+      "special_abilities": ["phase_shift", "drain_essence"],
+      "description": "A spectral enemy that phases between worlds and drains vitality."
+    },
+    {
+      "id": "brute",
+      "name": "Brute",
+      "k_value": 6,
+      "max_hp": 18,
+      "q_value": 3,
+      "v_value": 1,
+      "ai_type": "tanky_aggressive",
+      "special_abilities": ["heavy_strike"],
+      "description": "A heavily armored enemy with crushing melee attacks."
+    },
+    {
+      "id": "sorcerer",
+      "name": "Sorcerer",
+      "k_value": 6,
+      "max_hp": 12,
+      "q_value": 2,
+      "v_value": 3,
+      "ai_type": "caster",
+      "special_abilities": ["fireball", "mana_shield"],
+      "description": "A spellcasting enemy that hurls magical projectiles from a distance."
+    },
+    {
+      "id": "reaper",
+      "name": "Reaper",
+      "k_value": 7,
+      "max_hp": 15,
+      "q_value": 2,
+      "v_value": 2,
+      "ai_type": "debuffer",
+      "special_abilities": ["life_steal", "curse"],
+      "description": "A death-touched enemy that weakens its foes and harvests their vitality."
+    },
+    {
+      "id": "cipher",
+      "name": "Cipher",
+      "k_value": 8,
+      "max_hp": 16,
+      "q_value": 2,
+      "v_value": 2,
+      "ai_type": "tactical",
+      "special_abilities": ["adaptation", "pattern_analysis"],
+      "description": "An intelligent enemy that learns from combat and adapts its strategy."
+    }
+  ]
+}
