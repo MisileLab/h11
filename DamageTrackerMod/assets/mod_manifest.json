@@ -1,8 +1,0 @@
-{
-  "pck_name": "DamageTracker",
-  "name": "Damage Tracker",
-  "author": "Misile",
-  "description": "Real-time damage tracking overlay for single-player and co-op.",
-  "version": "0.1.0",
-  "min_game_version": "0.1.0"
-}
