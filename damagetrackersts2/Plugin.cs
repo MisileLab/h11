@@ -1,4 +1,3 @@
-using System;
 using Godot;
 using DamageTracker.Core;
 using DamageTracker.UI;
@@ -14,7 +13,7 @@ public partial class Plugin : Node
 
     public override void _Ready()
     {
-        Console.WriteLine("[DamageTracker] Initializing mod...");
+        GD.Print("[DamageTracker] Plugin _Ready start");
 
         ConfigStore.Load();
 
@@ -23,11 +22,12 @@ public partial class Plugin : Node
         _eventCollector = new EventCollector(_statsEngine, _syncManager);
 
         _eventCollector.Install();
+        GD.Print("[DamageTracker] Event collector installed");
 
         _ui = new OverlayUI(_statsEngine);
         AddChild(_ui);
 
-        Console.WriteLine("[DamageTracker] Initialization complete.");
+        GD.Print("[DamageTracker] Plugin _Ready complete");
     }
 
     public override void _Process(double delta)
@@ -44,7 +44,7 @@ public partial class Plugin : Node
         }
     }
 
-    public override void Dispose(bool disposing)
+    protected override void Dispose(bool disposing)
     {
         if (disposing)
         {

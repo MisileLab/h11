@@ -23,17 +23,23 @@ public partial class OverlayUI : CanvasLayer
 
     public override void _Ready()
     {
+        GD.Print("[DamageTracker] Overlay _Ready start");
         Layer = ConfigStore.Instance.LayerPreference == "1025" ? 1025 : 128;
         
         _isDealtMode = ConfigStore.Instance.DefaultMode == "Dealt";
 
         var root = new Control
         {
-            GlobalPosition = new Vector2(ConfigStore.Instance.PanelPosition[0], ConfigStore.Instance.PanelPosition[1])
+            GlobalPosition = new Vector2(ConfigStore.Instance.PanelPosition[0], ConfigStore.Instance.PanelPosition[1]),
+            CustomMinimumSize = new Vector2(300f, 200f),
+            Visible = true
         };
         AddChild(root);
 
-        _container = new VBoxContainer();
+        _container = new VBoxContainer
+        {
+            Visible = true
+        };
         root.AddChild(_container);
 
         _header = new HBoxContainer();
@@ -41,6 +47,7 @@ public partial class OverlayUI : CanvasLayer
 
         _toggleLabel = new Label { Text = _isDealtMode ? "Mode: Dealt" : "Mode: Taken" };
         _header.AddChild(_toggleLabel);
+        GD.Print("[DamageTracker] Overlay _Ready complete");
     }
 
     public override void _Process(double delta)
@@ -52,7 +59,7 @@ public partial class OverlayUI : CanvasLayer
 
     private void UpdateSegments()
     {
-        foreach (var child in _container.GetChildren().Skip(1))
+        foreach (var child in _container.GetChildren().OfType<Node>().Skip(1).ToArray())
         {
             child.QueueFree();
         }
@@ -108,9 +115,4 @@ public partial class OverlayUI : CanvasLayer
         _isDealtMode = !_isDealtMode;
         _toggleLabel.Text = _isDealtMode ? "Mode: Dealt" : "Mode: Taken";
     }
-}
-
-public static class NodeExtensions
-{
-    public static IEnumerable<Node> GetChildren(this Node node) => Array.Empty<Node>();
 }
