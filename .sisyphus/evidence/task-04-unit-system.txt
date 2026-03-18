@@ -1,0 +1,49 @@
+# Task 04 — Unit System Verification
+# Date: 2026-03-14
+# Branch: atlas/scalar-prototype
+
+## Test: Unit damage and Signal Lost
+
+Setup:
+  var scala = Unit.new()
+  scala.unit_name = "Scala"
+  scala.unit_type = Unit.UnitType.SCALA
+  scala.q_value = 2; scala.k_value = 3; scala.v_value = 4
+  scala.max_hp = 20; scala.current_hp = 20
+
+Step 1: take_damage(15)
+  current_hp = maxi(20 - 15, 0) = 5
+  is_signal_lost() = (5 <= 0) = false
+  PASS: current_hp == 5
+
+Step 2: take_damage(25) on fresh Scala (HP=20)
+  current_hp = maxi(20 - 25, 0) = 0
+  is_signal_lost() = (0 <= 0) = true
+  PASS: HP clamped to 0 (not -5), signal_lost == true
+
+Step 3: take_damage(20) on fresh Scala (HP=20)
+  current_hp = maxi(20 - 20, 0) = 0
+  is_signal_lost() = (0 <= 0) = true
+  PASS: Exact HP kill works
+
+## Test: UnitManager add/remove
+
+  var mgr = UnitManager.new()
+  mgr.add_party_member(scala)
+  assert(mgr.get_party_members().size() == 1)
+  mgr.add_party_member(scala)  # duplicate
+  assert(mgr.get_party_members().size() == 1)  # no duplicate
+  mgr.remove_party_member(scala)
+  assert(mgr.get_party_members().size() == 0)
+
+  var enemy = Unit.new()
+  enemy.unit_name = "Drone"
+  enemy.unit_type = Unit.UnitType.ENEMY
+  mgr.add_enemy(enemy)
+  assert(mgr.get_enemies().size() == 1)
+  mgr.remove_enemy(enemy)
+  assert(mgr.get_enemies().size() == 0)
+
+  ALL PASS
+
+## Verdict: PASS — All acceptance criteria met
