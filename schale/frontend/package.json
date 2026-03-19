@@ -16,10 +16,10 @@
     "format:check": "oxfmt --check ."
   },
   "dependencies": {
-    "@astrojs/node": "10.0.2",
+    "@astrojs/node": "10.0.3",
     "@astrojs/sitemap": "3.7.1",
     "@misile/satellite": "0.0.5",
-    "astro": "6.0.5",
+    "astro": "6.0.7",
     "dayjs": "1.11.20",
     "mobile-device-detect": "0.4.3",
     "nanostores": "1.2.0"
