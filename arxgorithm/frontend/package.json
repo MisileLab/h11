@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.21",
-    "next": "16.1.7",
+    "next": "16.2.0",
     "react": "^19",
     "react-dom": "^19"
   },
@@ -32,7 +32,7 @@
     "@typescript-eslint/parser": "^8.57.0",
     "@vitejs/plugin-react": "^6.0.0",
     "eslint": "^10.0.3",
-    "eslint-config-next": "16.1.7",
+    "eslint-config-next": "16.2.0",
     "jsdom": "^29.0.0",
     "postcss": "^8",
     "tailwindcss": "^4.2.1",
