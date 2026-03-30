@@ -1,2 +1,0 @@
-        drawContext.fill(x - 4, y - 4, x + textWidth + 4, y + 12, 0x80000000.toInt())
-        drawContext.drawText(textRenderer, displayText, x, y, 0xFFFFFF, true)
