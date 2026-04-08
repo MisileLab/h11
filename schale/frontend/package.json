@@ -32,7 +32,7 @@
     "eslint": "^10.0.3",
     "eslint-plugin-astro": "^1.6.0",
     "eslint-plugin-oxlint": "^1.51.0",
-    "oxfmt": "^0.43.0",
+    "oxfmt": "^0.44.0",
     "oxlint": "^1.51.0",
     "tailwindcss": "4.2.2",
     "typescript": "6.0.2",
