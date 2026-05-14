@@ -4,7 +4,7 @@ RUN npm install -g pnpm@11.1.1
 
 FROM base AS deps
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile --ignore-scripts=false
+RUN pnpm install --frozen-lockfile --dangerously-allow-all-build-scripts
 
 FROM deps AS build
 COPY . .
@@ -12,7 +12,7 @@ RUN pnpm build
 
 FROM base AS runtime-deps
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --prod --frozen-lockfile --ignore-scripts=false
+RUN pnpm install --prod --frozen-lockfile --dangerously-allow-all-build-scripts
 
 FROM node:25-alpine AS runtime
 WORKDIR /app
