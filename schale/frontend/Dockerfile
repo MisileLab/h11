@@ -4,6 +4,7 @@ RUN npm install -g pnpm@11.1.1
 
 FROM base AS deps
 COPY package.json pnpm-lock.yaml ./
+RUN echo -e 'only-built-dependencies[]=esbuild\nonly-built-dependencies[]=sharp' > .npmrc
 RUN pnpm install --frozen-lockfile
 
 FROM deps AS build
@@ -12,6 +13,7 @@ RUN pnpm build
 
 FROM base AS runtime-deps
 COPY package.json pnpm-lock.yaml ./
+RUN echo -e 'only-built-dependencies[]=esbuild\nonly-built-dependencies[]=sharp' > .npmrc
 RUN pnpm install --prod --frozen-lockfile
 
 FROM node:25-alpine AS runtime
