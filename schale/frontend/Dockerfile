@@ -4,7 +4,8 @@ RUN npm install -g pnpm@11.1.1
 
 FROM base AS deps
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile --config.onlyBuiltDependencies='[]'
+RUN echo 'ignore-scripts=false' > .npmrc
+RUN pnpm install --frozen-lockfile
 
 FROM deps AS build
 COPY . .
@@ -12,7 +13,8 @@ RUN pnpm build
 
 FROM base AS runtime-deps
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --prod --frozen-lockfile --config.onlyBuiltDependencies='[]'
+RUN echo 'ignore-scripts=false' > .npmrc
+RUN pnpm install --prod --frozen-lockfile
 
 FROM node:25-alpine AS runtime
 WORKDIR /app
