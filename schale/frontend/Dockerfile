@@ -4,8 +4,7 @@ RUN npm install -g pnpm@11.1.1
 
 FROM base AS deps
 COPY package.json pnpm-lock.yaml ./
-RUN echo 'ignore-scripts=false' > .npmrc
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --config.ignore-scripts=false
 
 FROM deps AS build
 COPY . .
@@ -13,8 +12,7 @@ RUN pnpm build
 
 FROM base AS runtime-deps
 COPY package.json pnpm-lock.yaml ./
-RUN echo 'ignore-scripts=false' > .npmrc
-RUN pnpm install --prod --frozen-lockfile
+RUN pnpm install --prod --frozen-lockfile --config.ignore-scripts=false
 
 FROM node:25-alpine AS runtime
 WORKDIR /app
