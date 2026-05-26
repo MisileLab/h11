@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@astrojs/node':
         specifier: 10.1.1
-        version: 10.1.1(astro@6.3.5(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(yaml@2.8.2))
+        version: 10.1.1(astro@6.3.7(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(yaml@2.8.2))
       '@astrojs/sitemap':
         specifier: 3.7.2
         version: 3.7.2
@@ -18,8 +18,8 @@ importers:
         specifier: 0.0.5
         version: 0.0.5
       astro:
-        specifier: 6.3.5
-        version: 6.3.5(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(yaml@2.8.2)
+        specifier: 6.3.7
+        version: 6.3.7(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(yaml@2.8.2)
       dayjs:
         specifier: 1.11.20
         version: 1.11.20
@@ -1379,8 +1379,8 @@ packages:
     resolution: {integrity: sha512-+QDcgc7e+au6EZ0YjMmRRjNoQo5bDMlaR45aWDoFsuxQTCM9qmCHRoiKJPELgckJ8Wmr7vcfpa9eCDHBFh6G4w==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  astro@6.3.5:
-    resolution: {integrity: sha512-gU+4KedkbTuVgz7YoVAN+9Ftnq0GaYwejxK2NbqDzB0M9dWd0f3kXZBuaM9hzbchRFoRAJfJjFtdX9LK6Ir7ZA==}
+  astro@6.3.7:
+    resolution: {integrity: sha512-zIeDRrI0qNgN1lcCjNqt6/IVCVej7VwSa326cO8uP9BOk1cg4QuffhLnOn2gCgWQr32/wxpSRFfXiLKHglu1Tw==}
     engines: {node: '>=22.12.0', npm: '>=9.6.5', pnpm: '>=7.1.0'}
     hasBin: true
 
@@ -3050,10 +3050,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@astrojs/node@10.1.1(astro@6.3.5(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(yaml@2.8.2))':
+  '@astrojs/node@10.1.1(astro@6.3.7(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(yaml@2.8.2))':
     dependencies:
       '@astrojs/internal-helpers': 0.9.1
-      astro: 6.3.5(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(yaml@2.8.2)
+      astro: 6.3.7(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(yaml@2.8.2)
       send: 1.2.1
       server-destroy: 1.0.1
     transitivePeerDependencies:
@@ -3990,7 +3990,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  astro@6.3.5(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(yaml@2.8.2):
+  astro@6.3.7(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(yaml@2.8.2):
     dependencies:
       '@astrojs/compiler': 4.0.0
       '@astrojs/internal-helpers': 0.9.1
