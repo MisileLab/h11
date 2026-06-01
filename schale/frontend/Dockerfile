@@ -1,9 +1,9 @@
 FROM node:25-alpine AS base
 WORKDIR /app
-RUN npm install -g pnpm@11.1.1
+RUN npm install -g pnpm@11.5.0
 
 FROM base AS deps
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile --config.ignore-scripts=false
 
 FROM deps AS build
@@ -11,7 +11,7 @@ COPY . .
 RUN pnpm build
 
 FROM base AS runtime-deps
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --prod --frozen-lockfile --config.ignore-scripts=false
 
 FROM node:25-alpine AS runtime
