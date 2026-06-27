@@ -22,3 +22,4 @@ minimumReleaseAgeExclude:
   - '@oxfmt/binding-win32-ia32-msvc@0.54.0'
   - '@oxfmt/binding-win32-x64-msvc@0.54.0'
   - oxfmt@0.54.0
+  - nanostores@1.4.0
