@@ -27,14 +27,14 @@
   "devDependencies": {
     "@astrojs/check": "0.9.9",
     "@eslint/js": "^10.0.1",
-    "@tailwindcss/vite": "4.3.1",
+    "@tailwindcss/vite": "4.3.2",
     "@typescript-eslint/parser": "^8.57.0",
     "eslint": "^10.0.3",
     "eslint-plugin-astro": "^2.0.0",
     "eslint-plugin-oxlint": "^1.51.0",
     "oxfmt": "^0.57.0",
     "oxlint": "^1.51.0",
-    "tailwindcss": "4.3.1",
+    "tailwindcss": "4.3.2",
     "typescript": "6.0.3",
     "vite": "^8.0.0"
   },
