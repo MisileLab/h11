@@ -30,7 +30,7 @@
     "@tailwindcss/vite": "4.3.2",
     "@typescript-eslint/parser": "^8.57.0",
     "eslint": "^10.0.3",
-    "eslint-plugin-astro": "^2.0.0",
+    "eslint-plugin-astro": "^3.0.0",
     "eslint-plugin-oxlint": "^1.51.0",
     "oxfmt": "^0.58.0",
     "oxlint": "^1.51.0",
