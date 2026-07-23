@@ -19,7 +19,7 @@
     "@astrojs/node": "11.0.2",
     "@astrojs/sitemap": "3.7.3",
     "@misile/satellite": "0.0.5",
-    "astro": "7.1.0",
+    "astro": "7.1.3",
     "dayjs": "1.11.21",
     "mobile-device-detect": "0.4.3",
     "nanostores": "1.4.0"
