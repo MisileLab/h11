@@ -22,7 +22,7 @@
     "astro": "7.0.7",
     "dayjs": "1.11.21",
     "mobile-device-detect": "0.4.3",
-    "nanostores": "1.4.0"
+    "nanostores": "1.4.1"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.9",
