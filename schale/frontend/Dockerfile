@@ -1,10 +1,12 @@
 FROM node:25-alpine AS base
 WORKDIR /app
-RUN npm install -g pnpm@11.10.0
+COPY package.json ./
+# pin pnpm from package.json's packageManager field so it can't drift
+RUN npm install -g "$(node -p "require('./package.json').packageManager")"
 RUN pnpm config set minimumReleaseAge 0
 
 FROM base AS deps
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile --config.ignore-scripts=false
 
 FROM deps AS build
@@ -12,7 +14,7 @@ COPY . .
 RUN pnpm build
 
 FROM base AS runtime-deps
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --prod --frozen-lockfile --config.ignore-scripts=false
 
 FROM node:25-alpine AS runtime
