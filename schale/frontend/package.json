@@ -1,7 +1,7 @@
 {
   "name": "astrojs",
-  "type": "module",
   "version": "0.0.1",
+  "type": "module",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -12,8 +12,8 @@
     "lint:fix": "oxlint --ignore-path /dev/null \"src/**/*.{js,mjs,cjs,ts,tsx}\" \"astro.config.mjs\" --fix && eslint . --fix",
     "lint:ox": "oxlint --ignore-path /dev/null \"src/**/*.{js,mjs,cjs,ts,tsx}\" \"astro.config.mjs\"",
     "lint:ox:fix": "oxlint --ignore-path /dev/null \"src/**/*.{js,mjs,cjs,ts,tsx}\" \"astro.config.mjs\" --fix",
-    "format": "oxfmt .",
-    "format:check": "oxfmt --check ."
+    "format": "oxfmt --ignore-path /dev/null . '!pnpm-workspace.yaml'",
+    "format:check": "oxfmt --check --ignore-path /dev/null . '!pnpm-workspace.yaml'"
   },
   "dependencies": {
     "@astrojs/node": "11.0.3",
@@ -36,7 +36,7 @@
     "oxlint": "^1.51.0",
     "tailwindcss": "4.3.2",
     "typescript": "6.0.3",
-    "vite": "^8.0.0"
+    "vite": "^8.2.0"
   },
   "packageManager": "pnpm@11.18.0"
 }

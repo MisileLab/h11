@@ -1,6 +1,6 @@
 export enum DataType {
   blog = "blog",
-  news = "news"
+  news = "news",
 }
 
 export function getTextContent(h: HTMLElement) {
