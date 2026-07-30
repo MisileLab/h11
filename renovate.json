@@ -3,6 +3,9 @@
   "extends": [
     "config:recommended"
   ],
+  "minimumReleaseAge": "1 day",
+  "prCreation": "not-pending",
+  "dependencyDashboard": true,
   "packageRules": [
     {
       "matchPackageNames": [

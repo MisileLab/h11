@@ -1,10 +1,13 @@
 <!-- Parent: ../AGENTS.md -->
+
 # FRONTEND
 
 ## OVERVIEW
+
 Astro SSR app: Tailwind v4 via Vite, Node standalone adapter, pnpm 10.
 
 ## STRUCTURE
+
 ```
 frontend/
 ├── src/              # Astro source
@@ -16,17 +19,19 @@ frontend/
 ```
 
 ## WHERE TO LOOK
-| Task | Location | Notes |
-| --- | --- | --- |
-| Astro config | `astro.config.mjs` | SSR, sitemap filter, site URL |
-| Routes | `src/pages` | File-based; i18n via dir prefixes |
-| Layouts | `src/components` | `base.astro`, `content.astro` (no `src/layouts/`) |
-| API helpers | `src/components/request.ts` | Fetch wrappers, StatusError, env-aware URLs |
-| Middleware | `src/middleware.ts` | Security headers (HSTS, CSP, X-Frame) |
-| Styles | `src/styles/global.css` | Single-line `@import "tailwindcss"` |
-| Fonts | `public/fonts` | Large assets (~1.5 GB); avoid moving |
+
+| Task         | Location                    | Notes                                             |
+| ------------ | --------------------------- | ------------------------------------------------- |
+| Astro config | `astro.config.mjs`          | SSR, sitemap filter, site URL                     |
+| Routes       | `src/pages`                 | File-based; i18n via dir prefixes                 |
+| Layouts      | `src/components`            | `base.astro`, `content.astro` (no `src/layouts/`) |
+| API helpers  | `src/components/request.ts` | Fetch wrappers, StatusError, env-aware URLs       |
+| Middleware   | `src/middleware.ts`         | Security headers (HSTS, CSP, X-Frame)             |
+| Styles       | `src/styles/global.css`     | Single-line `@import "tailwindcss"`               |
+| Fonts        | `public/fonts`              | Large assets (~1.5 GB); avoid moving              |
 
 ## CONVENTIONS
+
 - TypeScript strict via `astro/tsconfigs/strict`.
 - Named exports only in TS files (no default exports).
 - Linting: `oxlint` + `eslint`; formatting: `oxfmt` (not Prettier).
