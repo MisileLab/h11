@@ -2,5 +2,17 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": [
+        "js-yaml"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": false,
+      "description": "js-yaml 5 dropped the default export; astro's CLI imports it as default. Keep 4.x until astro moves to a named import (see schale/frontend/pnpm-workspace.yaml)."
+    }
   ]
 }
