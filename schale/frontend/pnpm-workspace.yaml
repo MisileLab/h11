@@ -6,7 +6,7 @@ overrides:
   fast-uri@3.1.2: 4.1.2
   # js-yaml 5 dropped the default export; astro's CLI imports it as default.
   # Keep 4.3.0 (still patched) until astro moves to a named import.
-  js-yaml@4.2.0: 4.3.0
+  js-yaml@4.2.0: 4.3.1
   postcss@<=8.5.17: 8.5.25
   sharp@0.34.5: 0.35.3
   svgo@4.0.1: 4.0.2
