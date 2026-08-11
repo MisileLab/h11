@@ -1,12 +1,14 @@
 import js from "@eslint/js";
 import oxlint from "eslint-plugin-oxlint";
 import tsParser from "@typescript-eslint/parser";
+import astro from "eslint-plugin-astro";
 
 export default [
   {
-    ignores: ["dist/", ".astro/", "node_modules/", "**/*.astro"],
+    ignores: ["dist/", ".astro/", "node_modules/", "src/pages/contact.astro"],
   },
   js.configs.recommended,
+  ...astro.configs.recommended,
   {
     files: ["**/*.{js,mjs,cjs,ts,tsx}"],
     languageOptions: {
