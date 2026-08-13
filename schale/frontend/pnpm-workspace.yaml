@@ -5,8 +5,11 @@ overrides:
   brace-expansion@5.0.6: 5.0.9
   fast-uri@3.1.2: 4.1.2
   # js-yaml 5 dropped the default export; astro's CLI imports it as default.
-  # Keep 4.3.0 (still patched) until astro moves to a named import.
+  # Keep the 4.3.x line until astro moves to a named import. Selector must
+  # cover 4.3.0 as well — @4.2.0 alone left the lockfile on vulnerable 4.3.0.
   js-yaml@4.2.0: 4.3.1
+  js-yaml@4.3.0: 4.3.1
+  nanoid@3.3.16: 3.3.17
   postcss@<=8.5.17: 8.5.25
   sharp@0.34.5: 0.35.3
   svgo@4.0.1: 4.0.2
