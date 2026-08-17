@@ -9,7 +9,7 @@ overrides:
   # cover 4.3.0 as well — @4.2.0 alone left the lockfile on vulnerable 4.3.0.
   js-yaml@4.2.0: 4.3.1
   js-yaml@4.3.0: 4.3.1
-  nanoid@3.3.16: 3.3.17
+  nanoid@3.3.16: 3.3.18
   postcss@<=8.5.17: 8.5.25
   sharp@0.34.5: 0.35.3
   svgo@4.0.1: 4.0.2
