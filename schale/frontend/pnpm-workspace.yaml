@@ -2,7 +2,7 @@ allowBuilds:
   esbuild: true
   sharp: true
 overrides:
-  fast-uri@3.1.2: 4.1.2
+  fast-uri@3.1.2: 4.1.4
   yaml@2.7.1: 2.9.0
 minimumReleaseAgeExclude:
   - '@oxfmt/binding-android-arm-eabi@0.54.0'
