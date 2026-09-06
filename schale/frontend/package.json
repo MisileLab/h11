@@ -20,7 +20,7 @@
     "@astrojs/sitemap": "3.7.3",
     "@misile/satellite": "0.0.5",
     "astro": "7.1.6",
-    "dayjs": "1.11.21",
+    "dayjs": "1.11.23",
     "mobile-device-detect": "0.4.3",
     "nanostores": "1.4.2"
   },
